@@ -16,14 +16,8 @@
 
 package com.google.android.mobly.snippet;
 
-import android.content.ComponentName;
-
 public interface Constants {
-    public static final String ACTION_KILL =
-            "com.google.android.mobly.snippet.action.KILL";
-    public static final String ACTION_LAUNCH_SERVER =
-            "com.google.android.mobly.snippet.action.LAUNCH_SERVER";
-
-    public static final String EXTRA_SERVICE_PORT =
-            "com.google.android.mobly.snippet.extra.SERVICE_PORT";
+    String ACTION_KILL = "com.google.android.mobly.snippet.action.KILL";
+    String ACTION_LAUNCH_SERVER = "com.google.android.mobly.snippet.action.LAUNCH_SERVER";
+    String EXTRA_SERVICE_PORT =  "com.google.android.mobly.snippet.extra.SERVICE_PORT";
 }

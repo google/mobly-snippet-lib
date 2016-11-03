@@ -19,7 +19,6 @@ package com.google.android.mobly.snippet.rpc;
 import java.util.Map;
 
 public interface SnippetManagerFactory {
-  public SnippetManager create(Integer UID);
-
-  public Map<Integer, SnippetManager> getSnippetManagers();
+  SnippetManager create(Integer UID);
+  Map<Integer, SnippetManager> getSnippetManagers();
 }

@@ -53,8 +53,8 @@ public abstract class SimpleServer {
   private Thread mServerThread;
 
   public interface SimpleServerObserver {
-    public void onConnect();
-    public void onDisconnect();
+    void onConnect();
+    void onDisconnect();
   }
 
   protected abstract void handleConnection(Socket socket) throws Exception;
@@ -209,47 +209,6 @@ public abstract class SimpleServer {
         e1.printStackTrace();
         return null;
       }
-    } catch (Exception e) {
-      Log.e("Failed to start server.", e);
-      return null;
-    }
-    int boundPort = start();
-    return InetSocketAddress.createUnresolved(mServer.getInetAddress().getHostAddress(), boundPort);
-  }
-
-  /**
-   * data Starts the RPC server bound to the public facing address.
-   *
-   * @param port
-   *          the port to bind to or 0 to pick any unused port
-   *
-   * @return the port that the server is bound to
-   */
-  public InetSocketAddress startPublic(int port) {
-    InetAddress address;
-    try {
-      // address = getPublicInetAddress();
-      address = null;
-      mServer = new ServerSocket(port, 5 /* backlog */, address);
-    } catch (Exception e) {
-      Log.e("Failed to start server.", e);
-      return null;
-    }
-    int boundPort = start();
-    return InetSocketAddress.createUnresolved(mServer.getInetAddress().getHostAddress(), boundPort);
-  }
-
-  /**
-   * data Starts the RPC server bound to all interfaces
-   *
-   * @param port
-   *          the port to bind to or 0 to pick any unused port
-   *
-   * @return the port that the server is bound to
-   */
-  public InetSocketAddress startAllInterfaces(int port) {
-    try {
-      mServer = new ServerSocket(port, 5 /* backlog */);
     } catch (Exception e) {
       Log.e("Failed to start server.", e);
       return null;

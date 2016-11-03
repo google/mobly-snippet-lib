@@ -21,41 +21,20 @@ import android.content.Context;
 import com.google.android.mobly.snippet.facade.ReflectionFacadeManagerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.UUID;
 
 public class AndroidProxy {
 
     private InetSocketAddress mAddress;
     private final JsonRpcServer mJsonRpcServer;
-    private final UUID mSecret;
     private final SnippetManagerFactory mFacadeManagerFactory;
 
-    /**
-     *
-     * @param context
-     *          Android context (required to build facades).
-     * @param requiresHandshake
-     *          indicates whether RPC security protocol should be enabled.
-     */
-    public AndroidProxy(Context context, boolean requiresHandshake) {
-        if (requiresHandshake) {
-            mSecret = UUID.randomUUID();
-        } else {
-            mSecret = null;
-        }
+    public AndroidProxy(Context context) {
         mFacadeManagerFactory = new ReflectionFacadeManagerFactory(context);
-        mJsonRpcServer = new JsonRpcServer(mFacadeManagerFactory, getSecret());
+        mJsonRpcServer = new JsonRpcServer(mFacadeManagerFactory);
     }
 
     public InetSocketAddress startLocal(int port) {
         mAddress = mJsonRpcServer.startLocal(port);
         return mAddress;
-    }
-
-    private String getSecret() {
-        if (mSecret == null) {
-            return null;
-        }
-        return mSecret.toString();
     }
 }

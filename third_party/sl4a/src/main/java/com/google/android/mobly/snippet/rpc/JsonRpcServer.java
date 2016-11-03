@@ -24,11 +24,11 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * A JSON RPC server that forwards RPC calls to a specified receiver object.
- *
  */
 public class JsonRpcServer extends SimpleServer {
 
@@ -36,16 +36,12 @@ public class JsonRpcServer extends SimpleServer {
 
     private final SnippetManagerFactory mSnippetManagerFactory;
 
-    // private final String mHandshake;
-
     /**
      * Construct a {@link JsonRpcServer} connected to the provided {@link SnippetManager}.
      *
      * @param managerFactory the {@link SnippetManager} to register with the server
-     * @param handshake the secret handshake required for authorization to use this server
      */
-    public JsonRpcServer(SnippetManagerFactory managerFactory, String handshake) {
-        // mHandshake = handshake;
+    public JsonRpcServer(SnippetManagerFactory managerFactory) {
         mSnippetManagerFactory = managerFactory;
     }
 
@@ -76,7 +72,6 @@ public class JsonRpcServer extends SimpleServer {
                 receiverManager = mSnippetManagerFactory.create(UID);
             }
         }
-        // boolean passedAuthentication = false;
         String data;
         while ((data = reader.readLine()) != null) {
             Log.v("Session " + UID + " Received: " + data);
@@ -84,6 +79,11 @@ public class JsonRpcServer extends SimpleServer {
             int id = request.getInt("id");
             String method = request.getString("method");
             JSONArray params = request.getJSONArray("params");
+
+            if (method.equals("help")) {
+                help(writer, id, receiverManager, UID);
+                continue;
+            }
 
             MethodDescriptor rpc = receiverManager.getMethodDescriptor(method);
             if (rpc == null) {
@@ -109,6 +109,16 @@ public class JsonRpcServer extends SimpleServer {
                 return;
             }
         }
+    }
+
+    private void help(PrintWriter writer, int id, SnippetManager receiverManager, Integer UID)
+        throws JSONException {
+        StringBuilder result = new StringBuilder("Known methods:\n");
+        for (String method : receiverManager.getMethodNames()) {
+            MethodDescriptor descriptor = receiverManager.getMethodDescriptor(method);
+            result.append("  ").append(descriptor.getHelp()).append("\n");
+        }
+        send(writer, JsonRpcResult.result(id, result), UID);
     }
 
     private void send(PrintWriter writer, JSONObject result, int UID) {
