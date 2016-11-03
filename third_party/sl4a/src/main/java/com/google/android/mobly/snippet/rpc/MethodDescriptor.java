@@ -43,8 +43,6 @@ import org.json.JSONObject;
  *
  */
 public final class MethodDescriptor {
-  private static final Map<Class<?>, Converter<?>> sConverters = populateConverters();
-
   private final Method mMethod;
   private final Class<? extends Snippet> mClass;
 
@@ -79,10 +77,8 @@ public final class MethodDescriptor {
    * @throws Throwable
    */
   public Object invoke(SnippetManager manager, final JSONArray parameters) throws Throwable {
-
     final Type[] parameterTypes = getGenericParameterTypes();
     final Object[] args = new Object[parameterTypes.length];
-    final Annotation annotations[][] = getParameterAnnotations();
 
     if (parameters.length() > args.length) {
       throw new RpcError("Too many parameters specified.");
@@ -92,8 +88,6 @@ public final class MethodDescriptor {
       final Type parameterType = parameterTypes[i];
       if (i < parameters.length()) {
         args[i] = convertParameter(parameters, i, parameterType);
-      } else if (MethodDescriptor.hasDefaultValue(annotations[i])) {
-        args[i] = MethodDescriptor.getDefaultValue(parameterType, annotations[i]);
       } else {
         throw new RpcError("Argument " + (i + 1) + " is not present");
       }
@@ -102,35 +96,8 @@ public final class MethodDescriptor {
     return invoke(manager, args);
   }
 
-  /**
-   * Invokes the call that belongs to this object with the given parameters. Wraps the response
-   * (possibly an exception) in a JSONObject.
-   *
-   * @param parameters {@code Bundle} containing the parameters
-   * @return result
-   * @throws Throwable
-   */
-  public Object invoke(SnippetManager manager, final Bundle parameters) throws Throwable {
-    final Annotation annotations[][] = getParameterAnnotations();
-    final Class<?>[] parameterTypes = getMethod().getParameterTypes();
-    final Object[] args = new Object[parameterTypes.length];
-
-    for (int i = 0; i < parameterTypes.length; i++) {
-      Class<?> parameterType = parameterTypes[i];
-      String parameterName = getName(annotations[i]);
-      if (i < parameterTypes.length) {
-        args[i] = convertParameter(parameters, parameterType, parameterName);
-      } else if (MethodDescriptor.hasDefaultValue(annotations[i])) {
-        args[i] = MethodDescriptor.getDefaultValue(parameterType, annotations[i]);
-      } else {
-        throw new RpcError("Argument " + (i + 1) + " is not present");
-      }
-    }
-    return invoke(manager, args);
-  }
-
-  private Object invoke(SnippetManager manager, Object[] args) throws Throwable{
-    Object result = null;
+  private Object invoke(SnippetManager manager, Object[] args) throws Throwable {
+    Object result;
     try {
       result = manager.invoke(mClass, mMethod, args);
     } catch (Throwable t) {
@@ -151,8 +118,6 @@ public final class MethodDescriptor {
   static Object convertParameter(final JSONArray parameters, int index, Type type)
       throws JSONException, RpcError {
     try {
-      // Log.d("sl4a", parameters.toString());
-      // Log.d("sl4a", type.toString());
       // We must handle null and numbers explicitly because we cannot magically cast them. We
       // also need to convert implicitly from numbers to bools.
       if (parameters.isNull(index)) {
@@ -204,41 +169,6 @@ public final class MethodDescriptor {
     }
   }
 
-  private Object convertParameter(Bundle bundle, Class<?> type, String name) {
-    Object param = null;
-    if (type.isAssignableFrom(Boolean.class)) {
-      param = bundle.getBoolean(name, false);
-    }
-    if (type.isAssignableFrom(Boolean[].class)) {
-      param = bundle.getBooleanArray(name);
-    }
-    if (type.isAssignableFrom(String.class)) {
-      param = bundle.getString(name);
-    }
-    if (type.isAssignableFrom(String[].class)) {
-      param = bundle.getStringArray(name);
-    }
-    if (type.isAssignableFrom(Integer.class)) {
-      param = bundle.getInt(name, 0);
-    }
-    if (type.isAssignableFrom(Integer[].class)) {
-      param = bundle.getIntArray(name);
-    }
-    if (type.isAssignableFrom(Bundle.class)) {
-      param = bundle.getBundle(name);
-    }
-    if (type.isAssignableFrom(Parcelable.class)) {
-      param = bundle.getParcelable(name);
-    }
-    if (type.isAssignableFrom(Parcelable[].class)) {
-      param = bundle.getParcelableArray(name);
-    }
-    if (type.isAssignableFrom(Intent.class)) {
-      param = bundle.getParcelable(name);
-    }
-    return param;
-  }
-
   public static Object buildIntent(JSONObject jsonObject) throws JSONException {
     Intent intent = new Intent();
     if (jsonObject.has("action")) {
@@ -270,27 +200,12 @@ public final class MethodDescriptor {
     return intent;
   }
 
-  public Method getMethod() {
-    return mMethod;
-  }
-
-  public Class<? extends Snippet> getDeclaringClass() {
-    return mClass;
-  }
-
   public String getName() {
-    if (mMethod.isAnnotationPresent(RpcName.class)) {
-      return mMethod.getAnnotation(RpcName.class).name();
-    }
     return mMethod.getName();
   }
 
   public Type[] getGenericParameterTypes() {
     return mMethod.getGenericParameterTypes();
-  }
-
-  public Annotation[][] getParameterAnnotations() {
-    return mMethod.getParameterAnnotations();
   }
 
   /**
@@ -299,298 +214,22 @@ public final class MethodDescriptor {
    * @return derived help string
    */
   public String getHelp() {
-    StringBuilder helpBuilder = new StringBuilder();
-    Rpc rpcAnnotation = mMethod.getAnnotation(Rpc.class);
-
-    helpBuilder.append(mMethod.getName());
-    helpBuilder.append("(");
-    final Class<?>[] parameterTypes = mMethod.getParameterTypes();
-    final Type[] genericParameterTypes = mMethod.getGenericParameterTypes();
-    final Annotation[][] annotations = mMethod.getParameterAnnotations();
+    StringBuilder paramBuilder = new StringBuilder();
+    Class<?>[] parameterTypes = mMethod.getParameterTypes();
     for (int i = 0; i < parameterTypes.length; i++) {
-      if (i == 0) {
-        helpBuilder.append("\n  ");
-      } else {
-        helpBuilder.append(",\n  ");
+      if (i != 0) {
+        paramBuilder.append(", ");
       }
-
-      helpBuilder.append(getHelpForParameter(genericParameterTypes[i], annotations[i]));
+      paramBuilder.append(parameterTypes[i].getSimpleName());
     }
-    helpBuilder.append(")\n\n");
-    helpBuilder.append(rpcAnnotation.description());
-    if (!rpcAnnotation.returns().equals("")) {
-      helpBuilder.append("\n");
-      helpBuilder.append("\nReturns:\n  ");
-      helpBuilder.append(rpcAnnotation.returns());
-    }
-
-    if (mMethod.isAnnotationPresent(RpcStartEvent.class)) {
-      String eventName = mMethod.getAnnotation(RpcStartEvent.class).value();
-      helpBuilder.append(String.format("\n\nGenerates \"%s\" events.", eventName));
-    }
-
-    if (mMethod.isAnnotationPresent(RpcDeprecated.class)) {
-      String replacedBy = mMethod.getAnnotation(RpcDeprecated.class).value();
-      String release = mMethod.getAnnotation(RpcDeprecated.class).release();
-      helpBuilder.append(String.format("\n\nDeprecated in %s! Please use %s instead.", release,
-          replacedBy));
-    }
-
-    return helpBuilder.toString();
-  }
-
-  /**
-   * Returns the help string for one particular parameter. This respects optional parameters.
-   *
-   * @param parameterType
-   *          (generic) type of the parameter
-   * @param annotations
-   *          annotations of the parameter, may be null
-   * @return string describing the parameter based on source code annotations
-   */
-  private static String getHelpForParameter(Type parameterType, Annotation[] annotations) {
-    StringBuilder result = new StringBuilder();
-
-    appendTypeName(result, parameterType);
-    result.append(" ");
-    result.append(getName(annotations));
-    if (hasDefaultValue(annotations)) {
-      result.append("[optional");
-      if (hasExplicitDefaultValue(annotations)) {
-        result.append(", default " + getDefaultValue(parameterType, annotations));
-      }
-      result.append("]");
-    }
-
-    String description = getDescription(annotations);
-    if (description.length() > 0) {
-      result.append(": ");
-      result.append(description);
-    }
-
-    return result.toString();
-  }
-
-  /**
-   * Appends the name of the given type to the {@link StringBuilder}.
-   *
-   * @param builder
-   *          string builder to append to
-   * @param type
-   *          type whose name to append
-   */
-  private static void appendTypeName(final StringBuilder builder, final Type type) {
-    if (type instanceof Class<?>) {
-      builder.append(((Class<?>) type).getSimpleName());
-    } else {
-      ParameterizedType parametrizedType = (ParameterizedType) type;
-      builder.append(((Class<?>) parametrizedType.getRawType()).getSimpleName());
-      builder.append("<");
-
-      Type[] arguments = parametrizedType.getActualTypeArguments();
-      for (int i = 0; i < arguments.length; i++) {
-        if (i > 0) {
-          builder.append(", ");
-        }
-        appendTypeName(builder, arguments[i]);
-      }
-      builder.append(">");
-    }
-  }
-
-  /**
-   * Returns parameter descriptors suitable for the RPC call text representation.
-   *
-   * <p>
-   * Uses parameter value, default value or name, whatever is available first.
-   *
-   * @return an array of parameter descriptors
-   */
-  public ParameterDescriptor[] getParameterValues(String[] values) {
-    Type[] parameterTypes = mMethod.getGenericParameterTypes();
-    Annotation[][] parametersAnnotations = mMethod.getParameterAnnotations();
-    ParameterDescriptor[] parameters = new ParameterDescriptor[parametersAnnotations.length];
-    for (int index = 0; index < parameters.length; index++) {
-      String value;
-      if (index < values.length) {
-        value = values[index];
-      } else if (hasDefaultValue(parametersAnnotations[index])) {
-        Object defaultValue = getDefaultValue(parameterTypes[index], parametersAnnotations[index]);
-        if (defaultValue == null) {
-          value = null;
-        } else {
-          value = String.valueOf(defaultValue);
-        }
-      } else {
-        value = getName(parametersAnnotations[index]);
-      }
-      parameters[index] = new ParameterDescriptor(value, parameterTypes[index]);
-    }
-    return parameters;
-  }
-
-  /**
-   * Returns parameter hints.
-   *
-   * @return an array of parameter hints
-   */
-  public String[] getParameterHints() {
-    Annotation[][] parametersAnnotations = mMethod.getParameterAnnotations();
-    String[] hints = new String[parametersAnnotations.length];
-    for (int index = 0; index < hints.length; index++) {
-      String name = getName(parametersAnnotations[index]);
-      String description = getDescription(parametersAnnotations[index]);
-      String hint = "No paramenter description.";
-      if (!name.equals("") && !description.equals("")) {
-        hint = name + ": " + description;
-      } else if (!name.equals("")) {
-        hint = name;
-      } else if (!description.equals("")) {
-        hint = description;
-      }
-      hints[index] = hint;
-    }
-    return hints;
-  }
-
-  /**
-   * Extracts the formal parameter name from an annotation.
-   *
-   * @param annotations
-   *          the annotations of the parameter
-   * @return the formal name of the parameter
-   */
-  private static String getName(Annotation[] annotations) {
-    for (Annotation a : annotations) {
-      if (a instanceof RpcParameter) {
-        return ((RpcParameter) a).name();
-      }
-    }
-    throw new IllegalStateException("No parameter name");
-  }
-
-  /**
-   * Extracts the parameter description from its annotations.
-   *
-   * @param annotations
-   *          the annotations of the parameter
-   * @return the description of the parameter
-   */
-  private static String getDescription(Annotation[] annotations) {
-    for (Annotation a : annotations) {
-      if (a instanceof RpcParameter) {
-        return ((RpcParameter) a).description();
-      }
-    }
-    throw new IllegalStateException("No parameter description");
-  }
-
-  /**
-   * Returns the default value for a specific parameter.
-   *
-   * @param parameterType
-   *          parameterType
-   * @param annotations
-   *          annotations of the parameter
-   */
-  public static Object getDefaultValue(Type parameterType, Annotation[] annotations) {
-    for (Annotation a : annotations) {
-      if (a instanceof RpcDefault) {
-        RpcDefault defaultAnnotation = (RpcDefault) a;
-        Converter<?> converter = converterFor(parameterType, defaultAnnotation.converter());
-        return converter.convert(defaultAnnotation.value());
-      } else if (a instanceof RpcOptional) {
-        return null;
-      }
-    }
-    throw new IllegalStateException("No default value for " + parameterType);
-  }
-
-  @SuppressWarnings("rawtypes")
-  private static Converter<?> converterFor(Type parameterType,
-      Class<? extends Converter> converterClass) {
-    if (converterClass == Converter.class) {
-      Converter<?> converter = sConverters.get(parameterType);
-      if (converter == null) {
-        throw new IllegalArgumentException("No predefined converter found for " + parameterType);
-      }
-      return converter;
-    }
-    try {
-      Constructor<?> constructor = converterClass.getConstructor(new Class<?>[0]);
-      return (Converter<?>) constructor.newInstance(new Object[0]);
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Cannot create converter from "
-          + converterClass.getCanonicalName());
-    }
-  }
-
-  /**
-   * Determines whether or not this parameter has default value.
-   *
-   * @param annotations
-   *          annotations of the parameter
-   */
-  public static boolean hasDefaultValue(Annotation[] annotations) {
-    for (Annotation a : annotations) {
-      if (a instanceof RpcDefault || a instanceof RpcOptional) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Returns whether the default value is specified for a specific parameter.
-   *
-   * @param annotations
-   *          annotations of the parameter
-   */
-  //@VisibleForTesting
-  static boolean hasExplicitDefaultValue(Annotation[] annotations) {
-    for (Annotation a : annotations) {
-      if (a instanceof RpcDefault) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /** Returns the converters for {@code String}, {@code Integer} and {@code Boolean}. */
-  private static Map<Class<?>, Converter<?>> populateConverters() {
-    Map<Class<?>, Converter<?>> converters = new HashMap<Class<?>, Converter<?>>();
-    converters.put(String.class, new Converter<String>() {
-      @Override
-      public String convert(String value) {
-        return value;
-      }
-    });
-    converters.put(Integer.class, new Converter<Integer>() {
-      @Override
-      public Integer convert(String input) {
-        try {
-          return Integer.decode(input);
-        } catch (NumberFormatException e) {
-          throw new IllegalArgumentException("'" + input + "' is not an integer");
-        }
-      }
-    });
-    converters.put(Boolean.class, new Converter<Boolean>() {
-      @Override
-      public Boolean convert(String input) {
-        if (input == null) {
-          return null;
-        }
-        input = input.toLowerCase();
-        if (input.equals("true")) {
-          return Boolean.TRUE;
-        }
-        if (input.equals("false")) {
-          return Boolean.FALSE;
-        }
-        throw new IllegalArgumentException("'" + input + "' is not a boolean");
-      }
-    });
-    return converters;
+    Rpc rpcAnnotation = mMethod.getAnnotation(Rpc.class);
+    String help = String.format(
+            "%s(%s) returns %s  // %s",
+            mMethod.getName(),
+            paramBuilder,
+            //mMethod.getDeclaringClass().getName(),
+            mMethod.getReturnType().getSimpleName(),
+            rpcAnnotation.description());
+    return help;
   }
 }

@@ -18,7 +18,6 @@ package com.google.android.mobly.snippet.facade;
 
 import android.content.Context;
 
-import com.google.android.mobly.snippet.rpc.RpcDeprecated;
 import com.google.android.mobly.snippet.rpc.RpcMinSdk;
 import com.google.android.mobly.snippet.rpc.Snippet;
 import com.google.android.mobly.snippet.rpc.SnippetManager;
@@ -45,11 +44,7 @@ public class FacadeManager extends SnippetManager {
   public Object invoke(Class<? extends Snippet> clazz, Method method, Object[] args)
       throws Exception {
     try {
-      if (method.isAnnotationPresent(RpcDeprecated.class)) {
-        String replacedBy = method.getAnnotation(RpcDeprecated.class).value();
-        String title = method.getName() + " is deprecated";
-        Log.notify(mContext, title, title, String.format("Please use %s instead.", replacedBy));
-      } else if (method.isAnnotationPresent(RpcMinSdk.class)) {
+      if (method.isAnnotationPresent(RpcMinSdk.class)) {
         int requiredSdkLevel = method.getAnnotation(RpcMinSdk.class).value();
         if (mSdkLevel < requiredSdkLevel) {
           throw new SnippetLibException(

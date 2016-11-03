@@ -21,8 +21,12 @@ import android.content.Context;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.google.android.mobly.snippet.util.Log;
 
@@ -75,6 +79,10 @@ public abstract class SnippetManager {
 
     public MethodDescriptor getMethodDescriptor(String methodName) {
         return mKnownRpcs.get(methodName);
+    }
+
+    public SortedSet<String> getMethodNames() {
+        return new TreeSet<>(mKnownRpcs.keySet());
     }
 
     public Object invoke(Class<? extends Snippet> clazz, Method method, Object[] args)

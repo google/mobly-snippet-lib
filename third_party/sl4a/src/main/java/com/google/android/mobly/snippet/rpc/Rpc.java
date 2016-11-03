@@ -35,9 +35,4 @@ public @interface Rpc {
    * Returns brief description of the function. Should be limited to one or two sentences.
    */
   String description();
-
-  /**
-   * Gives a brief description of the functions return value (and the underlying data structure).
-   */
-  String returns() default "";
 }

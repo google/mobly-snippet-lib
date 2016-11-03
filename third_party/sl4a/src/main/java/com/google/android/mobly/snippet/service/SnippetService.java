@@ -105,7 +105,7 @@ public class SnippetService extends ForegroundService {
     }
 
     private AndroidProxy launchServer(Intent intent) {
-        AndroidProxy androidProxy = new AndroidProxy(this, false /* requiresHandshake */);
+        AndroidProxy androidProxy = new AndroidProxy(this);
         int servicePort = intent.getIntExtra(Constants.EXTRA_SERVICE_PORT, 0);
         if (servicePort == 0) {
             throw new IllegalArgumentException(
