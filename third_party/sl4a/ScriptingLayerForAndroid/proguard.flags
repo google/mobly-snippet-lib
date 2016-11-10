@@ -1,0 +1,5 @@
+
+-libraryjars libs
+
+-keep class net.londatiga.android.**{*;}
+

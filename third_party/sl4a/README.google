@@ -1,0 +1,14 @@
+URL: https://android.googlesource.com/platform/external/sl4a/+archive/f0a094f3709187319222e64d8434f168ad8ffac9.tar.gz
+Version: f0a094f3709187319222e64d8434f168ad8ffac9
+License: Apache 2.0
+License File: LICENSE
+
+Description:
+Originally authored by Damon Kohler, Scripting Layer for Android, SL4A, is an
+automation toolset for calling Android APIs in a platform-independent manner. It
+supports both remote automation via ADB as well as execution of scripts from
+on-device via a series of lightweight translation layers.
+
+Local Modifications:
+- LICENSE file has been created for compliance purposes. Not included in
+  original distribution.
