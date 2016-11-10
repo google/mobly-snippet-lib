@@ -1,0 +1,4 @@
+This folder a heavily modified version of sl4a which acts as an RPC library for
+third-party facades.
+
+It no longer has much in common with the original sl4a project.

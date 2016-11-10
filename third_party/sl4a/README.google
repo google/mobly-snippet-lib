@@ -12,3 +12,6 @@ on-device via a series of lightweight translation layers.
 Local Modifications:
 - LICENSE file has been created for compliance purposes. Not included in
   original distribution.
+- This version of sl4a has been extensively refactored to remove all Android
+  facades and scripting interpreters. Only the RPC layer and facade registration
+  engine remain. This is to facilitate its use as a library in user projects.
