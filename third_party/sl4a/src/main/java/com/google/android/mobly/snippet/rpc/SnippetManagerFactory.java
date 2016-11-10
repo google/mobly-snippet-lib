@@ -18,8 +18,8 @@ package com.google.android.mobly.snippet.rpc;
 
 import java.util.Map;
 
-public interface RpcReceiverManagerFactory {
-  public RpcReceiverManager create(Integer UID);
+public interface SnippetManagerFactory {
+  public SnippetManager create(Integer UID);
 
-  public Map<Integer, RpcReceiverManager> getRpcReceiverManagers();
+  public Map<Integer, SnippetManager> getSnippetManagers();
 }

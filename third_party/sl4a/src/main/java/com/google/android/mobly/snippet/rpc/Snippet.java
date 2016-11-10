@@ -16,7 +16,7 @@
 
 package com.google.android.mobly.snippet.rpc;
 
-public interface RpcReceiver {
+public interface Snippet {
   /** Invoked when the receiver is shut down. */
   void shutdown();
 }

@@ -16,16 +16,15 @@
 
 package com.google.android.mobly.snippet.facade;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.google.android.mobly.snippet.rpc.RpcReceiver;
-import com.google.android.mobly.snippet.rpc.RpcReceiverManager;
-import com.google.android.mobly.snippet.rpc.RpcReceiverManagerFactory;
+import com.google.android.mobly.snippet.rpc.Snippet;
+import com.google.android.mobly.snippet.rpc.SnippetManager;
+import com.google.android.mobly.snippet.rpc.SnippetManagerFactory;
 import com.google.android.mobly.snippet.util.Log;
 
 import java.util.Collections;
@@ -34,33 +33,33 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ReflectionFacadeManagerFactory implements RpcReceiverManagerFactory {
+public class ReflectionFacadeManagerFactory implements SnippetManagerFactory {
     private static final String METADATA_TAG_NAME = "mobly-snippets";
 
     private final Context mContext;
-    private final Set<Class<? extends RpcReceiver>> mClasses;
-    private final Map<Integer, RpcReceiverManager> mFacadeManagers;
+    private final Set<Class<? extends Snippet>> mClasses;
+    private final Map<Integer, SnippetManager> mSnippetManagers;
 
     public ReflectionFacadeManagerFactory(Context context) {
         mContext = context;
-        mClasses = loadRpcReceivers();
-        mFacadeManagers = new HashMap<>();
+        mClasses = loadSnippets();
+        mSnippetManagers = new HashMap<>();
     }
 
     @Override
     public FacadeManager create(Integer UID) {
         int sdkLevel = Build.VERSION.SDK_INT;
         FacadeManager facadeManager = new FacadeManager(sdkLevel, mContext, mClasses);
-        mFacadeManagers.put(UID, facadeManager);
+        mSnippetManagers.put(UID, facadeManager);
         return facadeManager;
     }
 
     @Override
-    public Map<Integer, RpcReceiverManager> getRpcReceiverManagers() {
-        return Collections.unmodifiableMap(mFacadeManagers);
+    public Map<Integer, SnippetManager> getSnippetManagers() {
+        return Collections.unmodifiableMap(mSnippetManagers);
     }
 
-    private Set<Class<? extends RpcReceiver>> loadRpcReceivers() {
+    private Set<Class<? extends Snippet>> loadSnippets() {
         ApplicationInfo appInfo;
         try {
             appInfo = mContext
@@ -79,19 +78,19 @@ public class ReflectionFacadeManagerFactory implements RpcReceiverManagerFactory
                         + "name=\"" + METADATA_TAG_NAME + "\"");
         }
         String[] snippetClassNames = snippets.split("\\s*,\\s*");
-        Set<Class<? extends RpcReceiver>> receiverSet = new HashSet<>();
+        Set<Class<? extends Snippet>> receiverSet = new HashSet<>();
         for (String snippetClassName : snippetClassNames) {
             try {
-                Log.i("Trying to load RpcReceiver class: " + snippetClassName);
+                Log.i("Trying to load Snippet class: " + snippetClassName);
                 Class<?> snippetClass = Class.forName(snippetClassName);
-                receiverSet.add((Class<? extends RpcReceiver>) snippetClass);
+                receiverSet.add((Class<? extends Snippet>) snippetClass);
             } catch (ClassNotFoundException e) {
                 Log.e("Failed to find class " + snippetClassName);
                 throw new RuntimeException(e);
             }
         }
         if (receiverSet.isEmpty()) {
-            throw new IllegalStateException("Found no subclasses of RpcReceiver.");
+            throw new IllegalStateException("Found no subclasses of Snippet.");
         }
         return receiverSet;
     }

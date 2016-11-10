@@ -26,21 +26,21 @@ import java.util.Map;
 
 import com.google.android.mobly.snippet.util.Log;
 
-public abstract class RpcReceiverManager {
+public abstract class SnippetManager {
 
     private final Context mContext;
-    private final Map<Class<? extends RpcReceiver>, RpcReceiver> mReceivers;
+    private final Map<Class<? extends Snippet>, Snippet> mReceivers;
 
     /**
      * A map of strings to known RPCs.
      */
     private final Map<String, MethodDescriptor> mKnownRpcs = new HashMap<String, MethodDescriptor>();
 
-    public RpcReceiverManager(
-            Context context, Collection<Class<? extends RpcReceiver>> classList) {
+    public SnippetManager(
+            Context context, Collection<Class<? extends Snippet>> classList) {
         mContext = context;
         mReceivers = new HashMap<>();
-        for (Class<? extends RpcReceiver> receiverClass : classList) {
+        for (Class<? extends Snippet> receiverClass : classList) {
             mReceivers.put(receiverClass, null);
             Collection<MethodDescriptor> methodList = MethodDescriptor.collectFrom(receiverClass);
             for (MethodDescriptor m : methodList) {
@@ -55,13 +55,13 @@ public abstract class RpcReceiverManager {
         }
     }
 
-    private RpcReceiver get(Class<? extends RpcReceiver> clazz) {
-        RpcReceiver object = mReceivers.get(clazz);
+    private Snippet get(Class<? extends Snippet> clazz) {
+        Snippet object = mReceivers.get(clazz);
         if (object != null) {
             return object;
         }
 
-        Constructor<? extends RpcReceiver> constructor;
+        Constructor<? extends Snippet> constructor;
         try {
             constructor = clazz.getConstructor(Context.class);
             object = constructor.newInstance(mContext);
@@ -77,20 +77,20 @@ public abstract class RpcReceiverManager {
         return mKnownRpcs.get(methodName);
     }
 
-    public Object invoke(Class<? extends RpcReceiver> clazz, Method method, Object[] args)
+    public Object invoke(Class<? extends Snippet> clazz, Method method, Object[] args)
             throws Exception {
-        RpcReceiver object = get(clazz);
+        Snippet object = get(clazz);
         return method.invoke(object, args);
     }
 
     public void shutdown() {
-        for (RpcReceiver receiver : mReceivers.values()) {
+        for (Snippet receiver : mReceivers.values()) {
             try {
                 if (receiver != null) {
                     receiver.shutdown();
                 }
             } catch (Exception e) {
-                Log.e("Failed to shut down an RpcReceiver", e);
+                Log.e("Failed to shut down an Snippet", e);
             }
         }
     }

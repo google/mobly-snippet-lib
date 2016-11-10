@@ -34,26 +34,26 @@ public class JsonRpcServer extends SimpleServer {
 
     private static final String CMD_CLOSE_SESSION = "closeSl4aSession";
 
-    private final RpcReceiverManagerFactory mRpcReceiverManagerFactory;
+    private final SnippetManagerFactory mSnippetManagerFactory;
 
     // private final String mHandshake;
 
     /**
-     * Construct a {@link JsonRpcServer} connected to the provided {@link RpcReceiverManager}.
+     * Construct a {@link JsonRpcServer} connected to the provided {@link SnippetManager}.
      *
-     * @param managerFactory the {@link RpcReceiverManager} to register with the server
+     * @param managerFactory the {@link SnippetManager} to register with the server
      * @param handshake the secret handshake required for authorization to use this server
      */
-    public JsonRpcServer(RpcReceiverManagerFactory managerFactory, String handshake) {
+    public JsonRpcServer(SnippetManagerFactory managerFactory, String handshake) {
         // mHandshake = handshake;
-        mRpcReceiverManagerFactory = managerFactory;
+        mSnippetManagerFactory = managerFactory;
     }
 
     @Override
     public void shutdown() {
         super.shutdown();
         // Notify all RPC receiving objects. They may have to clean up some of their state.
-        for (RpcReceiverManager manager : mRpcReceiverManagerFactory.getRpcReceiverManagers()
+        for (SnippetManager manager : mSnippetManagerFactory.getSnippetManagers()
                 .values()) {
             manager.shutdown();
         }
@@ -62,18 +62,18 @@ public class JsonRpcServer extends SimpleServer {
     @Override
     protected void handleRPCConnection(Socket sock, Integer UID, BufferedReader reader,
             PrintWriter writer) throws Exception {
-        RpcReceiverManager receiverManager = null;
-        Map<Integer, RpcReceiverManager> mgrs = mRpcReceiverManagerFactory.getRpcReceiverManagers();
+        SnippetManager receiverManager = null;
+        Map<Integer, SnippetManager> mgrs = mSnippetManagerFactory.getSnippetManagers();
         synchronized (mgrs) {
             Log.d("UID " + UID);
             Log.d("manager map keys: "
-                    + mRpcReceiverManagerFactory.getRpcReceiverManagers().keySet());
+                    + mSnippetManagerFactory.getSnippetManagers().keySet());
             if (mgrs.containsKey(UID)) {
                 Log.d("Look up existing session");
                 receiverManager = mgrs.get(UID);
             } else {
                 Log.d("Create a new session");
-                receiverManager = mRpcReceiverManagerFactory.create(UID);
+                receiverManager = mSnippetManagerFactory.create(UID);
             }
         }
         // boolean passedAuthentication = false;

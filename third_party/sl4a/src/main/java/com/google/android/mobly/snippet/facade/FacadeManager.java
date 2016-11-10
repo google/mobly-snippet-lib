@@ -16,13 +16,12 @@
 
 package com.google.android.mobly.snippet.facade;
 
-import android.app.Service;
 import android.content.Context;
 
 import com.google.android.mobly.snippet.rpc.RpcDeprecated;
 import com.google.android.mobly.snippet.rpc.RpcMinSdk;
-import com.google.android.mobly.snippet.rpc.RpcReceiver;
-import com.google.android.mobly.snippet.rpc.RpcReceiverManager;
+import com.google.android.mobly.snippet.rpc.Snippet;
+import com.google.android.mobly.snippet.rpc.SnippetManager;
 import com.google.android.mobly.snippet.util.SnippetLibException;
 import com.google.android.mobly.snippet.util.Log;
 
@@ -30,20 +29,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-public class FacadeManager extends RpcReceiverManager {
+public class FacadeManager extends SnippetManager {
 
   private final Context mContext;
   private int mSdkLevel;
 
   public FacadeManager(int sdkLevel, Context context,
-                       Collection<Class<? extends RpcReceiver>> classList) {
+                       Collection<Class<? extends Snippet>> classList) {
     super(context, classList);
     mSdkLevel = sdkLevel;
     mContext = context;
   }
 
   @Override
-  public Object invoke(Class<? extends RpcReceiver> clazz, Method method, Object[] args)
+  public Object invoke(Class<? extends Snippet> clazz, Method method, Object[] args)
       throws Exception {
     try {
       if (method.isAnnotationPresent(RpcDeprecated.class)) {

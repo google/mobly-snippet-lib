@@ -16,9 +16,7 @@
 
 package com.google.android.mobly.snippet.rpc;
 
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
 
 import com.google.android.mobly.snippet.facade.ReflectionFacadeManagerFactory;
 
@@ -30,7 +28,7 @@ public class AndroidProxy {
     private InetSocketAddress mAddress;
     private final JsonRpcServer mJsonRpcServer;
     private final UUID mSecret;
-    private final RpcReceiverManagerFactory mFacadeManagerFactory;
+    private final SnippetManagerFactory mFacadeManagerFactory;
 
     /**
      *

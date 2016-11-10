@@ -46,9 +46,9 @@ public final class MethodDescriptor {
   private static final Map<Class<?>, Converter<?>> sConverters = populateConverters();
 
   private final Method mMethod;
-  private final Class<? extends RpcReceiver> mClass;
+  private final Class<? extends Snippet> mClass;
 
-  public MethodDescriptor(Class<? extends RpcReceiver> clazz, Method method) {
+  public MethodDescriptor(Class<? extends Snippet> clazz, Method method) {
     mClass = clazz;
     mMethod = method;
   }
@@ -59,7 +59,7 @@ public final class MethodDescriptor {
   }
 
   /** Collects all methods with {@code RPC} annotation from given class. */
-  public static Collection<MethodDescriptor> collectFrom(Class<? extends RpcReceiver> clazz) {
+  public static Collection<MethodDescriptor> collectFrom(Class<? extends Snippet> clazz) {
     List<MethodDescriptor> descriptors = new ArrayList<MethodDescriptor>();
     for (Method method : clazz.getMethods()) {
       if (method.isAnnotationPresent(Rpc.class)) {
@@ -78,7 +78,7 @@ public final class MethodDescriptor {
    * @return result
    * @throws Throwable
    */
-  public Object invoke(RpcReceiverManager manager, final JSONArray parameters) throws Throwable {
+  public Object invoke(SnippetManager manager, final JSONArray parameters) throws Throwable {
 
     final Type[] parameterTypes = getGenericParameterTypes();
     final Object[] args = new Object[parameterTypes.length];
@@ -110,7 +110,7 @@ public final class MethodDescriptor {
    * @return result
    * @throws Throwable
    */
-  public Object invoke(RpcReceiverManager manager, final Bundle parameters) throws Throwable {
+  public Object invoke(SnippetManager manager, final Bundle parameters) throws Throwable {
     final Annotation annotations[][] = getParameterAnnotations();
     final Class<?>[] parameterTypes = getMethod().getParameterTypes();
     final Object[] args = new Object[parameterTypes.length];
@@ -129,7 +129,7 @@ public final class MethodDescriptor {
     return invoke(manager, args);
   }
 
-  private Object invoke(RpcReceiverManager manager, Object[] args) throws Throwable{
+  private Object invoke(SnippetManager manager, Object[] args) throws Throwable{
     Object result = null;
     try {
       result = manager.invoke(mClass, mMethod, args);
@@ -274,7 +274,7 @@ public final class MethodDescriptor {
     return mMethod;
   }
 
-  public Class<? extends RpcReceiver> getDeclaringClass() {
+  public Class<? extends Snippet> getDeclaringClass() {
     return mClass;
   }
 
