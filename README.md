@@ -4,82 +4,43 @@ Mobly Snippet Lib is a library for triggering device-side code from host-side
 [Mobly](http://github.com/google/mobly) tests. This tutorial teaches you how to
 use the snippet lib to trigger custom device-side actions.
 
-This is not an official Google product.
+Note: Mobly and the snippet lib are not official Google products.
+
 
 ## Prerequisites
--   This tutorial assumes basic familiarity with the Mobly framework, so please
-    follow the [Mobly tutorial](http://github.com/google/mobly) before doing
-    this one.
+
+-   These examples and tutorials assume basic familiarity with the Mobly
+    framework, so please follow the
+    [Mobly tutorial](http://github.com/google/mobly) before doing this one.
 -   You should know how to create an Android app and build it with gradle. If
     not, follow the
     [Android app tutorial](https://developer.android.com/training/basics/firstapp/index.html).
 
-## Using Mobly Snippet Lib
 
-1.  Link against Mobly Snippet Lib in your `build.gradle` file
+## Overview
 
-    ```
-    apply plugin: 'com.android.application'
-    dependencies {
-      androidTestCompile 'com.google.android.mobly:snippetlib:0.0.1'
-    }
-    ```
+The Mobly Snippet Lib allows you to write Java methods that run on Android
+devices, and trigger the methods from inside a Mobly test case. The Java methods
+invoked this way are called `snippets`.
 
-2.  In your `androidTest` source tree, write a Java class implementing `Snippet`
-    and add methods to trigger the behaviour that you want. Annotate them with
-    `@Rpc`
+The `snippet` code can either be written in its own standalone apk, or as a
+[product flavor](https://developer.android.com/studio/build/build-variants.html#product-flavors)
+of an existing apk. This allows you to write snippets that instrument or
+automate another app.
 
-    ```java
-    package com.my.app.test;
+Under the hood, the snippet lib starts a web server which listens for requests
+to trigger snippets. It locates the corrsponding methods by reflection, runs
+them, and returns results over the tcp socket. All common built-in variable
+types are supported as arguments.
 
-    ...
 
-    public class ExampleSnippet implements Snippet {
-      public ExampleSnippet(Context context) {}
+## Usage
 
-      @Rpc(description='Returns a string containing the given number.')
-      public String getFoo(Integer input) {
-        return 'foo ' + input;
-      }
+The [examples/](tree/master/examples) folder contains examples of how to use the
+mobly snippet lib along with detailed tutorials.
 
-      @Override
-      public void shutdown() {}
-    }
-    ```
-
-3.  Add any classes that implement the `Snippet` interface in your
-    `AndroidManifest.xml` application section as `meta-data`
-
-    ```xml
-    <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.my.app.test">
-      <application>
-        <meta-data
-            android:name="mobly-snippets"
-            android:value="com.my.app.test.MySnippet1,
-                           com.my.app.test.MySnippet2" />
-        ...
-    ```
-
-4.  Build your apk and install it on your phone
-
-5.  In your Mobly python test, connect to your snippet .apk in `setup_class`
-
-    ```python
-    class HelloWorldTest(base_test.BaseTestClass):
-      def setup_class(self):
-        self.ads = self.register_controller(android_device)
-        self.dut1 = self.ads[0]
-        self.dut1.load_snippets(name='snippet', package='com.my.app.test')
-
-      if __name__ == '__main__':
-        test_runner.main()
-    ```
-
-6.  Invoke your needed functionality within your test
-
-    ```python
-    def test_get_foo(self):
-      actual_foo = self.dut1.snippet.getFoo(5)
-      asserts.assert_equal("foo 5", actual_foo)
-    ```
+*   [1_standalone_app](tree/master/examples/1_standalone_app): Basic example of
+    a snippet which is compiled into its own standalone apk.
+*   [2_espresso](tree/master/examples/2_espresso): Example of a snippet which
+    instruments a main app to drive its UI using
+    [Espresso](https://google.github.io/android-testing-support-library/docs/espresso/).
