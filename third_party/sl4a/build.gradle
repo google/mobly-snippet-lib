@@ -11,3 +11,7 @@ android {
         versionName "0.0.1"
     }
 }
+
+dependencies {
+    compile 'com.android.support.test:runner:0.5'
+}
