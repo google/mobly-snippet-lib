@@ -14,16 +14,36 @@
  * the License.
  */
 
-package com.google.android.mobly.snippet.example;
+package com.google.android.mobly.snippet.example2;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    private TextView mTextView;
+    private Button mButton;
+    private int mNumPressed;
 
+    /**
+     * Attaches a simple listener that increments the text in the textbox whenever the button is
+     * pressed.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mTextView = (TextView) findViewById(R.id.main_text_view);
+        mButton = (Button) findViewById(R.id.main_button);
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNumPressed++;
+                mTextView.setText("Button pressed " + mNumPressed + " times");
+            }
+        });
     }
 }

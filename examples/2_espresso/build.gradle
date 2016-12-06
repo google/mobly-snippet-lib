@@ -1,0 +1,26 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.3"
+
+    defaultConfig {
+        applicationId "com.google.android.mobly.snippet.example2"
+        minSdkVersion 11
+        targetSdkVersion 24
+        versionCode 1
+        versionName "0.0.1"
+    }
+
+    productFlavors {
+        main {}
+        snippet {}
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    snippetCompile project(':third_party:sl4a')
+    snippetCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    snippetCompile 'com.android.support:support-annotations:24.2.1'
+}

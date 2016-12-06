@@ -14,16 +14,12 @@
  * the License.
  */
 
-package com.google.android.mobly.snippet.example;
-
-import android.content.Context;
+package com.google.android.mobly.snippet.example1;
 
 import com.google.android.mobly.snippet.rpc.Rpc;
 import com.google.android.mobly.snippet.rpc.Snippet;
 
 public class ExampleSnippet implements Snippet {
-    public ExampleSnippet(Context context) {}
-
     @Rpc(description = "Returns the given integer with the prefix \"foo\"")
     public String getFoo(Integer input) {
         return "foo " + input;

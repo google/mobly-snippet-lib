@@ -14,16 +14,12 @@
  * the License.
  */
 
-package com.google.android.mobly.snippet.example;
-
-import android.content.Context;
+package com.google.android.mobly.snippet.example1;
 
 import com.google.android.mobly.snippet.rpc.Rpc;
 import com.google.android.mobly.snippet.rpc.Snippet;
 
 public class ExampleSnippet2 implements Snippet {
-    public ExampleSnippet2(Context context) {}
-
     @Rpc(description = "Returns the given string with the prefix \"bar\"")
     public String getBar(String input) {
         return "bar " + input;
