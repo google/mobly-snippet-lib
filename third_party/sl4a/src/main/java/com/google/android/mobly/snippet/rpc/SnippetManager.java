@@ -32,7 +32,6 @@ import com.google.android.mobly.snippet.util.Log;
 
 public abstract class SnippetManager {
 
-    private final Context mContext;
     private final Map<Class<? extends Snippet>, Snippet> mReceivers;
 
     /**
@@ -40,9 +39,7 @@ public abstract class SnippetManager {
      */
     private final Map<String, MethodDescriptor> mKnownRpcs = new HashMap<String, MethodDescriptor>();
 
-    public SnippetManager(
-            Context context, Collection<Class<? extends Snippet>> classList) {
-        mContext = context;
+    public SnippetManager(Collection<Class<? extends Snippet>> classList) {
         mReceivers = new HashMap<>();
         for (Class<? extends Snippet> receiverClass : classList) {
             mReceivers.put(receiverClass, null);
@@ -67,8 +64,8 @@ public abstract class SnippetManager {
 
         Constructor<? extends Snippet> constructor;
         try {
-            constructor = clazz.getConstructor(Context.class);
-            object = constructor.newInstance(mContext);
+            constructor = clazz.getConstructor();
+            object = constructor.newInstance();
             mReceivers.put(clazz, object);
         } catch (Exception e) {
             Log.e(e);

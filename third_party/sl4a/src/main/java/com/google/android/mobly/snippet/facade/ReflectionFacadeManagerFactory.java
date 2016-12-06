@@ -49,7 +49,7 @@ public class ReflectionFacadeManagerFactory implements SnippetManagerFactory {
     @Override
     public FacadeManager create(Integer UID) {
         int sdkLevel = Build.VERSION.SDK_INT;
-        FacadeManager facadeManager = new FacadeManager(sdkLevel, mContext, mClasses);
+        FacadeManager facadeManager = new FacadeManager(sdkLevel, mClasses);
         mSnippetManagers.put(UID, facadeManager);
         return facadeManager;
     }

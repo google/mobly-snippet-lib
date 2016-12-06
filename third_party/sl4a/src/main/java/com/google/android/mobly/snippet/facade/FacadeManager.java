@@ -30,35 +30,24 @@ import java.util.Collection;
 
 public class FacadeManager extends SnippetManager {
 
-  private final Context mContext;
   private int mSdkLevel;
 
-  public FacadeManager(int sdkLevel, Context context,
-                       Collection<Class<? extends Snippet>> classList) {
-    super(context, classList);
+  public FacadeManager(int sdkLevel, Collection<Class<? extends Snippet>> classList) {
+    super(classList);
     mSdkLevel = sdkLevel;
-    mContext = context;
   }
 
   @Override
   public Object invoke(Class<? extends Snippet> clazz, Method method, Object[] args)
       throws Exception {
-    try {
-      if (method.isAnnotationPresent(RpcMinSdk.class)) {
-        int requiredSdkLevel = method.getAnnotation(RpcMinSdk.class).value();
-        if (mSdkLevel < requiredSdkLevel) {
-          throw new SnippetLibException(
-                  String.format("%s requires API level %d, current level is %d",
-                          method.getName(), requiredSdkLevel, mSdkLevel));
-        }
+    if (method.isAnnotationPresent(RpcMinSdk.class)) {
+      int requiredSdkLevel = method.getAnnotation(RpcMinSdk.class).value();
+      if (mSdkLevel < requiredSdkLevel) {
+        throw new SnippetLibException(
+                String.format("%s requires API level %d, current level is %d",
+                        method.getName(), requiredSdkLevel, mSdkLevel));
       }
-      return super.invoke(clazz, method, args);
-    } catch (InvocationTargetException e) {
-      if (e.getCause() instanceof SecurityException) {
-        Log.notify(mContext, "RPC invoke failed...", mContext.getPackageName(), e.getCause()
-            .getMessage());
-      }
-      throw e;
     }
+    return super.invoke(clazz, method, args);
   }
 }
