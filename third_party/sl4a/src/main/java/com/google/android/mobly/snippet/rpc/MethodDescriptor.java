@@ -18,21 +18,16 @@ package com.google.android.mobly.snippet.rpc;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Parcelable;
 
+import com.google.android.mobly.snippet.Snippet;
+import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.util.AndroidUtil;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;

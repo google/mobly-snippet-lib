@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.android.mobly.snippet.facade;
+package com.google.android.mobly.snippet.manager;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -22,9 +22,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.google.android.mobly.snippet.rpc.Snippet;
-import com.google.android.mobly.snippet.rpc.SnippetManager;
-import com.google.android.mobly.snippet.rpc.SnippetManagerFactory;
+import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.util.Log;
 
 import java.util.Collections;
@@ -33,25 +31,25 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class ReflectionFacadeManagerFactory implements SnippetManagerFactory {
+public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
     private static final String METADATA_TAG_NAME = "mobly-snippets";
 
     private final Context mContext;
     private final Set<Class<? extends Snippet>> mClasses;
     private final Map<Integer, SnippetManager> mSnippetManagers;
 
-    public ReflectionFacadeManagerFactory(Context context) {
+    public ReflectionSnippetManagerFactory(Context context) {
         mContext = context;
         mClasses = loadSnippets();
         mSnippetManagers = new HashMap<>();
     }
 
     @Override
-    public FacadeManager create(Integer UID) {
+    public SnippetManager create(Integer UID) {
         int sdkLevel = Build.VERSION.SDK_INT;
-        FacadeManager facadeManager = new FacadeManager(sdkLevel, mClasses);
-        mSnippetManagers.put(UID, facadeManager);
-        return facadeManager;
+        SnippetManager manager = new SnippetManager(mClasses);
+        mSnippetManagers.put(UID, manager);
+        return manager;
     }
 
     @Override

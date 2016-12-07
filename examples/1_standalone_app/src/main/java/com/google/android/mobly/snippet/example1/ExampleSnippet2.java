@@ -16,8 +16,8 @@
 
 package com.google.android.mobly.snippet.example1;
 
+import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.Rpc;
-import com.google.android.mobly.snippet.rpc.Snippet;
 
 public class ExampleSnippet2 implements Snippet {
     @Rpc(description = "Returns the given string with the prefix \"bar\"")

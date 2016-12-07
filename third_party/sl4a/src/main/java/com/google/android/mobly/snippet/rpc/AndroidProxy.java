@@ -18,7 +18,8 @@ package com.google.android.mobly.snippet.rpc;
 
 import android.content.Context;
 
-import com.google.android.mobly.snippet.facade.ReflectionFacadeManagerFactory;
+import com.google.android.mobly.snippet.manager.ReflectionSnippetManagerFactory;
+import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 
 import java.net.InetSocketAddress;
 
@@ -26,11 +27,11 @@ public class AndroidProxy {
 
     private InetSocketAddress mAddress;
     private final JsonRpcServer mJsonRpcServer;
-    private final SnippetManagerFactory mFacadeManagerFactory;
+    private final SnippetManagerFactory mSnippetManagerFactory;
 
     public AndroidProxy(Context context) {
-        mFacadeManagerFactory = new ReflectionFacadeManagerFactory(context);
-        mJsonRpcServer = new JsonRpcServer(mFacadeManagerFactory);
+        mSnippetManagerFactory = new ReflectionSnippetManagerFactory(context);
+        mJsonRpcServer = new JsonRpcServer(mSnippetManagerFactory);
     }
 
     public InetSocketAddress startLocal(int port) {

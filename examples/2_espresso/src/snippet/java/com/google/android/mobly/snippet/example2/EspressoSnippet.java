@@ -19,8 +19,8 @@ package com.google.android.mobly.snippet.example2;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.rule.ActivityTestRule;
 
+import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.Rpc;
-import com.google.android.mobly.snippet.rpc.Snippet;
 
 import org.junit.Rule;
 

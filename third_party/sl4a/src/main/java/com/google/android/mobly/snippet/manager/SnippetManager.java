@@ -14,29 +14,27 @@
  * the License.
  */
 
-package com.google.android.mobly.snippet.rpc;
+package com.google.android.mobly.snippet.manager;
 
-import android.content.Context;
+import android.os.Build;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import com.google.android.mobly.snippet.Snippet;
+import com.google.android.mobly.snippet.rpc.MethodDescriptor;
+import com.google.android.mobly.snippet.rpc.RpcMinSdk;
 import com.google.android.mobly.snippet.util.Log;
+import com.google.android.mobly.snippet.util.SnippetLibException;
 
-public abstract class SnippetManager {
-
+public class SnippetManager {
     private final Map<Class<? extends Snippet>, Snippet> mReceivers;
-
-    /**
-     * A map of strings to known RPCs.
-     */
+    /** A map of strings to known RPCs. */
     private final Map<String, MethodDescriptor> mKnownRpcs = new HashMap<String, MethodDescriptor>();
 
     public SnippetManager(Collection<Class<? extends Snippet>> classList) {
@@ -52,6 +50,40 @@ public abstract class SnippetManager {
                             + " is already known.");
                 }
                 mKnownRpcs.put(m.getName(), m);
+            }
+        }
+    }
+
+    public MethodDescriptor getMethodDescriptor(String methodName) {
+        return mKnownRpcs.get(methodName);
+    }
+
+    public SortedSet<String> getMethodNames() {
+        return new TreeSet<>(mKnownRpcs.keySet());
+    }
+
+    public Object invoke(Class<? extends Snippet> clazz, Method method, Object[] args)
+            throws Exception {
+        if (method.isAnnotationPresent(RpcMinSdk.class)) {
+            int requiredSdkLevel = method.getAnnotation(RpcMinSdk.class).value();
+            if (Build.VERSION.SDK_INT < requiredSdkLevel) {
+                throw new SnippetLibException(
+                        String.format("%s requires API level %d, current level is %d",
+                                method.getName(), requiredSdkLevel, Build.VERSION.SDK_INT));
+            }
+        }
+        Snippet object = get(clazz);
+        return method.invoke(object, args);
+    }
+
+    public void shutdown() {
+        for (Snippet receiver : mReceivers.values()) {
+            try {
+                if (receiver != null) {
+                    receiver.shutdown();
+                }
+            } catch (Exception e) {
+                Log.e("Failed to shut down an Snippet", e);
             }
         }
     }
@@ -72,31 +104,5 @@ public abstract class SnippetManager {
         }
 
         return object;
-    }
-
-    public MethodDescriptor getMethodDescriptor(String methodName) {
-        return mKnownRpcs.get(methodName);
-    }
-
-    public SortedSet<String> getMethodNames() {
-        return new TreeSet<>(mKnownRpcs.keySet());
-    }
-
-    public Object invoke(Class<? extends Snippet> clazz, Method method, Object[] args)
-            throws Exception {
-        Snippet object = get(clazz);
-        return method.invoke(object, args);
-    }
-
-    public void shutdown() {
-        for (Snippet receiver : mReceivers.values()) {
-            try {
-                if (receiver != null) {
-                    receiver.shutdown();
-                }
-            } catch (Exception e) {
-                Log.e("Failed to shut down an Snippet", e);
-            }
-        }
     }
 }

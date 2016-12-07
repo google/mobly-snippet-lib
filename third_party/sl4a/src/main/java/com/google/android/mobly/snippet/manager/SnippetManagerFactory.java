@@ -14,9 +14,11 @@
  * the License.
  */
 
-package com.google.android.mobly.snippet.rpc;
+package com.google.android.mobly.snippet.manager;
 
-public interface Snippet {
-  /** Invoked when the receiver is shut down. */
-  void shutdown();
+import java.util.Map;
+
+public interface SnippetManagerFactory {
+  SnippetManager create(Integer UID);
+  Map<Integer, SnippetManager> getSnippetManagers();
 }
