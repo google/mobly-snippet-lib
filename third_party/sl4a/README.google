@@ -9,6 +9,11 @@ automation toolset for calling Android APIs in a platform-independent manner. It
 supports both remote automation via ADB as well as execution of scripts from
 on-device via a series of lightweight translation layers.
 
+This version of sl4a is heavily modified to act as an RPC library for
+third-party facades (called code snippets). It no longer has much in common with
+the original sl4a project.
+
+
 Local Modifications:
 - LICENSE file has been created for compliance purposes. Not included in
   original distribution.

@@ -90,21 +90,17 @@ public class SnippetService extends ForegroundService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        AndroidProxy proxy = null;
         if (intent == null) {
             return START_REDELIVER_INTENT;
-        } else if (intent.getAction().equals(Constants.ACTION_KILL)) {
-            stopSelf(startId);
-            return START_REDELIVER_INTENT;
         } else if (intent.getAction().equals(Constants.ACTION_LAUNCH_SERVER)) {
-            proxy = launchServer(intent);
+            launchServer(intent);
         } else {
             updateNotification("Action not implemented: " + intent.getAction());
         }
         return START_REDELIVER_INTENT;
     }
 
-    private AndroidProxy launchServer(Intent intent) {
+    private void launchServer(Intent intent) {
         AndroidProxy androidProxy = new AndroidProxy(this);
         int servicePort = intent.getIntExtra(Constants.EXTRA_SERVICE_PORT, 0);
         if (servicePort == 0) {
@@ -114,6 +110,5 @@ public class SnippetService extends ForegroundService {
         if (androidProxy.startLocal(servicePort) == null) {
             throw new RuntimeException("Failed to start server on port " + servicePort);
         }
-        return androidProxy;
     }
 }

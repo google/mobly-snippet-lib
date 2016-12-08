@@ -16,6 +16,8 @@
 
 package com.google.android.mobly.snippet.rpc;
 
+import com.google.android.mobly.snippet.manager.SnippetManager;
+import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 import com.google.android.mobly.snippet.util.Log;
 
 import java.io.BufferedReader;
@@ -49,8 +51,7 @@ public class JsonRpcServer extends SimpleServer {
     public void shutdown() {
         super.shutdown();
         // Notify all RPC receiving objects. They may have to clean up some of their state.
-        for (SnippetManager manager : mSnippetManagerFactory.getSnippetManagers()
-                .values()) {
+        for (SnippetManager manager : mSnippetManagerFactory.getSnippetManagers().values()) {
             manager.shutdown();
         }
     }

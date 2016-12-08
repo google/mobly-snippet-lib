@@ -14,9 +14,17 @@
  * the License.
  */
 
-package com.google.android.mobly.snippet;
+package com.google.android.mobly.snippet.example1;
 
-public interface Constants {
-    String ACTION_LAUNCH_SERVER = "com.google.android.mobly.snippet.action.LAUNCH_SERVER";
-    String EXTRA_SERVICE_PORT =  "com.google.android.mobly.snippet.extra.SERVICE_PORT";
+import com.google.android.mobly.snippet.Snippet;
+import com.google.android.mobly.snippet.rpc.Rpc;
+
+public class ExampleSnippet2 implements Snippet {
+    @Rpc(description = "Returns the given string with the prefix \"bar\"")
+    public String getBar(String input) {
+        return "bar " + input;
+    }
+
+    @Override
+    public void shutdown() {}
 }

@@ -16,7 +16,7 @@
 
 package com.google.android.mobly.snippet;
 
-public interface Constants {
-    String ACTION_LAUNCH_SERVER = "com.google.android.mobly.snippet.action.LAUNCH_SERVER";
-    String EXTRA_SERVICE_PORT =  "com.google.android.mobly.snippet.extra.SERVICE_PORT";
+public interface Snippet {
+  /** Invoked when the receiver is shut down. */
+  void shutdown();
 }

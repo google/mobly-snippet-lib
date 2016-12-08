@@ -11,5 +11,6 @@
                 <action android:name="com.google.android.mobly.snippet.action.LAUNCH_SERVER"/>
             </intent-filter>
         </service>
+        <uses-library android:name="android.test.runner"/>
     </application>
 </manifest>

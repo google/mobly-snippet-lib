@@ -14,9 +14,11 @@
  * the License.
  */
 
-package com.google.android.mobly.snippet;
+package com.google.android.mobly.snippet.manager;
 
-public interface Constants {
-    String ACTION_LAUNCH_SERVER = "com.google.android.mobly.snippet.action.LAUNCH_SERVER";
-    String EXTRA_SERVICE_PORT =  "com.google.android.mobly.snippet.extra.SERVICE_PORT";
+import java.util.Map;
+
+public interface SnippetManagerFactory {
+  SnippetManager create(Integer UID);
+  Map<Integer, SnippetManager> getSnippetManagers();
 }
