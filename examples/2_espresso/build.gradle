@@ -10,6 +10,7 @@ android {
         targetSdkVersion 24
         versionCode 1
         versionName "0.0.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     productFlavors {
@@ -20,6 +21,17 @@ android {
 
 dependencies {
     compile 'com.android.support:appcompat-v7:24.2.1'
+
+    // The androidTest package is not for snippet support; it shows an example
+    // of an instrumentation test coexisting with a snippet in the same
+    // codebase.
+    androidTestCompile 'com.android.support:support-annotations:24.2.1'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
     snippetCompile project(':third_party:sl4a')
     snippetCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     snippetCompile 'com.android.support:support-annotations:24.2.1'
