@@ -37,16 +37,14 @@ public class SnippetRunner extends AndroidJUnitRunner {
 
     private static final int NOTIFICATION_ID = NotificationIdFactory.create();
 
-    private Context mContext;
     private NotificationManager mNotificationManager;
     private int mServicePort;
     private Notification mNotification;
 
     @Override
     public void onCreate(Bundle arguments) {
-        mContext = getContext();
         mNotificationManager = (NotificationManager)
-                mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+                getTargetContext().getSystemService(Context.NOTIFICATION_SERVICE);
         String servicePort = arguments.getString(ARG_PORT);
         if (servicePort == null) {
             throw new IllegalArgumentException("\"--e port <port>\" was not specified");
@@ -70,7 +68,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
     }
 
     private void startServer() {
-        AndroidProxy androidProxy = new AndroidProxy(mContext);
+        AndroidProxy androidProxy = new AndroidProxy(getContext());
         if (androidProxy.startLocal(mServicePort) == null) {
             throw new RuntimeException("Failed to start server on port " + mServicePort);
         }
@@ -79,7 +77,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
     }
 
     private void createNotification() {
-        Notification.Builder builder = new Notification.Builder(mContext);
+        Notification.Builder builder = new Notification.Builder(getTargetContext());
         builder.setSmallIcon(android.R.drawable.btn_star)
                 .setTicker(null)
                 .setWhen(System.currentTimeMillis())
