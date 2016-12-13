@@ -75,7 +75,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
             throw new RuntimeException("Failed to start server on port " + mServicePort);
         }
         createNotification();
-        Log.e("Snippet server started for process " + Process.myPid() + " on port " + mServicePort);
+        Log.i("Snippet server started for process " + Process.myPid() + " on port " + mServicePort);
     }
 
     private void createNotification() {
