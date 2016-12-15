@@ -21,11 +21,11 @@ import android.content.Context;
 import com.google.android.mobly.snippet.manager.ReflectionSnippetManagerFactory;
 import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class AndroidProxy {
 
-    private InetSocketAddress mAddress;
     private final JsonRpcServer mJsonRpcServer;
     private final SnippetManagerFactory mSnippetManagerFactory;
 
@@ -34,8 +34,7 @@ public class AndroidProxy {
         mJsonRpcServer = new JsonRpcServer(mSnippetManagerFactory);
     }
 
-    public InetSocketAddress startLocal(int port) {
-        mAddress = mJsonRpcServer.startLocal(port);
-        return mAddress;
+    public void startLocal(int port) throws IOException {
+        mJsonRpcServer.startLocal(port);
     }
 }
