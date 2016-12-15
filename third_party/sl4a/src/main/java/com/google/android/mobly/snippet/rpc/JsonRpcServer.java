@@ -33,8 +33,8 @@ import org.json.JSONObject;
  * A JSON RPC server that forwards RPC calls to a specified receiver object.
  */
 public class JsonRpcServer extends SimpleServer {
-
     private static final String CMD_CLOSE_SESSION = "closeSl4aSession";
+    private static final String CMD_HELP = "help";
 
     private final SnippetManagerFactory mSnippetManagerFactory;
 
@@ -81,9 +81,22 @@ public class JsonRpcServer extends SimpleServer {
             String method = request.getString("method");
             JSONArray params = request.getJSONArray("params");
 
-            if (method.equals("help")) {
+            // Handle builtin commands
+            if (method.equals(CMD_HELP)) {
                 help(writer, id, receiverManager, UID);
                 continue;
+            } else if (method.equals(CMD_CLOSE_SESSION)) {
+                Log.d("Got shutdown signal");
+                send(writer, JsonRpcResult.empty(id), UID);
+                synchronized (writer) {
+                    receiverManager.shutdown();
+                    reader.close();
+                    writer.close();
+                    sock.close();
+                    shutdown();
+                    mgrs.remove(UID);
+                }
+                return;
             }
 
             MethodDescriptor rpc = receiverManager.getMethodDescriptor(method);
@@ -96,18 +109,6 @@ public class JsonRpcServer extends SimpleServer {
             } catch (Throwable t) {
                 Log.e("Invocation error.", t);
                 send(writer, JsonRpcResult.error(id, t), UID);
-            }
-            if (method.equals(CMD_CLOSE_SESSION)) {
-                Log.d("Got shutdown signal");
-                synchronized (writer) {
-                    receiverManager.shutdown();
-                    reader.close();
-                    writer.close();
-                    sock.close();
-                    shutdown();
-                    mgrs.remove(UID);
-                }
-                return;
             }
         }
     }
