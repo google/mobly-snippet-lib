@@ -33,47 +33,55 @@ import com.google.android.mobly.snippet.util.NotificationIdFactory;
  * It is written this way to be compatible with 'am instrument'.
  */
 public class SnippetRunner extends AndroidJUnitRunner {
+    private static final String ARG_ACTION = "action";
     private static final String ARG_PORT = "port";
+
+    private enum Action {START, STOP};
 
     private static final int NOTIFICATION_ID = NotificationIdFactory.create();
 
+    private Bundle mArguments;
     private NotificationManager mNotificationManager;
-    private int mServicePort;
     private Notification mNotification;
 
     @Override
     public void onCreate(Bundle arguments) {
+        mArguments = arguments;
         mNotificationManager = (NotificationManager)
                 getTargetContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        String servicePort = arguments.getString(ARG_PORT);
-        if (servicePort == null) {
-            throw new IllegalArgumentException("\"--e port <port>\" was not specified");
-        }
-        mServicePort = Integer.parseInt(servicePort);
         super.onCreate(arguments);
     }
 
     @Override
     public void onStart() {
-        startServer();
-
-        // Wait forever. Once our instrumentation returns, everything related to the app is killed.
-        while (true) {
-            try {
-                Thread.sleep(24L * 60 * 60 * 1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        String actionStr = mArguments.getString(ARG_ACTION);
+        if (actionStr == null) {
+            throw new IllegalArgumentException("\"--e action <action>\" was not specified");
+        }
+        Action action = Action.valueOf(actionStr.toUpperCase());
+        switch (action) {
+        case START:
+            String servicePort = mArguments.getString(ARG_PORT);
+            if (servicePort == null) {
+                throw new IllegalArgumentException("\"--e port <port>\" was not specified");
             }
+            int port = Integer.parseInt(servicePort);
+            startServer(port);
+            break;
+        case STOP:
+            mNotificationManager.cancel(NOTIFICATION_ID);
+            mNotificationManager.cancelAll();
+            super.onStart();
         }
     }
 
-    private void startServer() {
+    private void startServer(int port) {
         AndroidProxy androidProxy = new AndroidProxy(getContext());
-        if (androidProxy.startLocal(mServicePort) == null) {
-            throw new RuntimeException("Failed to start server on port " + mServicePort);
+        if (androidProxy.startLocal(port) == null) {
+            throw new RuntimeException("Failed to start server on port " + port);
         }
         createNotification();
-        Log.i("Snippet server started for process " + Process.myPid() + " on port " + mServicePort);
+        Log.i("Snippet server started for process " + Process.myPid() + " on port " + port);
     }
 
     private void createNotification() {
