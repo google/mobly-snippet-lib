@@ -36,6 +36,8 @@ public class SnippetRunner extends AndroidJUnitRunner {
     private static final String ARG_ACTION = "action";
     private static final String ARG_PORT = "port";
 
+    private enum Action {START, STOP};
+
     private static final int NOTIFICATION_ID = NotificationIdFactory.create();
 
     private Bundle mArguments;
@@ -52,23 +54,24 @@ public class SnippetRunner extends AndroidJUnitRunner {
 
     @Override
     public void onStart() {
-        String action = mArguments.getString(ARG_ACTION);
-        if (action == null) {
+        String actionStr = mArguments.getString(ARG_ACTION);
+        if (actionStr == null) {
             throw new IllegalArgumentException("\"--e action <action>\" was not specified");
         }
-        if (action.equals("start")) {
+        Action action = Action.valueOf(actionStr.toUpperCase());
+        switch (action) {
+        case START:
             String servicePort = mArguments.getString(ARG_PORT);
             if (servicePort == null) {
                 throw new IllegalArgumentException("\"--e port <port>\" was not specified");
             }
             int port = Integer.parseInt(servicePort);
             startServer(port);
-        } else if (action.equals("stop")) {
+            break;
+        case STOP:
             mNotificationManager.cancel(NOTIFICATION_ID);
             mNotificationManager.cancelAll();
             super.onStart();
-        } else {
-            throw new IllegalArgumentException("Unknown action type \"" + action + "\"");
         }
     }
 
