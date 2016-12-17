@@ -25,6 +25,8 @@ import android.support.test.runner.AndroidJUnitRunner;
 import com.google.android.mobly.snippet.rpc.AndroidProxy;
 import com.google.android.mobly.snippet.util.Log;
 import com.google.android.mobly.snippet.util.NotificationIdFactory;
+import java.io.IOException;
+import java.net.SocketException;
 
 /**
  * A launcher that starts the snippet server as an instrumentation so that it has access to the
@@ -77,8 +79,17 @@ public class SnippetRunner extends AndroidJUnitRunner {
 
     private void startServer(int port) {
         AndroidProxy androidProxy = new AndroidProxy(getContext());
-        if (androidProxy.startLocal(port) == null) {
-            throw new RuntimeException("Failed to start server on port " + port);
+        try {
+            androidProxy.startLocal(port);
+        } catch (SocketException e) {
+            if (e.getMessage().equals("Permission denied")) {
+                throw new RuntimeException("Failed to start server on port "
+                    + port + ". No permission to create a socket. Does the *MAIN* app manifest "
+                    + "declare the INTERNET permission?", e);
+            }
+            throw new RuntimeException("Failed to start server on port " + port, e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to start server on port " + port, e);
         }
         createNotification();
         Log.i("Snippet server started for process " + Process.myPid() + " on port " + port);

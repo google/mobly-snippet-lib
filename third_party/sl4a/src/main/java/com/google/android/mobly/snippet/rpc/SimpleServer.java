@@ -191,33 +191,17 @@ public abstract class SimpleServer {
    * @param port
    *          the port to bind to or 0 to pick any unused port
    *
-   * @return the port that the server is bound to
    * @throws IOException
    */
-  public InetSocketAddress startLocal(int port) {
+  public void startLocal(int port) throws IOException {
     InetAddress address;
-    try {
-      // address = InetAddress.getLocalHost();
-      address = getPrivateInetAddress();
-      mServer = new ServerSocket(port, 5, address);
-    } catch (BindException e) {
-      Log.e("Port " + port + " already in use.");
-      try {
-        address = getPrivateInetAddress();
-        mServer = new ServerSocket(0, 5, address);
-      } catch (IOException e1) {
-        e1.printStackTrace();
-        return null;
-      }
-    } catch (Exception e) {
-      Log.e("Failed to start server.", e);
-      return null;
-    }
-    int boundPort = start();
-    return InetSocketAddress.createUnresolved(mServer.getInetAddress().getHostAddress(), boundPort);
+    // address = InetAddress.getLocalHost();
+    address = getPrivateInetAddress();
+    mServer = new ServerSocket(port, 5, address);
+    start();
   }
 
-  private int start() {
+  private void start() {
     mServerThread = new Thread() {
       @Override
       public void run() {
@@ -243,7 +227,6 @@ public abstract class SimpleServer {
     };
     mServerThread.start();
     Log.v("Bound to " + mServer.getInetAddress());
-    return mServer.getLocalPort();
   }
 
   private void startConnectionThread(final Socket sock) throws IOException, JSONException {
