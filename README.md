@@ -39,8 +39,8 @@ types are supported as arguments.
 The [examples/](examples/) folder contains examples of how to use the
 mobly snippet lib along with detailed tutorials.
 
-*   [1_standalone_app](examples/1_standalone_app): Basic example of a snippet
-    which is compiled into its own standalone apk.
-*   [2_espresso](examples/2_espresso): Example of a snippet which instruments a
-    main app to drive its UI using
+*   [ex1_standalone_app](examples/ex1_standalone_app): Basic example of a
+    snippet which is compiled into its own standalone apk.
+*   [ex2_espresso](examples/ex2_espresso): Example of a snippet which
+    instruments a main app to drive its UI using
     [Espresso](https://google.github.io/android-testing-support-library/docs/espresso/).

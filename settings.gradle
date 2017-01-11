@@ -1,1 +1,1 @@
-include ':third_party:sl4a', ':examples:1_standalone_app', ':examples:2_espresso'
+include ':third_party:sl4a', ':examples:ex1_standalone_app', ':examples:ex2_espresso'
