@@ -98,7 +98,7 @@ This folder contains a fully working example of a standalone snippet apk.
 
         snippet_shell.py com.google.android.mobly.snippet.example1
 
-        >>> print s.help()
+        >>> print(s.help())
         Known methods:
           getBar(String) returns String  // Returns the given string with the prefix "bar"
           getFoo(Integer) returns String  // Returns the given integer with the prefix "foo"

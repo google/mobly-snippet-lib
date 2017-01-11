@@ -115,7 +115,7 @@ to automate a simple app.
 
         snippet_shell.py com.google.android.mobly.snippet.example2
 
-        >>> print s.help()
+        >>> print(s.help())
         Known methods:
           click() returns void  // Clicks the button
           firstClick() returns void  // Clicks the button for the first time and checks the label change
