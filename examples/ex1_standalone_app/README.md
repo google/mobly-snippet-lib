@@ -94,7 +94,14 @@ This folder contains a fully working example of a standalone snippet apk.
 
         adb install -r ./examples/ex1_standalone_app/build/outputs/apk/ex1_standalone_app-debug.apk
 
-    <!-- TODO(adorokhine): create a snippet_client in mobly to allow you to
-         trigger snippets without having to create a test. Then update this
-         instruction. -->
-1.  Create a python test to trigger `getFoo` following the above instructions.
+1.  Use `snippet_shell` from mobly to trigger `getFoo()`:
+
+        snippet_shell.py com.google.android.mobly.snippet.example1
+
+        >>> print(s.help())
+        Known methods:
+          getBar(String) returns String  // Returns the given string with the prefix "bar"
+          getFoo(Integer) returns String  // Returns the given integer with the prefix "foo"
+
+        >>> s.getFoo(5)
+        u'foo 5'
