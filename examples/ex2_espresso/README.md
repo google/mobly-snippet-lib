@@ -105,11 +105,11 @@ to automate a simple app.
 
 1.  Compile the example
 
-        ./gradlew examples:2_espresso:assembleSnippetDebug
+        ./gradlew examples:ex2_espresso:assembleSnippetDebug
 
 1.  Install the apk on your phone
 
-        adb install -r ./examples/2_espresso/build/outputs/apk/2_espresso-snippet-debug.apk
+        adb install -r ./examples/ex2_espresso/build/outputs/apk/ex2_espresso-snippet-debug.apk
 
     <!-- TODO(adorokhine): create a snippet_client in mobly to allow you to
          trigger snippets without having to create a test. Then update this
