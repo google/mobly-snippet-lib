@@ -111,8 +111,15 @@ to automate a simple app.
 
         adb install -r ./examples/ex2_espresso/build/outputs/apk/ex2_espresso-snippet-debug.apk
 
-    <!-- TODO(adorokhine): create a snippet_client in mobly to allow you to
-         trigger snippets without having to create a test. Then update this
-         instruction. -->
-1.  Create a python test to trigger the `clickButton` RPC following the above
-    instructions.
+1.  Use `snippet_shell` from mobly to trigger `click()`:
+
+        snippet_shell.py com.google.android.mobly.snippet.example2
+
+        >>> print s.help()
+        Known methods:
+          click() returns void  // Clicks the button
+          firstClick() returns void  // Clicks the button for the first time and checks the label change
+          startMainActivity() returns void  // Opens the main activity of the app
+
+        >>> s.startMainActivity()
+        >>> s.click()
