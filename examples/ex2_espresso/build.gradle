@@ -32,7 +32,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    snippetCompile project(':third_party:sl4a')
+    snippetCompile project(':mobly-snippet-lib')
     snippetCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
     snippetCompile 'com.android.support:support-annotations:24.2.1'
 }

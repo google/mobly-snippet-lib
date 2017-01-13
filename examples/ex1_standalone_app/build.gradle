@@ -14,5 +14,5 @@ android {
 }
 
 dependencies {
-    compile project(':third_party:sl4a')
+    compile project(':mobly-snippet-lib')
 }
