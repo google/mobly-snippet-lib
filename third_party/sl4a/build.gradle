@@ -59,8 +59,8 @@ install {
         pom.project {
             name ARTIFACT_ID
             description
-                'Library for triggering device-side code from host-side ' +
-                'Mobly tests.'
+                'Android library for triggering device-side code from ' +
+                'host-side Mobly tests.'
             url 'https://github.com/google/mobly-snippet-lib'
 
             packaging 'aar'
