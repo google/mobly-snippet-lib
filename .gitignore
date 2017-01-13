@@ -1,8 +1,8 @@
 .gradle/
 .idea/
-
 build/
 
 *.iml
 *.pro
+bintray.properties
 local.properties

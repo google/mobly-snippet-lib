@@ -1,4 +1,16 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+    }
+}
+
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 24
@@ -7,8 +19,12 @@ android {
     defaultConfig {
         minSdkVersion 11
         targetSdkVersion 24
-        versionCode 2
-        versionName "1.0.0"
+        versionCode VERSION_CODE.toInteger()
+        versionName VERSION_NAME
+        // Need to set up some project properties to publish to bintray.
+        project.group = GROUP_ID
+        project.archivesBaseName = ARTIFACT_ID
+        project.version = VERSION_NAME
     }
 }
 
@@ -35,4 +51,82 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives javadocJar
     archives sourcesJar
+}
+
+// bintray packaging information
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name ARTIFACT_ID
+            description
+                'Library for triggering device-side code from host-side ' +
+                'Mobly tests.'
+            url 'https://github.com/google/mobly-snippet-lib'
+
+            packaging 'aar'
+            groupId GROUP_ID
+            artifactId ARTIFACT_ID
+            version VERSION_NAME
+            name ARTIFACT_ID
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                connection 'https://github.com/google/mobly-snippet-lib.git'
+                url 'https://github.com/google/mobly-snippet-lib'
+            }
+        }
+    }
+}
+
+// Try loading bintray.properties. It's okay if this fails; we might not be
+// uploading.
+def bintrayPropFile = project.rootProject.file('bintray.properties')
+if (bintrayPropFile.exists()) {
+    Properties prop = new Properties()
+    prop.load(new FileInputStream(bintrayPropFile))
+    project.ext.bintrayUser = prop.user
+    project.ext.bintrayKey = prop.key
+} else {
+    project.ext.bintrayUser = null
+    project.ext.bintrayKey = null
+}
+
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(bintrayUpload)) {
+        if (project.bintrayUser == null || project.bintrayKey == null) {
+            if (bintrayPropFile.exists()) {
+                throw new IllegalArgumentException(
+                    bintrayPropFile.toString()
+                    + " does not contain 'user' or 'key' props")
+            } else {
+                throw new FileNotFoundException(
+                    "bintray.properties not found at path: " + bintrayPropFile)
+            }
+        }
+    }
+}
+
+bintray {
+    user = project.bintrayUser
+    key = project.bintrayKey
+    configurations = ['archives']
+    pkg {
+        repo = 'mobly'
+        name = ARTIFACT_ID
+        userOrg = 'google'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/google/mobly-snippet-lib.git'
+        version {
+            name = VERSION_NAME
+            desc = 'Mobly Snippet Lib ' + VERSION_NAME
+            released  = new Date()
+            vcsTag = VERSION_NAME
+        }
+    }
 }
