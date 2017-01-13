@@ -11,7 +11,7 @@ by itself and doesn't instrument a main app.
 
     ```
     dependencies {
-      compile 'com.google.android.mobly:snippetlib:0.0.1'
+      compile 'com.google.android.mobly:mobly-snippet-lib:1.0.0'
     }
     ```
 

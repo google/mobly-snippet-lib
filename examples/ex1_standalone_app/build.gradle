@@ -14,5 +14,8 @@ android {
 }
 
 dependencies {
+    // External users should use the repo dependency below instead of the
+    // project dependency.
+    //compile 'com.google.android.mobly:mobly-snippet-lib:1.0.0'
     compile project(':mobly-snippet-lib')
 }
