@@ -32,8 +32,9 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    // External users should use the repo dependency below instead of the
-    // project dependency.
+    // The 'snippetCompile project' dep is to compile against the snippet lib
+    // source in this repo. For your own snippets, you'll want to use the
+    // regular 'snippetCompile' dep instead:
     //snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.0.0'
     snippetCompile project(':mobly-snippet-lib')
 
