@@ -23,6 +23,7 @@ import android.os.Process;
 import android.support.test.runner.AndroidJUnitRunner;
 
 import com.google.android.mobly.snippet.rpc.AndroidProxy;
+import com.google.android.mobly.snippet.util.EmptyTestClass;
 import com.google.android.mobly.snippet.util.Log;
 import com.google.android.mobly.snippet.util.NotificationIdFactory;
 import java.io.IOException;
@@ -48,6 +49,9 @@ public class SnippetRunner extends AndroidJUnitRunner {
 
     @Override
     public void onCreate(Bundle arguments) {
+        // Prevent this runner from triggering any real JUnit tests in the snippet by feeding it a
+        // hardcoded empty test class.
+        arguments.putString("class", EmptyTestClass.class.getCanonicalName());
         mArguments = arguments;
         mNotificationManager = (NotificationManager)
                 getTargetContext().getSystemService(Context.NOTIFICATION_SERVICE);
