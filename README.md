@@ -28,10 +28,19 @@ The `snippet` code can either be written in its own standalone apk, or as a
 of an existing apk. This allows you to write snippets that instrument or
 automate another app.
 
-Under the hood, the snippet lib starts a web server which listens for requests
-to trigger snippets. It locates the corrsponding methods by reflection, runs
-them, and returns results over the tcp socket. All common built-in variable
-types are supported as arguments.
+
+## Under The Hood
+
+A snippet is launched by an `am instrument` call. Snippets use a custom
+`InstrumentationTestRunner` derived from `AndroidJUnitRunner`. This allows
+for snippets that interact with a main app's classes, such as Espresso snippets,
+and allows you to get either the test app's or the main app's context from
+`InstrumentationRegistry`.
+
+Once started, the special runner starts a web server which listens for requests
+to trigger snippets. The server's handler locates the corrsponding methods by
+reflection, runs them, and returns results over the tcp socket. All common
+built-in variable types are supported as arguments.
 
 
 ## Usage
