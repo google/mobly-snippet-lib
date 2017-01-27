@@ -33,7 +33,10 @@ import java.net.SocketException;
  * A launcher that starts the snippet server as an instrumentation so that it has access to the
  * target app's context.
  *
- * It is written this way to be compatible with 'am instrument'.
+ * <p>We have to extend some subclass of {@link android.test.InstrumentationTestRunner} because
+ * snippets are launched with 'am instrument'. We're specifically extending
+ * {@link AndroidJUnitRunner} because Espresso requires being called through it, since it sets up
+ * {@link android.support.test.InstrumentationRegistry} which Espresso requires.
  */
 public class SnippetRunner extends AndroidJUnitRunner {
     private static final String ARG_ACTION = "action";
@@ -49,13 +52,13 @@ public class SnippetRunner extends AndroidJUnitRunner {
 
     @Override
     public void onCreate(Bundle arguments) {
+        mArguments = arguments;
         // Prevent this runner from triggering any real JUnit tests in the snippet by feeding it a
         // hardcoded empty test class.
-        arguments.putString("class", EmptyTestClass.class.getCanonicalName());
-        mArguments = arguments;
+        mArguments.putString("class", EmptyTestClass.class.getCanonicalName());
         mNotificationManager = (NotificationManager)
                 getTargetContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        super.onCreate(arguments);
+        super.onCreate(mArguments);
     }
 
     @Override
