@@ -51,7 +51,9 @@ public class JsonRpcResult {
 
   public static JSONObject error(int id, Throwable t) throws JSONException {
     StringWriter stackTraceWriter = new StringWriter();
+    stackTraceWriter.write("\n-------------- Java Stacktrace ---------------\n");
     t.printStackTrace(new PrintWriter(stackTraceWriter));
+    stackTraceWriter.write("----------------------------------------------");
     String stackTrace = stackTraceWriter.toString();
 
     JSONObject json = new JSONObject();
