@@ -19,6 +19,7 @@ package com.google.android.mobly.snippet.manager;
 import android.os.Build;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class SnippetManager {
     }
 
     public Object invoke(Class<? extends Snippet> clazz, Method method, Object[] args)
-            throws Exception {
+            throws Throwable {
         if (method.isAnnotationPresent(RpcMinSdk.class)) {
             int requiredSdkLevel = method.getAnnotation(RpcMinSdk.class).value();
             if (Build.VERSION.SDK_INT < requiredSdkLevel) {
@@ -72,8 +73,12 @@ public class SnippetManager {
                                 method.getName(), requiredSdkLevel, Build.VERSION.SDK_INT));
             }
         }
-        Snippet object = get(clazz);
-        return method.invoke(object, args);
+        try {
+            Snippet object = get(clazz);
+            return method.invoke(object, args);
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
+        }
     }
 
     public void shutdown() {
@@ -88,21 +93,16 @@ public class SnippetManager {
         }
     }
 
-    private Snippet get(Class<? extends Snippet> clazz) {
+    private Snippet get(Class<? extends Snippet> clazz) throws Exception {
         Snippet object = mReceivers.get(clazz);
         if (object != null) {
             return object;
         }
 
         Constructor<? extends Snippet> constructor;
-        try {
-            constructor = clazz.getConstructor();
-            object = constructor.newInstance();
-            mReceivers.put(clazz, object);
-        } catch (Exception e) {
-            Log.e(e);
-        }
-
+        constructor = clazz.getConstructor();
+        object = constructor.newInstance();
+        mReceivers.put(clazz, object);
         return object;
     }
 }

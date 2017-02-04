@@ -16,6 +16,8 @@
 
 package com.google.android.mobly.snippet.rpc;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,10 +50,16 @@ public class JsonRpcResult {
   }
 
   public static JSONObject error(int id, Throwable t) throws JSONException {
+    StringWriter stackTraceWriter = new StringWriter();
+    stackTraceWriter.write("\n-------------- Java Stacktrace ---------------\n");
+    t.printStackTrace(new PrintWriter(stackTraceWriter));
+    stackTraceWriter.write("----------------------------------------------");
+    String stackTrace = stackTraceWriter.toString();
+
     JSONObject json = new JSONObject();
     json.put("id", id);
     json.put("result", JSONObject.NULL);
-    json.put("error", t.toString());
+    json.put("error", stackTrace);
     return json;
   }
 }

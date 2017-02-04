@@ -88,17 +88,7 @@ public final class MethodDescriptor {
       }
     }
 
-    return invoke(manager, args);
-  }
-
-  private Object invoke(SnippetManager manager, Object[] args) throws Throwable {
-    Object result;
-    try {
-      result = manager.invoke(mClass, mMethod, args);
-    } catch (Throwable t) {
-      throw t.getCause();
-    }
-    return result;
+    return manager.invoke(mClass, mMethod, args);
   }
 
   /**

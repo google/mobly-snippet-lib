@@ -18,11 +18,17 @@ package com.google.android.mobly.snippet.example1;
 
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.Rpc;
+import java.io.IOException;
 
 public class ExampleSnippet2 implements Snippet {
     @Rpc(description = "Returns the given string with the prefix \"bar\"")
     public String getBar(String input) {
         return "bar " + input;
+    }
+
+    @Rpc(description = "Throws an exception")
+    public String throwSomething() throws IOException {
+        throw new IOException("Example exception from throwSomething()");
     }
 
     @Override
