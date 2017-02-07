@@ -1,0 +1,35 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.3"
+
+    defaultConfig {
+        applicationId "com.google.android.mobly.snippet.example4"
+        minSdkVersion 11
+        targetSdkVersion 24
+        versionCode 1
+        versionName "0.0.1"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    productFlavors {
+        main {}
+        snippet {
+            minSdkVersion 18
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:24.2.1'
+
+    // The 'snippetCompile project' dep is to compile against the snippet lib
+    // source in this repo. For your own snippets, you'll want to use the
+    // regular 'snippetCompile' dep instead:
+    //snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.0.0'
+    snippetCompile project(':mobly-snippet-lib')
+
+    snippetCompile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    snippetCompile 'junit:junit:4.12'
+}
