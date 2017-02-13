@@ -19,19 +19,15 @@ package com.google.android.mobly.snippet.rpc;
 import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 import com.google.android.mobly.snippet.util.Log;
-
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * A JSON RPC server that forwards RPC calls to a specified receiver object.
- */
+/** A JSON RPC server that forwards RPC calls to a specified receiver object. */
 public class JsonRpcServer extends SimpleServer {
     private static final String CMD_CLOSE_SESSION = "closeSl4aSession";
     private static final String CMD_HELP = "help";
@@ -57,14 +53,13 @@ public class JsonRpcServer extends SimpleServer {
     }
 
     @Override
-    protected void handleRPCConnection(Socket sock, Integer UID, BufferedReader reader,
-            PrintWriter writer) throws Exception {
+    protected void handleRPCConnection(
+            Socket sock, Integer UID, BufferedReader reader, PrintWriter writer) throws Exception {
         SnippetManager receiverManager = null;
         Map<Integer, SnippetManager> mgrs = mSnippetManagerFactory.getSnippetManagers();
         synchronized (mgrs) {
             Log.d("UID " + UID);
-            Log.d("manager map keys: "
-                    + mSnippetManagerFactory.getSnippetManagers().keySet());
+            Log.d("manager map keys: " + mSnippetManagerFactory.getSnippetManagers().keySet());
             if (mgrs.containsKey(UID)) {
                 Log.d("Look up existing session");
                 receiverManager = mgrs.get(UID);
@@ -114,7 +109,7 @@ public class JsonRpcServer extends SimpleServer {
     }
 
     private void help(PrintWriter writer, int id, SnippetManager receiverManager, Integer UID)
-        throws JSONException {
+            throws JSONException {
         StringBuilder result = new StringBuilder("Known methods:\n");
         for (String method : receiverManager.getMethodNames()) {
             MethodDescriptor descriptor = receiverManager.getMethodDescriptor(method);
@@ -130,6 +125,5 @@ public class JsonRpcServer extends SimpleServer {
     }
 
     @Override
-    protected void handleConnection(Socket socket) throws Exception {
-    }
+    protected void handleConnection(Socket socket) throws Exception {}
 }

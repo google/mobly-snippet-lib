@@ -8,6 +8,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.github.sherter.google-java-format" version "0.6"
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
@@ -30,6 +34,10 @@ android {
 
 dependencies {
     compile 'com.android.support.test:runner:0.5'
+}
+
+googleJavaFormat {
+    options style: 'AOSP'
 }
 
 task sourcesJar(type: Jar) {

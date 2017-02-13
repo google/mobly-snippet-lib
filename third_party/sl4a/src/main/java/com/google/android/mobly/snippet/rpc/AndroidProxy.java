@@ -17,12 +17,9 @@
 package com.google.android.mobly.snippet.rpc;
 
 import android.content.Context;
-
 import com.google.android.mobly.snippet.manager.ReflectionSnippetManagerFactory;
 import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
-
 import java.io.IOException;
-import java.net.InetSocketAddress;
 
 public class AndroidProxy {
 

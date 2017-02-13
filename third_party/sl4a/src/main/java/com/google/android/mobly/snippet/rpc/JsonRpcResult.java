@@ -25,41 +25,40 @@ import org.json.JSONObject;
  * Represents a JSON RPC result.
  *
  * @see http://json-rpc.org/wiki/specification
- *
  */
 public class JsonRpcResult {
 
-  private JsonRpcResult() {
-    // Utility class.
-  }
+    private JsonRpcResult() {
+        // Utility class.
+    }
 
-  public static JSONObject empty(int id) throws JSONException {
-    JSONObject json = new JSONObject();
-    json.put("id", id);
-    json.put("result", JSONObject.NULL);
-    json.put("error", JSONObject.NULL);
-    return json;
-  }
+    public static JSONObject empty(int id) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("result", JSONObject.NULL);
+        json.put("error", JSONObject.NULL);
+        return json;
+    }
 
-  public static JSONObject result(int id, Object data) throws JSONException {
-    JSONObject json = new JSONObject();
-    json.put("id", id);
-    json.put("result", JsonBuilder.build(data));
-    json.put("error", JSONObject.NULL);
-    return json;
-  }
+    public static JSONObject result(int id, Object data) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("result", JsonBuilder.build(data));
+        json.put("error", JSONObject.NULL);
+        return json;
+    }
 
-  public static JSONObject error(int id, Throwable t) throws JSONException {
-    StringWriter stackTraceWriter = new StringWriter();
-    stackTraceWriter.write("\n-------------- Java Stacktrace ---------------\n");
-    t.printStackTrace(new PrintWriter(stackTraceWriter));
-    stackTraceWriter.write("----------------------------------------------");
-    String stackTrace = stackTraceWriter.toString();
+    public static JSONObject error(int id, Throwable t) throws JSONException {
+        StringWriter stackTraceWriter = new StringWriter();
+        stackTraceWriter.write("\n-------------- Java Stacktrace ---------------\n");
+        t.printStackTrace(new PrintWriter(stackTraceWriter));
+        stackTraceWriter.write("----------------------------------------------");
+        String stackTrace = stackTraceWriter.toString();
 
-    JSONObject json = new JSONObject();
-    json.put("id", id);
-    json.put("result", JSONObject.NULL);
-    json.put("error", stackTrace);
-    return json;
-  }
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("result", JSONObject.NULL);
+        json.put("error", stackTrace);
+        return json;
+    }
 }

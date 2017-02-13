@@ -19,16 +19,15 @@ package com.google.android.mobly.snippet.util;
 @SuppressWarnings("serial")
 public class SnippetLibException extends Exception {
 
-  public SnippetLibException(Exception e) {
-    super(e);
-  }
+    public SnippetLibException(Exception e) {
+        super(e);
+    }
 
-  public SnippetLibException(String message) {
-    super(message);
-  }
+    public SnippetLibException(String message) {
+        super(message);
+    }
 
-  public SnippetLibException(String message, Exception e) {
-    super(message, e);
-  }
-
+    public SnippetLibException(String message, Exception e) {
+        super(message, e);
+    }
 }

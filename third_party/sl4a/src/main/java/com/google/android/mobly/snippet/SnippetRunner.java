@@ -21,7 +21,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Process;
 import android.support.test.runner.AndroidJUnitRunner;
-
 import com.google.android.mobly.snippet.rpc.AndroidProxy;
 import com.google.android.mobly.snippet.util.EmptyTestClass;
 import com.google.android.mobly.snippet.util.Log;
@@ -34,15 +33,18 @@ import java.net.SocketException;
  * target app's context.
  *
  * <p>We have to extend some subclass of {@link android.test.InstrumentationTestRunner} because
- * snippets are launched with 'am instrument'. We're specifically extending
- * {@link AndroidJUnitRunner} because Espresso requires being called through it, since it sets up
- * {@link android.support.test.InstrumentationRegistry} which Espresso requires.
+ * snippets are launched with 'am instrument'. We're specifically extending {@link
+ * AndroidJUnitRunner} because Espresso requires being called through it, since it sets up {@link
+ * android.support.test.InstrumentationRegistry} which Espresso requires.
  */
 public class SnippetRunner extends AndroidJUnitRunner {
     private static final String ARG_ACTION = "action";
     private static final String ARG_PORT = "port";
 
-    private enum Action {START, STOP};
+    private enum Action {
+        START,
+        STOP
+    };
 
     private static final int NOTIFICATION_ID = NotificationIdFactory.create();
 
@@ -56,8 +58,9 @@ public class SnippetRunner extends AndroidJUnitRunner {
         // Prevent this runner from triggering any real JUnit tests in the snippet by feeding it a
         // hardcoded empty test class.
         mArguments.putString("class", EmptyTestClass.class.getCanonicalName());
-        mNotificationManager = (NotificationManager)
-                getTargetContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager =
+                (NotificationManager)
+                        getTargetContext().getSystemService(Context.NOTIFICATION_SERVICE);
         super.onCreate(mArguments);
     }
 
@@ -69,18 +72,18 @@ public class SnippetRunner extends AndroidJUnitRunner {
         }
         Action action = Action.valueOf(actionStr.toUpperCase());
         switch (action) {
-        case START:
-            String servicePort = mArguments.getString(ARG_PORT);
-            if (servicePort == null) {
-                throw new IllegalArgumentException("\"--e port <port>\" was not specified");
-            }
-            int port = Integer.parseInt(servicePort);
-            startServer(port);
-            break;
-        case STOP:
-            mNotificationManager.cancel(NOTIFICATION_ID);
-            mNotificationManager.cancelAll();
-            super.onStart();
+            case START:
+                String servicePort = mArguments.getString(ARG_PORT);
+                if (servicePort == null) {
+                    throw new IllegalArgumentException("\"--e port <port>\" was not specified");
+                }
+                int port = Integer.parseInt(servicePort);
+                startServer(port);
+                break;
+            case STOP:
+                mNotificationManager.cancel(NOTIFICATION_ID);
+                mNotificationManager.cancelAll();
+                super.onStart();
         }
     }
 
@@ -90,9 +93,12 @@ public class SnippetRunner extends AndroidJUnitRunner {
             androidProxy.startLocal(port);
         } catch (SocketException e) {
             if (e.getMessage().equals("Permission denied")) {
-                throw new RuntimeException("Failed to start server on port "
-                    + port + ". No permission to create a socket. Does the *MAIN* app manifest "
-                    + "declare the INTERNET permission?", e);
+                throw new RuntimeException(
+                        "Failed to start server on port "
+                                + port
+                                + ". No permission to create a socket. Does the *MAIN* app manifest "
+                                + "declare the INTERNET permission?",
+                        e);
             }
             throw new RuntimeException("Failed to start server on port " + port, e);
         } catch (IOException e) {

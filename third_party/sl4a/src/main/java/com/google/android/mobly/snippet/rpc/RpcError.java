@@ -19,8 +19,7 @@ package com.google.android.mobly.snippet.rpc;
 @SuppressWarnings("serial")
 public class RpcError extends Exception {
 
-  public RpcError(String message) {
-    super(message);
-  }
-
+    public RpcError(String message) {
+        super(message);
+    }
 }

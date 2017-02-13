@@ -17,7 +17,11 @@
 package com.google.android.mobly.snippet.manager;
 
 import android.os.Build;
-
+import com.google.android.mobly.snippet.Snippet;
+import com.google.android.mobly.snippet.rpc.MethodDescriptor;
+import com.google.android.mobly.snippet.rpc.RpcMinSdk;
+import com.google.android.mobly.snippet.util.Log;
+import com.google.android.mobly.snippet.util.SnippetLibException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,16 +31,11 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.google.android.mobly.snippet.Snippet;
-import com.google.android.mobly.snippet.rpc.MethodDescriptor;
-import com.google.android.mobly.snippet.rpc.RpcMinSdk;
-import com.google.android.mobly.snippet.util.Log;
-import com.google.android.mobly.snippet.util.SnippetLibException;
-
 public class SnippetManager {
     private final Map<Class<? extends Snippet>, Snippet> mReceivers;
     /** A map of strings to known RPCs. */
-    private final Map<String, MethodDescriptor> mKnownRpcs = new HashMap<String, MethodDescriptor>();
+    private final Map<String, MethodDescriptor> mKnownRpcs =
+            new HashMap<String, MethodDescriptor>();
 
     public SnippetManager(Collection<Class<? extends Snippet>> classList) {
         mReceivers = new HashMap<>();
@@ -47,8 +46,8 @@ public class SnippetManager {
                 if (mKnownRpcs.containsKey(m.getName())) {
                     // We already know an RPC of the same name. We don't catch this anywhere because
                     // this is a programming error.
-                    throw new RuntimeException("An RPC with the name " + m.getName()
-                            + " is already known.");
+                    throw new RuntimeException(
+                            "An RPC with the name " + m.getName() + " is already known.");
                 }
                 mKnownRpcs.put(m.getName(), m);
             }
@@ -69,7 +68,8 @@ public class SnippetManager {
             int requiredSdkLevel = method.getAnnotation(RpcMinSdk.class).value();
             if (Build.VERSION.SDK_INT < requiredSdkLevel) {
                 throw new SnippetLibException(
-                        String.format("%s requires API level %d, current level is %d",
+                        String.format(
+                                "%s requires API level %d, current level is %d",
                                 method.getName(), requiredSdkLevel, Build.VERSION.SDK_INT));
             }
         }

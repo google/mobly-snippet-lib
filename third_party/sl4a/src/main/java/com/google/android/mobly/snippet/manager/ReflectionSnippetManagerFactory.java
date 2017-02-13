@@ -21,10 +21,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.util.Log;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,9 +58,10 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
     private Set<Class<? extends Snippet>> loadSnippets() {
         ApplicationInfo appInfo;
         try {
-            appInfo = mContext
-                    .getPackageManager()
-                    .getApplicationInfo(mContext.getPackageName(), PackageManager.GET_META_DATA);
+            appInfo =
+                    mContext.getPackageManager()
+                            .getApplicationInfo(
+                                    mContext.getPackageName(), PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             throw new IllegalStateException(
                     "Failed to find ApplicationInfo with package name: "
@@ -73,7 +72,9 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
         if (snippets == null) {
             throw new IllegalStateException(
                     "AndroidManifest.xml does not contain a <metadata> tag with "
-                        + "name=\"" + METADATA_TAG_NAME + "\"");
+                            + "name=\""
+                            + METADATA_TAG_NAME
+                            + "\"");
         }
         String[] snippetClassNames = snippets.split("\\s*,\\s*");
         Set<Class<? extends Snippet>> receiverSet = new HashSet<>();
