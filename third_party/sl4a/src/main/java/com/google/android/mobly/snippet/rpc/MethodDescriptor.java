@@ -212,7 +212,6 @@ public final class MethodDescriptor {
                         "%s(%s) returns %s  // %s",
                         mMethod.getName(),
                         paramBuilder,
-                        //mMethod.getDeclaringClass().getName(),
                         mMethod.getReturnType().getSimpleName(),
                         rpcAnnotation.description());
         return help;
