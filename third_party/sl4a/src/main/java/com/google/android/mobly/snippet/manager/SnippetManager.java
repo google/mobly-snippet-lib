@@ -18,6 +18,7 @@ package com.google.android.mobly.snippet.manager;
 
 import android.os.Build;
 import com.google.android.mobly.snippet.Snippet;
+import com.google.android.mobly.snippet.event.EventSnippet;
 import com.google.android.mobly.snippet.rpc.MethodDescriptor;
 import com.google.android.mobly.snippet.rpc.RpcMinSdk;
 import com.google.android.mobly.snippet.util.Log;
@@ -98,10 +99,13 @@ public class SnippetManager {
         if (object != null) {
             return object;
         }
-
-        Constructor<? extends Snippet> constructor;
-        constructor = clazz.getConstructor();
-        object = constructor.newInstance();
+        if (clazz == EventSnippet.class) {
+            object = EventSnippet.getInstance();
+        } else {
+            Constructor<? extends Snippet> constructor;
+            constructor = clazz.getConstructor();
+            object = constructor.newInstance();
+        }
         mReceivers.put(clazz, object);
         return object;
     }

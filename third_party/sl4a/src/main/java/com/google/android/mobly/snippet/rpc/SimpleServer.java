@@ -188,14 +188,14 @@ public abstract class SimpleServer {
      * Starts the RPC server bound to the localhost address.
      *
      * @param port the port to bind to or 0 to pick any unused port
+     * @return The InetAddress the server is bound to.
      * @throws IOException
      */
-    public void startLocal(int port) throws IOException {
-        InetAddress address;
-        // address = InetAddress.getLocalHost();
-        address = getPrivateInetAddress();
+    public InetAddress startLocal(int port) throws IOException {
+        InetAddress address = getPrivateInetAddress();
         mServer = new ServerSocket(port, 5, address);
         start();
+        return address;
     }
 
     private void start() {

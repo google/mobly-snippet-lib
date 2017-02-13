@@ -100,7 +100,16 @@ public class JsonRpcServer extends SimpleServer {
                 continue;
             }
             try {
-                send(writer, JsonRpcResult.result(id, rpc.invoke(receiverManager, params)), UID);
+                /** If calling an {@link AsyncRpc}, inject the message ID as the first param. */
+                if (rpc.isAsync()) {
+                    String callbackId = String.format("%d-%d", UID, id);
+                    params.put(0, callbackId);
+                    Object returnValue = rpc.invoke(receiverManager, params);
+                    send(writer, JsonRpcResult.callback(id, returnValue, callbackId), UID);
+                } else {
+                    Object returnValue = rpc.invoke(receiverManager, params);
+                    send(writer, JsonRpcResult.result(id, returnValue), UID);
+                }
             } catch (Throwable t) {
                 Log.e("Invocation error.", t);
                 send(writer, JsonRpcResult.error(id, t), UID);

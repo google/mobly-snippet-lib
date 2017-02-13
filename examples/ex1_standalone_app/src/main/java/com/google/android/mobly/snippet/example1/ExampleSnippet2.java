@@ -17,10 +17,21 @@
 package com.google.android.mobly.snippet.example1;
 
 import com.google.android.mobly.snippet.Snippet;
+import com.google.android.mobly.snippet.event.Event;
+import com.google.android.mobly.snippet.event.EventSnippet;
+import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.rpc.Rpc;
+import com.google.android.mobly.snippet.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 public class ExampleSnippet2 implements Snippet {
+
+    private final EventSnippet mEventQueue = EventSnippet.getInstance();
+
     @Rpc(description = "Returns the given string with the prefix \"bar\"")
     public String getBar(String input) {
         return "bar " + input;
@@ -29,6 +40,32 @@ public class ExampleSnippet2 implements Snippet {
     @Rpc(description = "Throws an exception")
     public String throwSomething() throws IOException {
         throw new IOException("Example exception from throwSomething()");
+    }
+
+    /**
+     * An rpc demonstrating event mechanism.
+     *
+     * Expect to see an event on the client side that looks like:
+     * {
+     *  'name': 'ExampleEvent',
+     *  'time': <timestamp>,
+     *  'data': {
+     *      'exampleData': "Here's a simple event.",
+     *      'secret': 42.24,
+     *      'isSecretive': True
+     *  }
+     * }
+     *
+     * @param eventId
+     * @throws JSONException
+     */
+    @AsyncRpc(description = "This call puts an event in the event queue.")
+    public void tryEvent(String eventId) throws JSONException {
+        Event event = new Event(eventId, "ExampleEvent");
+        event.add("exampleData", "Here's a simple event.");
+        event.add("secret", 42.24);
+        event.add("isSecretive", true);
+        mEventQueue.postEvent(event);
     }
 
     @Override

@@ -49,7 +49,8 @@ public final class MethodDescriptor {
     public static Collection<MethodDescriptor> collectFrom(Class<? extends Snippet> clazz) {
         List<MethodDescriptor> descriptors = new ArrayList<MethodDescriptor>();
         for (Method method : clazz.getMethods()) {
-            if (method.isAnnotationPresent(Rpc.class)) {
+            if (method.isAnnotationPresent(Rpc.class)
+                    || method.isAnnotationPresent(AsyncRpc.class)) {
                 descriptors.add(new MethodDescriptor(clazz, method));
             }
         }
@@ -110,7 +111,7 @@ public final class MethodDescriptor {
                 return parameters.getLong(index);
             } else if (type == Double.class) {
                 return parameters.getDouble(index);
-            } else if (type == Integer.class) {
+            } else if (type == Integer.class || type == int.class) {
                 return parameters.getInt(index);
             } else if (type == Intent.class) {
                 return buildIntent(parameters.getJSONObject(index));
@@ -147,7 +148,8 @@ public final class MethodDescriptor {
                             + (index + 1)
                             + " should be of type "
                             + ((Class<?>) type).getSimpleName()
-                            + ".");
+                            + ", but is of type "
+                            + parameters.get(index).getClass().getSimpleName());
         }
     }
 
@@ -192,6 +194,9 @@ public final class MethodDescriptor {
         return mMethod.getGenericParameterTypes();
     }
 
+    public boolean isAsync() {
+        return mMethod.isAnnotationPresent(AsyncRpc.class);
+    }
     /**
      * Returns a human-readable help text for this RPC, based on annotations in the source code.
      *
