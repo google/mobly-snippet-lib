@@ -1,0 +1,5 @@
+1.0.1:
+  - Ignore regular JUnit tests linked into the snippet lib.
+  - Improved exception handling and reporting.
+
+1.0.0: Initial release of Mobly Snippet Lib with some examples.
