@@ -75,8 +75,9 @@ public class EventSnippet implements Snippet {
         }
         if (result != null) {
             mEventQueue.remove(result);
+            return result.toJson();
         }
-        return result.toJson();
+        return new JSONObject();
     }
 
     public void postEvent(Event event) {
