@@ -21,10 +21,8 @@ import com.google.android.mobly.snippet.event.Event;
 import com.google.android.mobly.snippet.event.EventSnippet;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.rpc.Rpc;
-import com.google.android.mobly.snippet.util.Log;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 
