@@ -8,13 +8,17 @@ buildscript {
     }
 }
 
+plugins {
+    id 'com.github.sherter.google-java-format' version '0.6'
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.3"
+    buildToolsVersion '24.0.3'
 
     defaultConfig {
         minSdkVersion 11
@@ -30,6 +34,10 @@ android {
 
 dependencies {
     compile 'com.android.support.test:runner:0.5'
+}
+
+googleJavaFormat {
+    options style: 'AOSP'
 }
 
 task sourcesJar(type: Jar) {
@@ -103,10 +111,10 @@ gradle.taskGraph.whenReady { graph ->
             if (bintrayPropFile.exists()) {
                 throw new IllegalArgumentException(
                     bintrayPropFile.toString()
-                    + " does not contain 'user' or 'key' props")
+                    + ' does not contain "user" or "key" props')
             } else {
                 throw new FileNotFoundException(
-                    "bintray.properties not found at path: " + bintrayPropFile)
+                    'bintray.properties not found at path: ' + bintrayPropFile)
             }
         }
     }

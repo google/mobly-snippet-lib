@@ -18,7 +18,6 @@ package com.google.android.mobly.snippet.util;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,8 +27,8 @@ public final class AndroidUtil {
 
     // TODO(damonkohler): Pull this out into proper argument deserialization and support
     // complex/nested types being passed in.
-    public static void putExtrasFromJsonObject(JSONObject extras,
-                                               Intent intent) throws JSONException {
+    public static void putExtrasFromJsonObject(JSONObject extras, Intent intent)
+            throws JSONException {
         JSONArray names = extras.names();
         for (int i = 0; i < names.length(); i++) {
             String name = names.getString(i);

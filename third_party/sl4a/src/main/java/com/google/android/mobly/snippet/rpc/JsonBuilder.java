@@ -16,6 +16,11 @@
 
 package com.google.android.mobly.snippet.rpc;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.ParcelUuid;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -25,16 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.content.ComponentName;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.ParcelUuid;
 
 public class JsonBuilder {
 
@@ -140,8 +138,7 @@ public class JsonBuilder {
         return result;
     }
 
-    private static JSONObject buildJsonBundle(Bundle bundle)
-            throws JSONException {
+    private static JSONObject buildJsonBundle(Bundle bundle) throws JSONException {
         JSONObject result = new JSONObject();
         for (String key : bundle.keySet()) {
             result.put(key, build(bundle.get(key)));
@@ -165,8 +162,7 @@ public class JsonBuilder {
         return result;
     }
 
-    private static <T> JSONArray buildJsonList(final List<T> list)
-            throws JSONException {
+    private static <T> JSONArray buildJsonList(final List<T> list) throws JSONException {
         JSONArray result = new JSONArray();
         for (T item : list) {
             result.put(build(item));
@@ -174,8 +170,7 @@ public class JsonBuilder {
         return result;
     }
 
-    private static JSONObject buildJsonMap(Map<String, ?> map)
-            throws JSONException {
+    private static JSONObject buildJsonMap(Map<String, ?> map) throws JSONException {
         JSONObject result = new JSONObject();
         for (Entry<String, ?> entry : map.entrySet()) {
             String key = entry.getKey();

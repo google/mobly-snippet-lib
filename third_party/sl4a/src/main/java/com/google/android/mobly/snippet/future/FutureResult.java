@@ -20,10 +20,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-/**
- * FutureResult represents an eventual execution result for asynchronous operations.
- *
- */
+/** FutureResult represents an eventual execution result for asynchronous operations. */
 public class FutureResult<T> implements Future<T> {
 
     private final CountDownLatch mLatch = new CountDownLatch(1);
@@ -60,5 +57,4 @@ public class FutureResult<T> implements Future<T> {
     public boolean isDone() {
         return mResult != null;
     }
-
 }
