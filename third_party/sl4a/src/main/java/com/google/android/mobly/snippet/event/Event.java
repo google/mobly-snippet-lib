@@ -57,6 +57,7 @@ public class Event {
 
     public JSONObject toJson() throws JSONException {
         JSONObject result = new JSONObject();
+        result.put("callbackId", getId());
         result.put("name", getName());
         result.put("time", getCreationTime());
         result.put("data", getData());
