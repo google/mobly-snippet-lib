@@ -26,12 +26,15 @@ public class Event {
     private JSONObject mData = new JSONObject();
     private double mCreationTime;
 
-    public Event(String eventId, String typeName) {
+    public Event(String eventId, String name) {
         if (eventId == null) {
-            throw new IllegalArgumentException("Event name shall not be null.");
+            throw new IllegalArgumentException("Event's callback ID shall not be null.");
+        }
+        if (name == null) {
+            throw new IllegalArgumentException("Event's name shall not be null.");
         }
         mId = eventId;
-        mName = typeName;
+        mName = name;
         mCreationTime = System.currentTimeMillis();
     }
 
