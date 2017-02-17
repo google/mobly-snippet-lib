@@ -19,27 +19,32 @@ package com.google.android.mobly.snippet.event;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/** Class used to store information from a callback event. */
 public class Event {
 
-    private String mId;
+    /** The ID used to associate an event to a callback object on the client side. */
+    private String mCallbackId;
+    /** The name of this event, e.g. startXxxServiceOnSuccess. */
     private String mName;
+    /** The content of this event. */
     private JSONObject mData = new JSONObject();
-    private double mCreationTime;
 
-    public Event(String eventId, String name) {
-        if (eventId == null) {
+    private final double mCreationTime;
+
+    public Event(String callbackId, String name) {
+        if (callbackId == null) {
             throw new IllegalArgumentException("Event's callback ID shall not be null.");
         }
         if (name == null) {
             throw new IllegalArgumentException("Event's name shall not be null.");
         }
-        mId = eventId;
+        mCallbackId = callbackId;
         mName = name;
         mCreationTime = System.currentTimeMillis();
     }
 
-    public String getId() {
-        return mId;
+    public String getCallbackId() {
+        return mCallbackId;
     }
 
     public String getName() {
@@ -60,7 +65,7 @@ public class Event {
 
     public JSONObject toJson() throws JSONException {
         JSONObject result = new JSONObject();
-        result.put("callbackId", getId());
+        result.put("callbackId", getCallbackId());
         result.put("name", getName());
         result.put("time", getCreationTime());
         result.put("data", getData());
