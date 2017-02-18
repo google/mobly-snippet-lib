@@ -101,28 +101,28 @@ public final class MethodDescriptor {
             // also need to convert implicitly from numbers to bools.
             if (parameters.isNull(index)) {
                 return null;
-            } else if (type == Boolean.class) {
+            } else if (type == Boolean.class || type == boolean.class) {
                 try {
                     return parameters.getBoolean(index);
                 } catch (JSONException e) {
                     return new Boolean(parameters.getInt(index) != 0);
                 }
-            } else if (type == Long.class) {
+            } else if (type == Long.class || type == long.class) {
                 return parameters.getLong(index);
-            } else if (type == Double.class) {
+            } else if (type == Double.class || type == double.class) {
                 return parameters.getDouble(index);
             } else if (type == Integer.class || type == int.class) {
                 return parameters.getInt(index);
             } else if (type == Intent.class) {
                 return buildIntent(parameters.getJSONObject(index));
-            } else if (type == Integer[].class) {
+            } else if (type == Integer[].class || type == int[].class) {
                 JSONArray list = parameters.getJSONArray(index);
                 Integer[] result = new Integer[list.length()];
                 for (int i = 0; i < list.length(); i++) {
                     result[i] = list.getInt(i);
                 }
                 return result;
-            } else if (type == byte[].class) {
+            } else if (type == Byte.class || type == byte[].class) {
                 JSONArray list = parameters.getJSONArray(index);
                 byte[] result = new byte[list.length()];
                 for (int i = 0; i < list.length(); i++) {

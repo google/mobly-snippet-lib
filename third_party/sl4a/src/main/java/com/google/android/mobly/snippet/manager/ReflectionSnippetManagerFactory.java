@@ -21,7 +21,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import com.google.android.mobly.snippet.Snippet;
-import com.google.android.mobly.snippet.event.EventManager;
+import com.google.android.mobly.snippet.event.EventSnippet;
 import com.google.android.mobly.snippet.util.Log;
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,7 +78,7 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
         String[] snippetClassNames = snippets.split("\\s*,\\s*");
         Set<Class<? extends Snippet>> receiverSet = new HashSet<>();
         /** Add the event snippet class which is provided within the Snippet Lib. */
-        receiverSet.add(EventManager.class);
+        receiverSet.add(EventSnippet.class);
         for (String snippetClassName : snippetClassNames) {
             try {
                 Log.i("Trying to load Snippet class: " + snippetClassName);

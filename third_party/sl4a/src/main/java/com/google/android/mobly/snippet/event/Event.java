@@ -23,14 +23,26 @@ import org.json.JSONObject;
 public class Event {
 
     /** The ID used to associate an event to a callback object on the client side. */
-    private String mCallbackId;
+    private final String mCallbackId;
     /** The name of this event, e.g. startXxxServiceOnSuccess. */
-    private String mName;
+    private final String mName;
     /** The content of this event. */
-    private JSONObject mData = new JSONObject();
+    private final JSONObject mData = new JSONObject();
 
-    private final double mCreationTime;
+    private final long mCreationTime;
 
+    /**
+     * Constructs an {@link Event} object.
+     *
+     * <p>The object is used to store information from a callback method associated with a call to
+     * an {@link com.google.android.mobly.snippet.rpc.AsyncRpc} method.
+     *
+     * <p>The callbackId passed to the {@link com.google.android.mobly.snippet.rpc.AsyncRpc} method
+     * and an event name are required.
+     *
+     * @param callbackId
+     * @param name
+     */
     public Event(String callbackId, String name) {
         if (callbackId == null) {
             throw new IllegalArgumentException("Event's callback ID shall not be null.");
