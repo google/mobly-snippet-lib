@@ -20,7 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /** Class used to store information from a callback event. */
-public class Event {
+public class SnippetEvent {
 
     /** The ID used to associate an event to a callback object on the client side. */
     private final String mCallbackId;
@@ -32,7 +32,7 @@ public class Event {
     private final long mCreationTime;
 
     /**
-     * Constructs an {@link Event} object.
+     * Constructs an {@link SnippetEvent} object.
      *
      * <p>The object is used to store information from a callback method associated with a call to
      * an {@link com.google.android.mobly.snippet.rpc.AsyncRpc} method.
@@ -43,12 +43,12 @@ public class Event {
      * @param callbackId
      * @param name
      */
-    public Event(String callbackId, String name) {
+    public SnippetEvent(String callbackId, String name) {
         if (callbackId == null) {
-            throw new IllegalArgumentException("Event's callback ID shall not be null.");
+            throw new IllegalArgumentException("SnippetEvent's callback ID shall not be null.");
         }
         if (name == null) {
-            throw new IllegalArgumentException("Event's name shall not be null.");
+            throw new IllegalArgumentException("SnippetEvent's name shall not be null.");
         }
         mCallbackId = callbackId;
         mName = name;

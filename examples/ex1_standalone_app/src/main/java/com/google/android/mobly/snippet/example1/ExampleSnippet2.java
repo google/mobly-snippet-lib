@@ -17,7 +17,7 @@
 package com.google.android.mobly.snippet.example1;
 
 import com.google.android.mobly.snippet.Snippet;
-import com.google.android.mobly.snippet.event.Event;
+import com.google.android.mobly.snippet.event.SnippetEvent;
 import com.google.android.mobly.snippet.event.EventManager;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.rpc.Rpc;
@@ -59,7 +59,7 @@ public class ExampleSnippet2 implements Snippet {
      */
     @AsyncRpc(description = "This call puts an event in the event queue.")
     public void tryEvent(String eventId) throws JSONException {
-        Event event = new Event(eventId, "ExampleEvent");
+        SnippetEvent event = new SnippetEvent(eventId, "ExampleEvent");
         event.add("exampleData", "Here's a simple event.");
         event.add("secret", 42.24);
         event.add("isSecretive", true);

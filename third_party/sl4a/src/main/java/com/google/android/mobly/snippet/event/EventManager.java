@@ -17,16 +17,16 @@
 package com.google.android.mobly.snippet.event;
 
 import com.google.android.mobly.snippet.util.Log;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Manage the event queue.
  *
- * <p>EventManager APIs interact with the Event cache - a data structure that holds {@link Event}
- * objects posted from snippet classes. The Event cache provides a useful means of recording
+ * <p>EventManager APIs interact with the SnippetEvent cache - a data structure that holds {@link SnippetEvent}
+ * objects posted from snippet classes. The SnippetEvent cache provides a useful means of recording
  * background events (such as sensor data) when the phone is busy with foreground activities.
  */
 public class EventManager {
@@ -36,47 +36,46 @@ public class EventManager {
      * A Map with each value being the queue for a particular type of event, and the key being the
      * unique ID of the queue. The ID is composed of a callback ID and an event's name.
      */
-    private final Map<String, LinkedBlockingDeque<Event>> mEventDeques = new ConcurrentHashMap<>();
+    private final Map<String, LinkedBlockingDeque<SnippetEvent>> mEventDeques = new HashMap<>();
 
     private static EventManager mEventManager;
 
     private EventManager() {}
 
-    public static EventManager getInstance() {
-        synchronized (mEventManager) {
-            if (mEventManager == null) {
-                mEventManager = new EventManager();
-            }
-            return mEventManager;
+    public static synchronized EventManager getInstance() {
+        if (mEventManager == null) {
+            mEventManager = new EventManager();
         }
+        return mEventManager;
     }
 
     public static String getQueueId(String callbackId, String name) {
         return String.format(EVENT_DEQUE_ID_TEMPLATE, callbackId, name);
     }
 
-    public LinkedBlockingDeque<Event> getEventDeque(String qId) {
+    public LinkedBlockingDeque<SnippetEvent> getEventDeque(String qId) {
         synchronized (mEventDeques) {
-            if (mEventDeques.containsKey(qId)) {
-                return mEventDeques.get(qId);
+            LinkedBlockingDeque<SnippetEvent> eventDeque = mEventDeques.get(qId);
+            if (eventDeque == null) {
+                LinkedBlockingDeque<SnippetEvent> newEventDeque = new LinkedBlockingDeque<>();
+                mEventDeques.put(qId, newEventDeque);
+                return newEventDeque;
             }
-            LinkedBlockingDeque<Event> newQueue = new LinkedBlockingDeque<>();
-            mEventDeques.put(qId, newQueue);
-            return newQueue;
+            return eventDeque;
         }
     }
 
     /**
-     * Post an event to the event cache.
+     * Post an snippetEvent to the snippetEvent cache.
      *
      * <p>Snippet classes should use this method to post events.
      *
-     * @param event The event to post.
+     * @param snippetEvent The snippetEvent to post.
      */
-    public void postEvent(Event event) {
-        String qId = getQueueId(event.getCallbackId(), event.getName());
-        Queue<Event> q = getEventDeque(qId);
-        q.add(event);
+    public void postEvent(SnippetEvent snippetEvent) {
+        String qId = getQueueId(snippetEvent.getCallbackId(), snippetEvent.getName());
+        Queue<SnippetEvent> q = getEventDeque(qId);
+        q.add(snippetEvent);
         Log.v(String.format("postEvent(%s)", qId));
     }
 

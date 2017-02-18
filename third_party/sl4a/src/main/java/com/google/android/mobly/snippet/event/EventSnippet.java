@@ -39,7 +39,7 @@ public class EventSnippet implements Snippet {
     public boolean eventWait(String callbackId, String eventName, @Nullable Integer timeout)
             throws InterruptedException, JSONException {
         String qId = EventManager.getQueueId(callbackId, eventName);
-        LinkedBlockingDeque<Event> q = mEventManager.getEventDeque(qId);
+        LinkedBlockingDeque<SnippetEvent> q = mEventManager.getEventDeque(qId);
         /**
          * The server side should never wait forever, so we'll use a default timeout is one is not
          * provided.
@@ -47,7 +47,7 @@ public class EventSnippet implements Snippet {
         if (timeout == null) {
             timeout = DEFAULT_TIMEOUT_MILLISECOND;
         }
-        Event result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
+        SnippetEvent result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
         /**
          * Since there's no reliable way of detecting which type of exception was thrown on the
          * client side right now, we signal failure with return false. TODO(angli): Add a way for
@@ -68,7 +68,7 @@ public class EventSnippet implements Snippet {
             String callbackId, String eventName, @Nullable Integer timeout)
             throws InterruptedException, JSONException {
         String qId = EventManager.getQueueId(callbackId, eventName);
-        LinkedBlockingDeque<Event> q = mEventManager.getEventDeque(qId);
+        LinkedBlockingDeque<SnippetEvent> q = mEventManager.getEventDeque(qId);
         /**
          * The server side should never wait forever, so we'll use a default timeout is one is not
          * provided.
@@ -76,7 +76,7 @@ public class EventSnippet implements Snippet {
         if (timeout == null) {
             timeout = DEFAULT_TIMEOUT_MILLISECOND;
         }
-        Event result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
+        SnippetEvent result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
         if (result == null) {
             return null;
         }
@@ -90,10 +90,10 @@ public class EventSnippet implements Snippet {
     public List<JSONObject> eventGetAll(String callbackId, String eventName)
             throws InterruptedException, JSONException {
         String qId = EventManager.getQueueId(callbackId, eventName);
-        LinkedBlockingDeque<Event> q = mEventManager.getEventDeque(qId);
+        LinkedBlockingDeque<SnippetEvent> q = mEventManager.getEventDeque(qId);
         ArrayList<JSONObject> results = new ArrayList<>(q.size());
-        for (Event event : q) {
-            results.add(event.toJson());
+        for (SnippetEvent snippetEvent : q) {
+            results.add(snippetEvent.toJson());
         }
         if (results.size() == 0) {
             return Collections.emptyList();
