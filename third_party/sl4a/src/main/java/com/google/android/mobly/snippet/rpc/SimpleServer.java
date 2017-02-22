@@ -191,9 +191,7 @@ public abstract class SimpleServer {
      * @throws IOException
      */
     public void startLocal(int port) throws IOException {
-        InetAddress address;
-        // address = InetAddress.getLocalHost();
-        address = getPrivateInetAddress();
+        InetAddress address = getPrivateInetAddress();
         mServer = new ServerSocket(port, 5, address);
         start();
     }

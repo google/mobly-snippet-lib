@@ -24,7 +24,7 @@ import org.json.JSONObject;
 /**
  * Represents a JSON RPC result.
  *
- * @see http://json-rpc.org/wiki/specification
+ * @see <a href="http://json-rpc.org/wiki/specification">http://json-rpc.org/wiki/specification</a>
  */
 public class JsonRpcResult {
 
@@ -36,6 +36,7 @@ public class JsonRpcResult {
         JSONObject json = new JSONObject();
         json.put("id", id);
         json.put("result", JSONObject.NULL);
+        json.put("callback", JSONObject.NULL);
         json.put("error", JSONObject.NULL);
         return json;
     }
@@ -44,6 +45,16 @@ public class JsonRpcResult {
         JSONObject json = new JSONObject();
         json.put("id", id);
         json.put("result", JsonBuilder.build(data));
+        json.put("callback", JSONObject.NULL);
+        json.put("error", JSONObject.NULL);
+        return json;
+    }
+
+    public static JSONObject callback(int id, Object data, String callbackId) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("id", id);
+        json.put("result", JsonBuilder.build(data));
+        json.put("callback", callbackId);
         json.put("error", JSONObject.NULL);
         return json;
     }
@@ -54,10 +65,10 @@ public class JsonRpcResult {
         t.printStackTrace(new PrintWriter(stackTraceWriter));
         stackTraceWriter.write("----------------------------------------------");
         String stackTrace = stackTraceWriter.toString();
-
         JSONObject json = new JSONObject();
         json.put("id", id);
         json.put("result", JSONObject.NULL);
+        json.put("callback", JSONObject.NULL);
         json.put("error", stackTrace);
         return json;
     }

@@ -98,7 +98,6 @@ public class SnippetManager {
         if (object != null) {
             return object;
         }
-
         Constructor<? extends Snippet> constructor;
         constructor = clazz.getConstructor();
         object = constructor.newInstance();
