@@ -51,12 +51,13 @@ public class EventSnippet implements Snippet {
         }
         String qId = EventCache.getQueueId(callbackId, eventName);
         LinkedBlockingDeque<SnippetEvent> q = mEventCache.getEventDeque(qId);
-        long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - startTime < timeout) {
+        long startTime = System.nanoTime();
+        while ((System.nanoTime() - startTime) / 1000000 < timeout) {
             SnippetEvent result = q.peekFirst();
             if (result != null) {
                 return;
             }
+            Thread.sleep(100);
         }
         throw new EventSnippetException("timeout.");
     }
@@ -84,16 +85,18 @@ public class EventSnippet implements Snippet {
 
     @Rpc(
         description =
-                "Gets all the events of a certain name that have been received so far. Non-blocking"
-                        + ". Potentially racey since it does not guarantee no event of the same "
-                        + "name will occur after the call."
+                "Gets and removes all the events of a certain name that have been received so far. "
+                        + "Non-blocking. Potentially racey since it does not guarantee no event of "
+                        + "the same name will occur after the call."
     )
     public List<JSONObject> eventGetAll(String callbackId, String eventName)
             throws InterruptedException, JSONException {
         String qId = EventCache.getQueueId(callbackId, eventName);
         LinkedBlockingDeque<SnippetEvent> q = mEventCache.getEventDeque(qId);
         ArrayList<JSONObject> results = new ArrayList<>(q.size());
-        for (SnippetEvent snippetEvent : q) {
+        ArrayList<SnippetEvent> buffer = new ArrayList<>(q.size());
+        q.drainTo(buffer);
+        for (SnippetEvent snippetEvent : buffer) {
             results.add(snippetEvent.toJson());
         }
         if (results.size() == 0) {

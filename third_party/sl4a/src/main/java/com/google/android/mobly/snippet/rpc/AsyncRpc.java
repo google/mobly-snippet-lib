@@ -30,14 +30,12 @@ import java.lang.annotation.Target;
  *
  * <p>Sample Usage:
  *
- * <pre>
- *     @AsyncRpc(description = "An example showing the usage of AsyncRpc")
- *     public void doSomethingAsync(String callbackId, ...) {
- *         // start some async operation and post
- *         // {@link com.google.android.mobly.snippet.event.SnippetEvent} with the callbackId
- *         // passed in.
- *     }
- * </pre>
+ * <pre>{@code
+ * {@literal @}AsyncRpc(description = "An example showing the usage of AsyncRpc")
+ * public void doSomethingAsync(String callbackId, ...) {
+ *     // start some async operation and post a Snippet Event object with the given callbackId.
+ * }
+ * }</pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
