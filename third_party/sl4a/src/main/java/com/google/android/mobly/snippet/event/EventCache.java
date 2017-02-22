@@ -87,7 +87,7 @@ public class EventCache {
         Log.v(String.format("Posted event(%s)", qId));
     }
 
-    /** Claers all cached events. */
+    /** Clears all cached events. */
     public void clearAll() {
         synchronized (mEventDeques) {
             mEventDeques.clear();

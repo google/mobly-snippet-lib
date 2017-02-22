@@ -36,6 +36,9 @@ import java.lang.annotation.Target;
  *     // start some async operation and post a Snippet Event object with the given callbackId.
  * }
  * }</pre>
+ *
+ * AsyncRpc methods can still return serializable values, which will be transported in the regular
+ * return value field of the Rpc protocol.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
