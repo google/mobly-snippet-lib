@@ -25,9 +25,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 /**
  * Manage the event queue.
  *
- * <p>EventManager APIs interact with the SnippetEvent cache - a data structure that holds {@link SnippetEvent}
- * objects posted from snippet classes. The SnippetEvent cache provides a useful means of recording
- * background events (such as sensor data) when the phone is busy with foreground activities.
+ * <p>EventManager APIs interact with the SnippetEvent cache - a data structure that holds {@link
+ * SnippetEvent} objects posted from snippet classes. The SnippetEvent cache provides a useful means
+ * of recording background events (such as sensor data) when the phone is busy with foreground
+ * activities.
  */
 public class EventManager {
     private static final String EVENT_DEQUE_ID_TEMPLATE = "%s|%s";
@@ -38,7 +39,7 @@ public class EventManager {
      */
     private final Map<String, LinkedBlockingDeque<SnippetEvent>> mEventDeques = new HashMap<>();
 
-    private static EventManager mEventManager;
+    private static volatile EventManager mEventManager;
 
     private EventManager() {}
 
@@ -57,16 +58,15 @@ public class EventManager {
         synchronized (mEventDeques) {
             LinkedBlockingDeque<SnippetEvent> eventDeque = mEventDeques.get(qId);
             if (eventDeque == null) {
-                LinkedBlockingDeque<SnippetEvent> newEventDeque = new LinkedBlockingDeque<>();
-                mEventDeques.put(qId, newEventDeque);
-                return newEventDeque;
+                eventDeque = new LinkedBlockingDeque<>();
+                mEventDeques.put(qId, eventDeque);
             }
             return eventDeque;
         }
     }
 
     /**
-     * Post an snippetEvent to the snippetEvent cache.
+     * Post an {@link SnippetEvent} object to the Event cache.
      *
      * <p>Snippet classes should use this method to post events.
      *

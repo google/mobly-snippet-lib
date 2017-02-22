@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 /**
  * The {@link AsyncRpc} annotation is used to annotate server-side implementations of RPCs that
  * trigger asynchronous events. This behaves generally the same as {@link Rpc}, but methods that are
- * annotated with {@link AsyncRpc} are expected to take an extra parameter which is the ID to use
+ * annotated with {@link AsyncRpc} are expected to take the extra parameter which is the ID to use
  * when posting async events.
  */
 @Retention(RetentionPolicy.RUNTIME)

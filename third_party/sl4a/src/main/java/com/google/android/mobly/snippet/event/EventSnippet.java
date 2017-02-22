@@ -29,6 +29,12 @@ import org.json.JSONObject;
 
 public class EventSnippet implements Snippet {
 
+    private static class EventSnippetException extends Exception {
+        public EventSnippetException(String msg) {
+            super(msg);
+        }
+    }
+
     private static final int DEFAULT_TIMEOUT_MILLISECOND = 60 * 1000;
     EventManager mEventManager = EventManager.getInstance();
 
@@ -36,8 +42,8 @@ public class EventSnippet implements Snippet {
         description =
                 "Blocks until an event of a specified type has been received. Default timeout is 60s."
     )
-    public boolean eventWait(String callbackId, String eventName, @Nullable Integer timeout)
-            throws InterruptedException, JSONException {
+    public void eventWait(String callbackId, String eventName, @Nullable Integer timeout)
+            throws InterruptedException, JSONException, EventSnippetException {
         String qId = EventManager.getQueueId(callbackId, eventName);
         LinkedBlockingDeque<SnippetEvent> q = mEventManager.getEventDeque(qId);
         /**
@@ -47,17 +53,17 @@ public class EventSnippet implements Snippet {
         if (timeout == null) {
             timeout = DEFAULT_TIMEOUT_MILLISECOND;
         }
-        SnippetEvent result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
         /**
-         * Since there's no reliable way of detecting which type of exception was thrown on the
-         * client side right now, we signal failure with return false. TODO(angli): Add a way for
-         * client side to identify exception type.
+         * Have to poll the event first then put it back if event exists because peekFirst is
+         * non-blocking.
          */
-        if (result == null) {
-            return false;
+        SnippetEvent result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
+        if (result != null) {
+            // Put the event back to the front of the deque so it can still be consumed.
+            q.putFirst(result);
+            return;
         }
-        q.putFirst(result);
-        return true;
+        throw new EventSnippetException("timeout.");
     }
 
     @Rpc(
@@ -66,7 +72,7 @@ public class EventSnippet implements Snippet {
     )
     public JSONObject eventWaitAndGet(
             String callbackId, String eventName, @Nullable Integer timeout)
-            throws InterruptedException, JSONException {
+            throws InterruptedException, JSONException, EventSnippetException {
         String qId = EventManager.getQueueId(callbackId, eventName);
         LinkedBlockingDeque<SnippetEvent> q = mEventManager.getEventDeque(qId);
         /**
@@ -78,7 +84,7 @@ public class EventSnippet implements Snippet {
         }
         SnippetEvent result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
         if (result == null) {
-            return null;
+            throw new EventSnippetException("timeout.");
         }
         return result.toJson();
     }

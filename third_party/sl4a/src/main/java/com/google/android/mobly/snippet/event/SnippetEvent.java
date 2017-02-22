@@ -16,8 +16,11 @@
 
 package com.google.android.mobly.snippet.event;
 
+import com.google.android.mobly.snippet.rpc.JsonBuilder;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 /** Class used to store information from a callback event. */
 public class SnippetEvent {
@@ -63,15 +66,25 @@ public class SnippetEvent {
         return mName;
     }
 
-    public void add(String name, Object data) throws JSONException {
+    /**
+     * Add serializable data to the Event.
+     *
+     * <p>This is usually for information passed by the original callback API. The data has to be
+     * JSON serializable so it can be transferred to the client side.
+     *
+     * @param name Name of the data set.
+     * @param data Content of the data.
+     * @throws JSONException
+     */
+    public void addData(String name, Object data) throws JSONException {
         mData.put(name, data);
     }
 
-    public Object getData() {
+    private JSONObject getData() {
         return mData;
     }
 
-    public double getCreationTime() {
+    public long getCreationTime() {
         return mCreationTime;
     }
 

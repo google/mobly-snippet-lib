@@ -23,6 +23,7 @@ import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.rpc.Rpc;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -60,9 +61,12 @@ public class ExampleSnippet2 implements Snippet {
     @AsyncRpc(description = "This call puts an event in the event queue.")
     public void tryEvent(String eventId) throws JSONException {
         SnippetEvent event = new SnippetEvent(eventId, "ExampleEvent");
-        event.add("exampleData", "Here's a simple event.");
-        event.add("secret", 42.24);
-        event.add("isSecretive", true);
+        event.addData("exampleData", "Here's a simple event.");
+        event.addData("secret", 42.24);
+        event.addData("isSecretive", true);
+        JSONObject moreData = new JSONObject();
+        moreData.put("evenMoreData", "More Data!");
+        event.addData("moreData", moreData);
         mEventQueue.postEvent(event);
     }
 
