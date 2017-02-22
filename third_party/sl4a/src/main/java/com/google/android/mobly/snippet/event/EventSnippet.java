@@ -36,31 +36,7 @@ public class EventSnippet implements Snippet {
     }
 
     private static final int DEFAULT_TIMEOUT_MILLISECOND = 60 * 1000;
-    EventCache mEventCache = EventCache.getInstance();
-
-    @Rpc(
-        description =
-                "Blocks until an event of a specified type has been received. Default timeout is 60s."
-    )
-    public void eventWait(String callbackId, String eventName, @Nullable Integer timeout)
-            throws InterruptedException, JSONException, EventSnippetException {
-        // The server side should never wait forever, so we'll use a default timeout is one is not
-        // provided.
-        if (timeout == null) {
-            timeout = DEFAULT_TIMEOUT_MILLISECOND;
-        }
-        String qId = EventCache.getQueueId(callbackId, eventName);
-        LinkedBlockingDeque<SnippetEvent> q = mEventCache.getEventDeque(qId);
-        long startTime = System.nanoTime();
-        while ((System.nanoTime() - startTime) / 1000000 < timeout) {
-            SnippetEvent result = q.peekFirst();
-            if (result != null) {
-                return;
-            }
-            Thread.sleep(100);
-        }
-        throw new EventSnippetException("timeout.");
-    }
+    private final EventCache mEventCache = EventCache.getInstance();
 
     @Rpc(
         description =

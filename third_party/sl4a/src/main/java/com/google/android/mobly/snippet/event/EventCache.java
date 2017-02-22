@@ -77,7 +77,7 @@ public class EventCache {
         Deque<SnippetEvent> q = getEventDeque(qId);
         synchronized (q) {
             while (!q.offer(snippetEvent)) {
-                SnippetEvent retiredEvent = q.remove();
+                SnippetEvent retiredEvent = q.removeFirst();
                 Log.v(
                         String.format(
                                 "Retired event %s due to deque reaching the size limit (%s).",
