@@ -89,7 +89,9 @@ public class EventSnippet implements Snippet {
 
     @Rpc(
         description =
-                "Gets all the events of a certain name that have been received so far. Non-blocking."
+                "Gets all the events of a certain name that have been received so far. Non-blocking"
+                        + ". Potentially racey since it does not guarantee no event of the same "
+                        + "name will occur after the call."
     )
     public List<JSONObject> eventGetAll(String callbackId, String eventName)
             throws InterruptedException, JSONException {

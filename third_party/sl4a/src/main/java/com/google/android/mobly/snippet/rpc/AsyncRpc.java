@@ -36,6 +36,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Documented
 public @interface AsyncRpc {
-    // Returns brief description of the function. Should be limited to one or two sentences.
+    /** Returns brief description of the function. Should be limited to one or two sentences. */
     String description();
 }
