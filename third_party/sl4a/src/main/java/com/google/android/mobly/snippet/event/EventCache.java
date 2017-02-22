@@ -25,12 +25,12 @@ import java.util.concurrent.LinkedBlockingDeque;
 /**
  * Manage the event queue.
  *
- * <p>EventManager APIs interact with the SnippetEvent cache - a data structure that holds {@link
+ * <p>EventCache APIs interact with the SnippetEvent cache - a data structure that holds {@link
  * SnippetEvent} objects posted from snippet classes. The SnippetEvent cache provides a useful means
  * of recording background events (such as sensor data) when the phone is busy with foreground
  * activities.
  */
-public class EventManager {
+public class EventCache {
     private static final String EVENT_DEQUE_ID_TEMPLATE = "%s|%s";
     private static final int EVENT_DEQUE_MAX_SIZE = 1024;
 
@@ -38,15 +38,15 @@ public class EventManager {
     // unique ID of the queue. The ID is composed of a callback ID and an event's name.
     private final Map<String, LinkedBlockingDeque<SnippetEvent>> mEventDeques = new HashMap<>();
 
-    private static volatile EventManager mEventManager;
+    private static volatile EventCache mEventCache;
 
-    private EventManager() {}
+    private EventCache() {}
 
-    public static synchronized EventManager getInstance() {
-        if (mEventManager == null) {
-            mEventManager = new EventManager();
+    public static synchronized EventCache getInstance() {
+        if (mEventCache == null) {
+            mEventCache = new EventCache();
         }
-        return mEventManager;
+        return mEventCache;
     }
 
     public static String getQueueId(String callbackId, String name) {
@@ -69,13 +69,21 @@ public class EventManager {
      *
      * <p>Snippet classes should use this method to post events.
      *
-     * @param snippetEvent The snippetEvent to post.
+     * @param snippetEvent The snippetEvent to post to {@link EventCache}.
      */
     public void postEvent(SnippetEvent snippetEvent) {
         String qId = getQueueId(snippetEvent.getCallbackId(), snippetEvent.getName());
         Deque<SnippetEvent> q = getEventDeque(qId);
-        q.add(snippetEvent);
-        Log.v(String.format("postEvent(%s)", qId));
+        synchronized (q) {
+            while (!q.offer(snippetEvent)) {
+                SnippetEvent retiredEvent = q.remove();
+                Log.v(
+                        String.format(
+                                "Retired event %s due to deque reaching the size limit (%s).",
+                                retiredEvent, EVENT_DEQUE_MAX_SIZE));
+            }
+        }
+        Log.v(String.format("Posted event(%s)", qId));
     }
 
     public void eventClearAll() {

@@ -17,8 +17,8 @@
 package com.google.android.mobly.snippet.example1;
 
 import com.google.android.mobly.snippet.Snippet;
+import com.google.android.mobly.snippet.event.EventCache;
 import com.google.android.mobly.snippet.event.SnippetEvent;
-import com.google.android.mobly.snippet.event.EventManager;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.rpc.Rpc;
 
@@ -29,7 +29,7 @@ import java.io.IOException;
 
 public class ExampleSnippet2 implements Snippet {
 
-    private final EventManager mEventQueue = EventManager.getInstance();
+    private final EventCache mEventQueue = EventCache.getInstance();
 
     @Rpc(description = "Returns the given string with the prefix \"bar\"")
     public String getBar(String input) {
