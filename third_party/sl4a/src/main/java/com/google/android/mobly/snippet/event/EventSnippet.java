@@ -83,6 +83,6 @@ public class EventSnippet implements Snippet {
 
     @Override
     public void shutdown() {
-        mEventCache.eventClearAll();
+        mEventCache.clearAll();
     }
 }
