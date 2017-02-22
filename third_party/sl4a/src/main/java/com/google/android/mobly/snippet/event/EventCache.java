@@ -67,7 +67,8 @@ public class EventCache {
     /**
      * Post an {@link SnippetEvent} object to the Event cache.
      *
-     * <p>Snippet classes should use this method to post events.
+     * <p>Snippet classes should use this method to post events. If EVENT_DEQUE_MAX_SIZE is reached,
+     * the oldest elements will be retired until the new event could be posted.
      *
      * @param snippetEvent The snippetEvent to post to {@link EventCache}.
      */

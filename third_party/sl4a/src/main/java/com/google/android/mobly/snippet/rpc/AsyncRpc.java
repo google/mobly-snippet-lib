@@ -28,9 +28,16 @@ import java.lang.annotation.Target;
  * annotated with {@link AsyncRpc} are expected to take the extra parameter which is the ID to use
  * when posting async events.
  *
- * <p>Sample Usage: @AsyncRpc(description = "An example showing the usage of AsyncRpc") public void
- * doSomethingAsync(String callbackId, ...) { // start some async operation and post // {@link
- * com.google.android.mobly.snippet.event.SnippetEvent} with the callbackId passed in. }
+ * <p>Sample Usage:
+ *
+ * <pre>
+ *     @AsyncRpc(description = "An example showing the usage of AsyncRpc")
+ *     public void doSomethingAsync(String callbackId, ...) {
+ *         // start some async operation and post
+ *         // {@link com.google.android.mobly.snippet.event.SnippetEvent} with the callbackId
+ *         // passed in.
+ *     }
+ * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

@@ -51,15 +51,10 @@ public class EventSnippet implements Snippet {
         }
         String qId = EventCache.getQueueId(callbackId, eventName);
         LinkedBlockingDeque<SnippetEvent> q = mEventCache.getEventDeque(qId);
-        // Synchronize here so we don't have the conflict of q reaching max capacity during this
-        // block.
-        synchronized (q) {
-            // Have to poll the event first then put it back if event exists because peekFirst is
-            // non-blocking.
-            SnippetEvent result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
+        long startTime = System.currentTimeMillis();
+        while (System.currentTimeMillis() - startTime < timeout) {
+            SnippetEvent result = q.peekFirst();
             if (result != null) {
-                // Put the event back to the front of the deque so it can still be consumed.
-                q.putFirst(result);
                 return;
             }
         }
@@ -73,13 +68,13 @@ public class EventSnippet implements Snippet {
     public JSONObject eventWaitAndGet(
             String callbackId, String eventName, @Nullable Integer timeout)
             throws InterruptedException, JSONException, EventSnippetException {
-        String qId = EventCache.getQueueId(callbackId, eventName);
-        LinkedBlockingDeque<SnippetEvent> q = mEventCache.getEventDeque(qId);
         // The server side should never wait forever, so we'll use a default timeout is one is not
         // provided.
         if (timeout == null) {
             timeout = DEFAULT_TIMEOUT_MILLISECOND;
         }
+        String qId = EventCache.getQueueId(callbackId, eventName);
+        LinkedBlockingDeque<SnippetEvent> q = mEventCache.getEventDeque(qId);
         SnippetEvent result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
         if (result == null) {
             throw new EventSnippetException("timeout.");
