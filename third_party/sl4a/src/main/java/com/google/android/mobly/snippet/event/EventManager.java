@@ -17,9 +17,9 @@
 package com.google.android.mobly.snippet.event;
 
 import com.google.android.mobly.snippet.util.Log;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
@@ -32,11 +32,10 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public class EventManager {
     private static final String EVENT_DEQUE_ID_TEMPLATE = "%s|%s";
+    private static final int EVENT_DEQUE_MAX_SIZE = 1024;
 
-    /**
-     * A Map with each value being the queue for a particular type of event, and the key being the
-     * unique ID of the queue. The ID is composed of a callback ID and an event's name.
-     */
+    // A Map with each value being the queue for a particular type of event, and the key being the
+    // unique ID of the queue. The ID is composed of a callback ID and an event's name.
     private final Map<String, LinkedBlockingDeque<SnippetEvent>> mEventDeques = new HashMap<>();
 
     private static volatile EventManager mEventManager;
@@ -58,7 +57,7 @@ public class EventManager {
         synchronized (mEventDeques) {
             LinkedBlockingDeque<SnippetEvent> eventDeque = mEventDeques.get(qId);
             if (eventDeque == null) {
-                eventDeque = new LinkedBlockingDeque<>();
+                eventDeque = new LinkedBlockingDeque<>(EVENT_DEQUE_MAX_SIZE);
                 mEventDeques.put(qId, eventDeque);
             }
             return eventDeque;
@@ -74,7 +73,7 @@ public class EventManager {
      */
     public void postEvent(SnippetEvent snippetEvent) {
         String qId = getQueueId(snippetEvent.getCallbackId(), snippetEvent.getName());
-        Queue<SnippetEvent> q = getEventDeque(qId);
+        Deque<SnippetEvent> q = getEventDeque(qId);
         q.add(snippetEvent);
         Log.v(String.format("postEvent(%s)", qId));
     }

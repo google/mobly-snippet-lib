@@ -16,20 +16,17 @@
 
 package com.google.android.mobly.snippet.event;
 
-import com.google.android.mobly.snippet.rpc.JsonBuilder;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 /** Class used to store information from a callback event. */
 public class SnippetEvent {
 
-    /** The ID used to associate an event to a callback object on the client side. */
+    // The ID used to associate an event to a callback object on the client side.
     private final String mCallbackId;
-    /** The name of this event, e.g. startXxxServiceOnSuccess. */
+    // The name of this event, e.g. startXxxServiceOnSuccess.
     private final String mName;
-    /** The content of this event. */
+    // The content of this event.
     private final JSONObject mData = new JSONObject();
 
     private final long mCreationTime;
@@ -40,11 +37,9 @@ public class SnippetEvent {
      * <p>The object is used to store information from a callback method associated with a call to
      * an {@link com.google.android.mobly.snippet.rpc.AsyncRpc} method.
      *
-     * <p>The callbackId passed to the {@link com.google.android.mobly.snippet.rpc.AsyncRpc} method
-     * and an event name are required.
-     *
-     * @param callbackId
-     * @param name
+     * @param callbackId The callbackId passed to the {@link
+     *     com.google.android.mobly.snippet.rpc.AsyncRpc} method.
+     * @param name The name of the event.
      */
     public SnippetEvent(String callbackId, String name) {
         if (callbackId == null) {

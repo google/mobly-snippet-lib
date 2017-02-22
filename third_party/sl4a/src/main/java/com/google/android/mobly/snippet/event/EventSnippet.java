@@ -46,17 +46,13 @@ public class EventSnippet implements Snippet {
             throws InterruptedException, JSONException, EventSnippetException {
         String qId = EventManager.getQueueId(callbackId, eventName);
         LinkedBlockingDeque<SnippetEvent> q = mEventManager.getEventDeque(qId);
-        /**
-         * The server side should never wait forever, so we'll use a default timeout is one is not
-         * provided.
-         */
+        // The server side should never wait forever, so we'll use a default timeout is one is not
+        // provided.
         if (timeout == null) {
             timeout = DEFAULT_TIMEOUT_MILLISECOND;
         }
-        /**
-         * Have to poll the event first then put it back if event exists because peekFirst is
-         * non-blocking.
-         */
+        // Have to poll the event first then put it back if event exists because peekFirst is
+        // non-blocking.
         SnippetEvent result = q.pollFirst(timeout, TimeUnit.MILLISECONDS);
         if (result != null) {
             // Put the event back to the front of the deque so it can still be consumed.
@@ -75,10 +71,8 @@ public class EventSnippet implements Snippet {
             throws InterruptedException, JSONException, EventSnippetException {
         String qId = EventManager.getQueueId(callbackId, eventName);
         LinkedBlockingDeque<SnippetEvent> q = mEventManager.getEventDeque(qId);
-        /**
-         * The server side should never wait forever, so we'll use a default timeout is one is not
-         * provided.
-         */
+        // The server side should never wait forever, so we'll use a default timeout is one is not
+        // provided.
         if (timeout == null) {
             timeout = DEFAULT_TIMEOUT_MILLISECOND;
         }

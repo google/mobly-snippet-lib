@@ -27,11 +27,15 @@ import java.lang.annotation.Target;
  * trigger asynchronous events. This behaves generally the same as {@link Rpc}, but methods that are
  * annotated with {@link AsyncRpc} are expected to take the extra parameter which is the ID to use
  * when posting async events.
+ *
+ * <p>Sample Usage: @AsyncRpc(description = "An example showing the usage of AsyncRpc") public void
+ * doSomethingAsync(String callbackId, ...) { // start some async operation and post // {@link
+ * com.google.android.mobly.snippet.event.SnippetEvent} with the callbackId passed in. }
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
 public @interface AsyncRpc {
-    /** Returns brief description of the function. Should be limited to one or two sentences. */
+    // Returns brief description of the function. Should be limited to one or two sentences.
     String description();
 }
