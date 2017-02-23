@@ -197,6 +197,15 @@ public final class MethodDescriptor {
     public boolean isAsync() {
         return mMethod.isAnnotationPresent(AsyncRpc.class);
     }
+
+    private String getAnnotationDescription() {
+        if (isAsync()) {
+            AsyncRpc annotation = mMethod.getAnnotation(AsyncRpc.class);
+            return annotation.description();
+        }
+        Rpc annotation = mMethod.getAnnotation(Rpc.class);
+        return annotation.description();
+    }
     /**
      * Returns a human-readable help text for this RPC, based on annotations in the source code.
      *
@@ -211,14 +220,13 @@ public final class MethodDescriptor {
             }
             paramBuilder.append(parameterTypes[i].getSimpleName());
         }
-        Rpc rpcAnnotation = mMethod.getAnnotation(Rpc.class);
         String help =
                 String.format(
                         "%s(%s) returns %s  // %s",
                         mMethod.getName(),
                         paramBuilder,
                         mMethod.getReturnType().getSimpleName(),
-                        rpcAnnotation.description());
+                        getAnnotationDescription());
         return help;
     }
 }
