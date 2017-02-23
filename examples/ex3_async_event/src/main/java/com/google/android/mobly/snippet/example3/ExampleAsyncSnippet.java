@@ -22,6 +22,7 @@ import com.google.android.mobly.snippet.event.SnippetEvent;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.util.Log;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ExampleAsyncSnippet implements Snippet {
@@ -36,12 +37,12 @@ public class ExampleAsyncSnippet implements Snippet {
      */
     public class AsyncTask implements Runnable {
 
-        private String mCallbackId;
-        private int secretNumber;
+        private final String mCallbackId;
+        private final int mSecretNumber;
 
         public AsyncTask(String callbackId, int secreteNumber) {
             this.mCallbackId = callbackId;
-            this.secretNumber = secreteNumber;
+            this.mSecretNumber = secreteNumber;
         }
 
         /**
@@ -49,17 +50,20 @@ public class ExampleAsyncSnippet implements Snippet {
          */
         public void run() {
             try {
+                Log.d("Sleeping for 10s before posting an event.");
                 Thread.sleep(10000);
                 SnippetEvent event = new SnippetEvent(mCallbackId, "ExampleEvent");
                 event.addData("exampleData", "Here's a simple event.");
-                event.addData("secretNumber", secretNumber);
+                event.addData("mSecretNumber", mSecretNumber);
                 event.addData("isSecretive", true);
                 JSONObject moreData = new JSONObject();
                 moreData.put("evenMoreData", "More Data!");
                 event.addData("moreData", moreData);
-                mEventQueue.postEvent(event);
-            } catch (Exception e) {
-                Log.e("Async operation failed: " + e);
+                mEventCache.postEvent(event);
+            } catch (InterruptedException e) {
+                Log.e("Thread sleep was interrupted: " + e);
+            } catch (JSONException e) {
+                Log.e("Failed to create the event to post: " + e);
             }
         }
     }
@@ -78,7 +82,7 @@ public class ExampleAsyncSnippet implements Snippet {
      *    'time': <timestamp>,
      *    'data': {
      *        'exampleData': "Here's a simple event.",
-     *        'secretNumber': 22,
+     *        'mSecretNumber': 22,
      *        'isSecretive': True,
      *        'moreData': {
      *            'evenMoreData': 'More Data!'
