@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Google Inc.
+ * Copyright (C) 2017 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -26,7 +26,7 @@ import org.json.JSONObject;
 
 public class ExampleAsyncSnippet implements Snippet {
 
-    private final EventCache mEventQueue = EventCache.getInstance();
+    private final EventCache mEventCache = EventCache.getInstance();
 
     /**
      * This is a sample asynchronous task.
@@ -36,11 +36,11 @@ public class ExampleAsyncSnippet implements Snippet {
      */
     public class AsyncTask implements Runnable {
 
-        private String callbackId;
+        private String mCallbackId;
         private int secretNumber;
 
         public AsyncTask(String callbackId, int secreteNumber) {
-            this.callbackId = callbackId;
+            this.mCallbackId = callbackId;
             this.secretNumber = secreteNumber;
         }
 
@@ -50,7 +50,7 @@ public class ExampleAsyncSnippet implements Snippet {
         public void run() {
             try {
                 Thread.sleep(10000);
-                SnippetEvent event = new SnippetEvent(callbackId, "ExampleEvent");
+                SnippetEvent event = new SnippetEvent(mCallbackId, "ExampleEvent");
                 event.addData("exampleData", "Here's a simple event.");
                 event.addData("secretNumber", secretNumber);
                 event.addData("isSecretive", true);
@@ -73,17 +73,17 @@ public class ExampleAsyncSnippet implements Snippet {
      * Expect to see an event on the client side that looks like:
      *
      * {
-     * 	'callbackId': <callbackID>,
-     * 	'name': 'ExampleEvent',
-     * 	'time': <timestamp>,
-     * 	'data': {
-     * 		'exampleData': "Here's a simple event.",
-     * 		'secretNumber': 22,
-     * 		'isSecretive': True,
-     * 		'moreData': {
-     *			'evenMoreData': 'More Data!'
-     * 		}
-     * 	}
+     *    'mCallbackId': <callbackID>,
+     *    'name': 'ExampleEvent',
+     *    'time': <timestamp>,
+     *    'data': {
+     *        'exampleData': "Here's a simple event.",
+     *        'secretNumber': 22,
+     *        'isSecretive': True,
+     *        'moreData': {
+     *            'evenMoreData': 'More Data!'
+     *        }
+     *    }
      * }
      *
      * @param callbackId The ID that should be used to tag {@link SnippetEvent} objects triggered by

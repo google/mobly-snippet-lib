@@ -23,5 +23,16 @@ This folder contains a fully working example of a standalone snippet apk.
 
         >>> eventHandler = s.tryEvent(42)
         >>> print("Not blocked, can do stuff here")
-        >>> eventHandler.waitAndGet('ExampleEvent') // Blocks until the event is posted on the server side
-        {'callbackId': '2-1', 'name': 'ExampleEvent', 'time': 20381008148, 'data': {'exampleData': "Here's a simple event.", 'secretNumber': 42, 'isSecretive': True, 'moreData': {'evenMoreData': 'More Data!'}}}
+        >>> event = eventHandler.waitAndGet('ExampleEvent') // Blocks until the event is posted on the server side
+
+        Now let's see the content of the event
+
+        >>> import pprint
+        >>> pprint.pprint(event)
+        {'callbackId': '2-1',
+         'data': {'exampleData': "Here's a simple event.",
+                  'isSecretive': True,
+                  'moreData': {'evenMoreData': 'More Data!'},
+                  'secretNumber': 42},
+         'name': 'ExampleEvent',
+         'time': 20381008148}
