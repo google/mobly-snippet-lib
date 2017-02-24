@@ -49,17 +49,17 @@ public class ExampleAsyncSnippet implements Snippet {
          */
         public void run() {
             Log.d("Sleeping for 10s before posting an event.");
+            SnippetEvent event = new SnippetEvent(mCallbackId, "AsyncTaskResult");
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
-                SnippetEvent event = new SnippetEvent(mCallbackId, "FailedEvent");
-                event.getData().putString("Reason", "Sleep was interrupted.");
+                event.getData().putBoolean("successful", false);
+                event.getData().putString("reason", "Sleep was interrupted.");
                 mEventCache.postEvent(event);
             }
-            SnippetEvent event = new SnippetEvent(mCallbackId, "ExampleEvent");
+            event.getData().putBoolean("successful", true);
             event.getData().putString("exampleData", "Here's a simple event.");
-            event.getData().putInt("mSecretNumber", mSecretNumber);
-            event.getData().putBoolean("isSecretive", true);
+            event.getData().putInt("secretNumber", mSecretNumber);
             mEventCache.postEvent(event);
         }
     }
@@ -72,19 +72,16 @@ public class ExampleAsyncSnippet implements Snippet {
      *
      * Expect to see an event on the client side that looks like:
      *
-     * {
-     *    'mCallbackId': <callbackID>,
-     *    'name': 'ExampleEvent',
-     *    'time': <timestamp>,
-     *    'data': {
-     *        'exampleData': "Here's a simple event.",
-     *        'mSecretNumber': 22,
-     *        'isSecretive': True,
-     *        'moreData': {
-     *            'evenMoreData': 'More Data!'
+     *    {
+     *        'callbackId': '2-1',
+     *        'name': 'AsyncTaskResult',
+     *        'time': 20460228696,
+     *        'data': {
+     *            'exampleData': "Here's a simple event.",
+     *            'successful': True,
+     *            'secretNumber': 12
      *        }
      *    }
-     * }
      *
      * @param callbackId The ID that should be used to tag {@link SnippetEvent} objects triggered by
      *                   this method.
