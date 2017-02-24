@@ -16,6 +16,8 @@
 
 package com.google.android.mobly.snippet.event;
 
+import android.os.Bundle;
+import com.google.android.mobly.snippet.rpc.JsonBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,8 +28,10 @@ public class SnippetEvent {
     private final String mCallbackId;
     // The name of this event, e.g. startXxxServiceOnSuccess.
     private final String mName;
-    // The content of this event.
-    private final JSONObject mData = new JSONObject();
+    // The content of this event. We use Android's Bundle because it adheres to Android convention
+    // and adding data to it does not throw checked exceptions, which makes the world a better
+    // place.
+    private final Bundle mData = new Bundle();
 
     private final long mCreationTime;
 
@@ -62,20 +66,14 @@ public class SnippetEvent {
     }
 
     /**
-     * Add serializable data to the Event.
+     * Get the internal bundle of this event.
      *
-     * <p>This is usually for information passed by the original callback API. The data has to be
-     * JSON serializable so it can be transferred to the client side.
+     * <p>This is the only way to add data to the event, because we can't inherit Bundle type and we
+     * don't want to dup all the getter and setters of {@link Bundle}.
      *
-     * @param name Name of the data set.
-     * @param data Content of the data.
-     * @throws JSONException
+     * @return The Bundle that holds user data for this {@link SnippetEvent}.
      */
-    public void addData(String name, Object data) throws JSONException {
-        mData.put(name, data);
-    }
-
-    private JSONObject getData() {
+    public Bundle getData() {
         return mData;
     }
 
@@ -88,7 +86,7 @@ public class SnippetEvent {
         result.put("callbackId", getCallbackId());
         result.put("name", getName());
         result.put("time", getCreationTime());
-        result.put("data", getData());
+        result.put("data", JsonBuilder.build(mData));
         return result;
     }
 }
