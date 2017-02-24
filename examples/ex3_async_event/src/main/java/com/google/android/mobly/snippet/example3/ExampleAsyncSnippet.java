@@ -22,9 +22,6 @@ import com.google.android.mobly.snippet.event.SnippetEvent;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.util.Log;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class ExampleAsyncSnippet implements Snippet {
 
     private final EventCache mEventCache = EventCache.getInstance();
@@ -46,25 +43,24 @@ public class ExampleAsyncSnippet implements Snippet {
         }
 
         /**
-         * Sleeps for 10s then post an {@link SnippetEvent}.
+         * Sleeps for 10s then post a {@link SnippetEvent} with some data.
+         *
+         * If the sleep is interrupted, a {@link SnippetEvent} signaling failure will be posted instead.
          */
         public void run() {
+            Log.d("Sleeping for 10s before posting an event.");
             try {
-                Log.d("Sleeping for 10s before posting an event.");
                 Thread.sleep(10000);
-                SnippetEvent event = new SnippetEvent(mCallbackId, "ExampleEvent");
-                event.addData("exampleData", "Here's a simple event.");
-                event.addData("mSecretNumber", mSecretNumber);
-                event.addData("isSecretive", true);
-                JSONObject moreData = new JSONObject();
-                moreData.put("evenMoreData", "More Data!");
-                event.addData("moreData", moreData);
-                mEventCache.postEvent(event);
             } catch (InterruptedException e) {
-                Log.e("Thread sleep was interrupted: " + e);
-            } catch (JSONException e) {
-                Log.e("Failed to create the event to post: " + e);
+                SnippetEvent event = new SnippetEvent(mCallbackId, "FailedEvent");
+                event.getData().putString("Reason", "Sleep was interrupted.");
+                mEventCache.postEvent(event);
             }
+            SnippetEvent event = new SnippetEvent(mCallbackId, "ExampleEvent");
+            event.getData().putString("exampleData", "Here's a simple event.");
+            event.getData().putInt("mSecretNumber", mSecretNumber);
+            event.getData().putBoolean("isSecretive", true);
+            mEventCache.postEvent(event);
         }
     }
 
