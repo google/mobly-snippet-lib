@@ -21,18 +21,21 @@ This folder contains a fully working example of a standalone snippet apk.
 
         snippet_shell.py com.google.android.mobly.snippet.example3
 
-        >>> eventHandler = s.tryEvent(42)
+        >>> handler = s.tryEvent(42)
         >>> print("Not blocked, can do stuff here")
-        >>> event = eventHandler.waitAndGet('ExampleEvent') // Blocks until the event is posted on the server side
+        >>> event = handler.waitAndGet('AsyncTaskResult') # Blocks until the event is received
 
         Now let's see the content of the event
 
         >>> import pprint
         >>> pprint.pprint(event)
-        {'callbackId': '2-1',
-         'data': {'exampleData': "Here's a simple event.",
-                  'isSecretive': True,
-                  'moreData': {'evenMoreData': 'More Data!'},
-                  'secretNumber': 42},
-         'name': 'ExampleEvent',
-         'time': 20381008148}
+        {
+            'callbackId': '2-1',
+            'name': 'AsyncTaskResult',
+            'time': 20460228696,
+            'data': {
+                'exampleData': "Here's a simple event.",
+                'successful': True,
+                'secretNumber': 12
+            }
+        }
