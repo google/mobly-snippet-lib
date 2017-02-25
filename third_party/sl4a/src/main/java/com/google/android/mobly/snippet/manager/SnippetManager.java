@@ -36,9 +36,9 @@ import java.util.TreeSet;
 import java.util.concurrent.CountDownLatch;
 
 public class SnippetManager {
-    private static abstract class MainThreadCaller implements Runnable {
+    private static abstract class MainThreadCaller<T> implements Runnable {
         private final CountDownLatch mLatch = new CountDownLatch(1);
-        private Object mReturnValue;
+        private T mReturnValue;
         private Throwable mException;
 
         @Override
@@ -52,13 +52,13 @@ public class SnippetManager {
             }
         }
 
-        public abstract Object call() throws Exception;
+        public abstract T call() throws Exception;
 
         public void awaitTermination() throws InterruptedException {
             mLatch.await();
         }
 
-        public Object getReturnValue() {
+        public T getReturnValue() {
             return mReturnValue;
         }
 
@@ -131,14 +131,24 @@ public class SnippetManager {
         }
     }
 
-    private Snippet get(Class<? extends Snippet> clazz) throws Exception {
+    private Snippet get(Class<? extends Snippet> clazz) throws Throwable {
         Snippet object = mReceivers.get(clazz);
         if (object != null) {
             return object;
         }
-        Constructor<? extends Snippet> constructor;
-        constructor = clazz.getConstructor();
-        object = constructor.newInstance();
+        final Constructor<? extends Snippet> constructor = clazz.getConstructor();
+        if (constructor.isAnnotationPresent(RpcMainThread.class)) {
+            Log.i("Constructing " + clazz + " on the main thread");
+            MainThreadCaller<Snippet> caller = new MainThreadCaller<Snippet>() {
+                @Override
+                public Snippet call() throws Exception {
+                    return constructor.newInstance();
+                }
+            };
+            object = runMainThreadCaller(caller);
+        } else {
+            object = constructor.newInstance();
+        }
         mReceivers.put(clazz, object);
         return object;
     }
@@ -147,20 +157,24 @@ public class SnippetManager {
             throws Throwable {
         if (method.isAnnotationPresent(RpcMainThread.class)) {
             Log.i("Invoking RPC method " + method + " on the main thread");
-            MainThreadCaller caller = new MainThreadCaller() {
+            MainThreadCaller<Object> caller = new MainThreadCaller<Object>() {
                 @Override
                 public Object call() throws Exception {
                     return method.invoke(object, args);
                 }
             };
-            mMainThreadHandler.post(caller);
-            caller.awaitTermination();
-            if (caller.getException() != null) {
-                throw caller.getException();
-            }
-            return caller.getReturnValue();
+            return runMainThreadCaller(caller);
         } else {
             return method.invoke(object, args);
         }
+    }
+
+    private <T> T runMainThreadCaller(MainThreadCaller<T> caller) throws Throwable {
+        mMainThreadHandler.post(caller);
+        caller.awaitTermination();
+        if (caller.getException() != null) {
+            throw caller.getException();
+        }
+        return caller.getReturnValue();
     }
 }
