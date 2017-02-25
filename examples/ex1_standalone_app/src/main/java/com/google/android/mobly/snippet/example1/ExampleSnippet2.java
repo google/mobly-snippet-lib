@@ -19,6 +19,7 @@ package com.google.android.mobly.snippet.example1;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.Rpc;
 
+import com.google.android.mobly.snippet.rpc.RpcMainThread;
 import java.io.IOException;
 
 public class ExampleSnippet2 implements Snippet {
@@ -31,6 +32,12 @@ public class ExampleSnippet2 implements Snippet {
     @Rpc(description = "Throws an exception")
     public String throwSomething() throws IOException {
         throw new IOException("Example exception from throwSomething()");
+    }
+
+    @Rpc(description = "Throws an exception from the main thread")
+    @RpcMainThread
+    public String throwSomethingFromMainThread() throws IOException {
+        throw new IOException("Example exception from throwSomethingFromMainThread()");
     }
 
     @Override

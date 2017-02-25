@@ -17,8 +17,11 @@
 package com.google.android.mobly.snippet.manager;
 
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.MethodDescriptor;
+import com.google.android.mobly.snippet.rpc.RpcMainThread;
 import com.google.android.mobly.snippet.rpc.RpcMinSdk;
 import com.google.android.mobly.snippet.util.Log;
 import com.google.android.mobly.snippet.util.SnippetLibException;
@@ -30,15 +33,49 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.CountDownLatch;
 
 public class SnippetManager {
+    private static abstract class MainThreadCaller implements Runnable {
+        private final CountDownLatch mLatch = new CountDownLatch(1);
+        private Object mReturnValue;
+        private Throwable mException;
+
+        @Override
+        public final void run() {
+            try {
+                mReturnValue = call();
+            } catch (Throwable t) {
+                mException = t;
+            } finally {
+                mLatch.countDown();
+            }
+        }
+
+        public abstract Object call() throws Exception;
+
+        public void awaitTermination() throws InterruptedException {
+            mLatch.await();
+        }
+
+        public Object getReturnValue() {
+            return mReturnValue;
+        }
+
+        public Throwable getException() {
+            return mException;
+        }
+    }
+
     private final Map<Class<? extends Snippet>, Snippet> mReceivers;
     /** A map of strings to known RPCs. */
     private final Map<String, MethodDescriptor> mKnownRpcs =
             new HashMap<String, MethodDescriptor>();
+    private final Handler mMainThreadHandler;
 
     public SnippetManager(Collection<Class<? extends Snippet>> classList) {
         mReceivers = new HashMap<>();
+        mMainThreadHandler = new Handler(Looper.getMainLooper());
         for (Class<? extends Snippet> receiverClass : classList) {
             mReceivers.put(receiverClass, null);
             Collection<MethodDescriptor> methodList = MethodDescriptor.collectFrom(receiverClass);
@@ -73,9 +110,10 @@ public class SnippetManager {
                                 method.getName(), requiredSdkLevel, Build.VERSION.SDK_INT));
             }
         }
+        Snippet object;
         try {
-            Snippet object = get(clazz);
-            return method.invoke(object, args);
+            object = get(clazz);
+            return invoke(object, method, args);
         } catch (InvocationTargetException e) {
             throw e.getCause();
         }
@@ -103,5 +141,26 @@ public class SnippetManager {
         object = constructor.newInstance();
         mReceivers.put(clazz, object);
         return object;
+    }
+
+    private Object invoke(final Snippet object, final Method method, final Object[] args)
+            throws Throwable {
+        if (method.isAnnotationPresent(RpcMainThread.class)) {
+            Log.i("Invoking RPC method " + method + " on the main thread");
+            MainThreadCaller caller = new MainThreadCaller() {
+                @Override
+                public Object call() throws Exception {
+                    return method.invoke(object, args);
+                }
+            };
+            mMainThreadHandler.post(caller);
+            caller.awaitTermination();
+            if (caller.getException() != null) {
+                throw caller.getException();
+            }
+            return caller.getReturnValue();
+        } else {
+            return method.invoke(object, args);
+        }
     }
 }
