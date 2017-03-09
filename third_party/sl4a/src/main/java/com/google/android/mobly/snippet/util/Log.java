@@ -16,15 +16,49 @@
 
 package com.google.android.mobly.snippet.util;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
+
 public final class Log {
+    public static volatile String APK_LOG_TAG = null;
+
     private Log() {}
 
+    public synchronized static void initLogTag(Context context) {
+        if (APK_LOG_TAG != null) {
+            throw new IllegalStateException("Logger is being re-initialized");
+        }
+        String packageName = context.getPackageName();
+        PackageManager packageManager = context.getPackageManager();
+        ApplicationInfo appInfo;
+        try {
+            appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+        } catch (NameNotFoundException e) {
+            throw new IllegalStateException(
+                "Failed to find ApplicationInfo with package name: " + packageName);
+        }
+        Bundle bundle = appInfo.metaData;
+        APK_LOG_TAG = bundle.getString("mobly-log-tag");
+        if (APK_LOG_TAG == null) {
+            APK_LOG_TAG = packageName;
+            w("AndroidManifest.xml does not contain metadata field named \"mobly-log-tag\". "
+                + "Using package name for logging instead.");
+        }
+    }
+
     private static String getTag() {
+        String logTag = APK_LOG_TAG;
+        if (logTag == null) {
+            throw new IllegalStateException("Logging called before initLogTag()");
+        }
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         String fullClassName = stackTraceElements[4].getClassName();
         String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
         int lineNumber = stackTraceElements[4].getLineNumber();
-        return "MoblySnippetLib." + className + ":" + lineNumber;
+        return logTag + "." + className + ":" + lineNumber;
     }
 
     public static void v(String message) {

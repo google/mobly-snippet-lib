@@ -4,14 +4,19 @@
     package="com.google.android.mobly.snippet.example1">
 
     <application>
+        <!-- Required: list of all classes with @Rpc methods. -->
         <meta-data
             android:name="mobly-snippets"
             android:value="com.google.android.mobly.snippet.example1.ExampleSnippet,
                            com.google.android.mobly.snippet.example1.ExampleSnippet2" />
+
+        <!-- Optional: tag which will be used for logs through the snippet lib's logger. -->
+        <meta-data
+          android:name="mobly-log-tag"
+          android:value="MoblySnippetLibExample1" />
     </application>
 
     <instrumentation
         android:name="com.google.android.mobly.snippet.SnippetRunner"
         android:targetPackage="com.google.android.mobly.snippet.example1" />
-
 </manifest>
