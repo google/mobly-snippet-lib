@@ -10,7 +10,12 @@
             android:value="com.google.android.mobly.snippet.example1.ExampleSnippet,
                            com.google.android.mobly.snippet.example1.ExampleSnippet2" />
 
-        <!-- Optional: tag which will be used for logs through the snippet lib's logger. -->
+        <!-- Optional: tag which will be used for logs through the snippet lib's logger.
+             If specified, log lines will look like this:
+             MoblySnippetLibExample1.JsonRpcServer:84: Got shutdown signal
+
+             If not specified, log lines will look like this
+             com.google.android.mobly.snippet.example1.JsonRpcServer:84: Got shutdown signal -->
         <meta-data
           android:name="mobly-log-tag"
           android:value="MoblySnippetLibExample1" />
