@@ -63,7 +63,6 @@ public final class MethodDescriptor {
      *
      * @param parameters {@code JSONArray} containing the parameters
      * @return result
-     * @throws Throwable
      */
     public Object invoke(SnippetManager manager, final JSONArray parameters) throws Throwable {
         final Type[] parameterTypes = getGenericParameterTypes();

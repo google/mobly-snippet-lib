@@ -17,13 +17,12 @@
 package com.google.android.mobly.snippet.manager;
 
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.MethodDescriptor;
 import com.google.android.mobly.snippet.rpc.RpcMainThread;
 import com.google.android.mobly.snippet.rpc.RpcMinSdk;
 import com.google.android.mobly.snippet.util.Log;
+import com.google.android.mobly.snippet.util.MainThread;
 import com.google.android.mobly.snippet.util.SnippetLibException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -31,53 +30,20 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Callable;
 
 public class SnippetManager {
-    private static abstract class MainThreadCaller<T> implements Runnable {
-        private final CountDownLatch mLatch = new CountDownLatch(1);
-        private T mReturnValue;
-        private Throwable mException;
-
-        @Override
-        public final void run() {
-            try {
-                mReturnValue = call();
-            } catch (Throwable t) {
-                mException = t;
-            } finally {
-                mLatch.countDown();
-            }
-        }
-
-        public abstract T call() throws Exception;
-
-        public void awaitTermination() throws InterruptedException {
-            mLatch.await();
-        }
-
-        public T getReturnValue() {
-            return mReturnValue;
-        }
-
-        public Throwable getException() {
-            return mException;
-        }
-    }
-
-    private final Map<Class<? extends Snippet>, Snippet> mReceivers;
+    private final Map<Class<? extends Snippet>, Snippet> mSnippets;
     /** A map of strings to known RPCs. */
-    private final Map<String, MethodDescriptor> mKnownRpcs =
-            new HashMap<String, MethodDescriptor>();
-    private final Handler mMainThreadHandler;
+    private final Map<String, MethodDescriptor> mKnownRpcs = new HashMap<>();
 
     public SnippetManager(Collection<Class<? extends Snippet>> classList) {
-        mReceivers = new HashMap<>();
-        mMainThreadHandler = new Handler(Looper.getMainLooper());
+        mSnippets = new HashMap<>();
         for (Class<? extends Snippet> receiverClass : classList) {
-            mReceivers.put(receiverClass, null);
+            mSnippets.put(receiverClass, null);
             Collection<MethodDescriptor> methodList = MethodDescriptor.collectFrom(receiverClass);
             for (MethodDescriptor m : methodList) {
                 if (mKnownRpcs.containsKey(m.getName())) {
@@ -119,62 +85,64 @@ public class SnippetManager {
         }
     }
 
-    public void shutdown() {
-        for (Snippet receiver : mReceivers.values()) {
-            try {
-                if (receiver != null) {
-                    receiver.shutdown();
-                }
-            } catch (Exception e) {
-                Log.e("Failed to shut down an Snippet", e);
+    public void shutdown() throws Exception {
+        for (final Entry<Class<? extends Snippet>, Snippet> entry : mSnippets.entrySet()) {
+            if (entry.getValue() == null) {
+                continue;
+            }
+            Method method = entry.getKey().getMethod("shutdown");
+            if (method.isAnnotationPresent(RpcMainThread.class)) {
+                Log.d("Shutting down " + entry.getKey().getName() + " on the main thread");
+                MainThread.run(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        entry.getValue().shutdown();
+                        return null;
+                    }
+                });
+            } else {
+                Log.d("Shutting down " + entry.getKey().getName());
+                entry.getValue().shutdown();
             }
         }
     }
 
-    private Snippet get(Class<? extends Snippet> clazz) throws Throwable {
-        Snippet object = mReceivers.get(clazz);
+    private Snippet get(Class<? extends Snippet> clazz) throws Exception {
+        Snippet object = mSnippets.get(clazz);
         if (object != null) {
             return object;
         }
         final Constructor<? extends Snippet> constructor = clazz.getConstructor();
         if (constructor.isAnnotationPresent(RpcMainThread.class)) {
-            Log.i("Constructing " + clazz + " on the main thread");
-            MainThreadCaller<Snippet> caller = new MainThreadCaller<Snippet>() {
+            Log.d("Constructing " + clazz + " on the main thread");
+            object = MainThread.run(new Callable<Snippet>() {
                 @Override
                 public Snippet call() throws Exception {
                     return constructor.newInstance();
                 }
-            };
-            object = runMainThreadCaller(caller);
+            });
         } else {
+            Log.d("Constructing " + clazz);
             object = constructor.newInstance();
         }
-        mReceivers.put(clazz, object);
+        mSnippets.put(clazz, object);
         return object;
     }
 
     private Object invoke(final Snippet object, final Method method, final Object[] args)
-            throws Throwable {
+            throws Exception {
         if (method.isAnnotationPresent(RpcMainThread.class)) {
-            Log.i("Invoking RPC method " + method + " on the main thread");
-            MainThreadCaller<Object> caller = new MainThreadCaller<Object>() {
+            Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName()
+                      + " on the main thread");
+            return MainThread.run(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
                     return method.invoke(object, args);
                 }
-            };
-            return runMainThreadCaller(caller);
+            });
         } else {
+            Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName());
             return method.invoke(object, args);
         }
-    }
-
-    private <T> T runMainThreadCaller(MainThreadCaller<T> caller) throws Throwable {
-        mMainThreadHandler.post(caller);
-        caller.awaitTermination();
-        if (caller.getException() != null) {
-            throw caller.getException();
-        }
-        return caller.getReturnValue();
     }
 }
