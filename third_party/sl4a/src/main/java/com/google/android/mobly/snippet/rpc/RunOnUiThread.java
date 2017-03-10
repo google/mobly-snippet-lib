@@ -31,4 +31,4 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface RpcMainThread {}
+public @interface RunOnUiThread {}
