@@ -29,7 +29,7 @@ public final class Log {
 
     public synchronized static void initLogTag(Context context) {
         if (APK_LOG_TAG != null) {
-            throw new IllegalStateException("Logger is being re-initialized");
+            throw new IllegalStateException("Logger should not be re-initialized");
         }
         String packageName = context.getPackageName();
         PackageManager packageManager = context.getPackageManager();
