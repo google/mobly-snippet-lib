@@ -28,33 +28,40 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SnippetManager {
     private final Map<Class<? extends Snippet>, Snippet> mSnippets;
     /** A map of strings to known RPCs. */
-    private final Map<String, MethodDescriptor> mKnownRpcs = new HashMap<>();
+    private final Map<String, MethodDescriptor> mKnownRpcs;
 
     public SnippetManager(Collection<Class<? extends Snippet>> classList) {
-        mSnippets = new HashMap<>();
+        // Concurrent for multiple connections on the same session.
+        mSnippets = new ConcurrentHashMap<>();
+        Map<String, MethodDescriptor> knownRpcs = new HashMap<>();
         for (Class<? extends Snippet> receiverClass : classList) {
             mSnippets.put(receiverClass, null);
             Collection<MethodDescriptor> methodList = MethodDescriptor.collectFrom(receiverClass);
             for (MethodDescriptor m : methodList) {
-                if (mKnownRpcs.containsKey(m.getName())) {
+                if (knownRpcs.containsKey(m.getName())) {
                     // We already know an RPC of the same name. We don't catch this anywhere because
                     // this is a programming error.
                     throw new RuntimeException(
                             "An RPC with the name " + m.getName() + " is already known.");
                 }
-                mKnownRpcs.put(m.getName(), m);
+                knownRpcs.put(m.getName(), m);
             }
         }
+        // Does not need to be concurrent because this map is read only, so it is safe to access
+        // from multiple threads. Wrap in an unmodifiableMap to enforce this.
+        mKnownRpcs = Collections.unmodifiableMap(knownRpcs);
     }
 
     public MethodDescriptor getMethodDescriptor(String methodName) {
@@ -109,23 +116,27 @@ public class SnippetManager {
 
     private Snippet get(Class<? extends Snippet> clazz) throws Exception {
         Snippet object = mSnippets.get(clazz);
-        if (object != null) {
-            return object;
-        }
-        final Constructor<? extends Snippet> constructor = clazz.getConstructor();
-        if (constructor.isAnnotationPresent(RunOnUiThread.class)) {
-            Log.d("Constructing " + clazz + " on the main thread");
-            object = MainThread.run(new Callable<Snippet>() {
-                @Override
-                public Snippet call() throws Exception {
-                    return constructor.newInstance();
+        if (object == null) {
+            synchronized (clazz) {
+                object = mSnippets.get(clazz);
+                if (object == null) {
+                    final Constructor<? extends Snippet> constructor = clazz.getConstructor();
+                    if (constructor.isAnnotationPresent(RunOnUiThread.class)) {
+                        Log.d("Constructing " + clazz + " on the main thread");
+                        object = MainThread.run(new Callable<Snippet>() {
+                            @Override
+                            public Snippet call() throws Exception {
+                                return constructor.newInstance();
+                            }
+                        });
+                    } else {
+                        Log.d("Constructing " + clazz);
+                        object = constructor.newInstance();
+                    }
+                    mSnippets.put(clazz, object);
                 }
-            });
-        } else {
-            Log.d("Constructing " + clazz);
-            object = constructor.newInstance();
+            }
         }
-        mSnippets.put(clazz, object);
         return object;
     }
 
