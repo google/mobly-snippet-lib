@@ -16,74 +16,49 @@
 
 package com.google.android.mobly.snippet.util;
 
-import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.widget.Toast;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
 
-public class Log {
-    private Log() {
-        // Utility class.
+public final class Log {
+    public static volatile String APK_LOG_TAG = null;
+
+    private Log() {}
+
+    public synchronized static void initLogTag(Context context) {
+        if (APK_LOG_TAG != null) {
+            throw new IllegalStateException("Logger should not be re-initialized");
+        }
+        String packageName = context.getPackageName();
+        PackageManager packageManager = context.getPackageManager();
+        ApplicationInfo appInfo;
+        try {
+            appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+        } catch (NameNotFoundException e) {
+            throw new IllegalStateException(
+                "Failed to find ApplicationInfo with package name: " + packageName);
+        }
+        Bundle bundle = appInfo.metaData;
+        APK_LOG_TAG = bundle.getString("mobly-log-tag");
+        if (APK_LOG_TAG == null) {
+            APK_LOG_TAG = packageName;
+            w("AndroidManifest.xml does not contain metadata field named \"mobly-log-tag\". "
+                + "Using package name for logging instead.");
+        }
     }
 
     private static String getTag() {
+        String logTag = APK_LOG_TAG;
+        if (logTag == null) {
+            throw new IllegalStateException("Logging called before initLogTag()");
+        }
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         String fullClassName = stackTraceElements[4].getClassName();
         String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
         int lineNumber = stackTraceElements[4].getLineNumber();
-        return "sl4a." + className + ":" + lineNumber;
-    }
-
-    private static void toast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-    }
-
-    public static void notify(Context context, String title, String contentTitle, String message) {
-        android.util.Log.v(getTag(), String.format("%s %s", contentTitle, message));
-
-        String packageName = context.getPackageName();
-        int iconId =
-                context.getResources().getIdentifier("stat_sys_warning", "drawable", packageName);
-        NotificationManager notificationManager =
-                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = new Notification.Builder(context);
-        builder.setSmallIcon(iconId > 0 ? iconId : -1)
-                .setTicker(title)
-                .setWhen(0)
-                .setContentTitle(contentTitle)
-                .setContentText(message)
-                .setContentIntent(PendingIntent.getService(context, 0, null, 0));
-        Notification note = builder.getNotification();
-        note.contentView.getLayoutId();
-        notificationManager.notify(NotificationIdFactory.create(), note);
-    }
-
-    public static void showDialog(final Context context, final String title, final String message) {
-        android.util.Log.v(getTag(), String.format("%s %s", title, message));
-
-        MainThread.run(
-                context,
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setTitle(title);
-                        builder.setMessage(message);
-
-                        DialogInterface.OnClickListener buttonListener =
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                };
-                        builder.setPositiveButton("Ok", buttonListener);
-                        builder.show();
-                    }
-                });
+        return logTag + "." + className + ":" + lineNumber;
     }
 
     public static void v(String message) {
@@ -91,16 +66,6 @@ public class Log {
     }
 
     public static void v(String message, Throwable e) {
-        android.util.Log.v(getTag(), message, e);
-    }
-
-    public static void v(Context context, String message) {
-        toast(context, message);
-        android.util.Log.v(getTag(), message);
-    }
-
-    public static void v(Context context, String message, Throwable e) {
-        toast(context, message);
         android.util.Log.v(getTag(), message, e);
     }
 
@@ -116,16 +81,6 @@ public class Log {
         android.util.Log.e(getTag(), message, e);
     }
 
-    public static void e(Context context, String message) {
-        toast(context, message);
-        android.util.Log.e(getTag(), message);
-    }
-
-    public static void e(Context context, String message, Throwable e) {
-        toast(context, message);
-        android.util.Log.e(getTag(), message, e);
-    }
-
     public static void w(Throwable e) {
         android.util.Log.w(getTag(), "Warning", e);
     }
@@ -138,16 +93,6 @@ public class Log {
         android.util.Log.w(getTag(), message, e);
     }
 
-    public static void w(Context context, String message) {
-        toast(context, message);
-        android.util.Log.w(getTag(), message);
-    }
-
-    public static void w(Context context, String message, Throwable e) {
-        toast(context, message);
-        android.util.Log.w(getTag(), message, e);
-    }
-
     public static void d(String message) {
         android.util.Log.d(getTag(), message);
     }
@@ -156,31 +101,11 @@ public class Log {
         android.util.Log.d(getTag(), message, e);
     }
 
-    public static void d(Context context, String message) {
-        toast(context, message);
-        android.util.Log.d(getTag(), message);
-    }
-
-    public static void d(Context context, String message, Throwable e) {
-        toast(context, message);
-        android.util.Log.d(getTag(), message, e);
-    }
-
     public static void i(String message) {
         android.util.Log.i(getTag(), message);
     }
 
     public static void i(String message, Throwable e) {
-        android.util.Log.i(getTag(), message, e);
-    }
-
-    public static void i(Context context, String message) {
-        toast(context, message);
-        android.util.Log.i(getTag(), message);
-    }
-
-    public static void i(Context context, String message, Throwable e) {
-        toast(context, message);
         android.util.Log.i(getTag(), message, e);
     }
 }

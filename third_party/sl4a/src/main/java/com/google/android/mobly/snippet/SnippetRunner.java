@@ -55,6 +55,10 @@ public class SnippetRunner extends AndroidJUnitRunner {
     @Override
     public void onCreate(Bundle arguments) {
         mArguments = arguments;
+
+        // First-run static setup
+        Log.initLogTag(getContext());
+
         // Prevent this runner from triggering any real JUnit tests in the snippet by feeding it a
         // hardcoded empty test class.
         mArguments.putString("class", EmptyTestClass.class.getCanonicalName());
