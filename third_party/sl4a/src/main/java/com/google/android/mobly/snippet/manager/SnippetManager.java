@@ -19,8 +19,8 @@ package com.google.android.mobly.snippet.manager;
 import android.os.Build;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.MethodDescriptor;
-import com.google.android.mobly.snippet.rpc.RpcMainThread;
 import com.google.android.mobly.snippet.rpc.RpcMinSdk;
+import com.google.android.mobly.snippet.rpc.RunOnUiThread;
 import com.google.android.mobly.snippet.util.Log;
 import com.google.android.mobly.snippet.util.MainThread;
 import com.google.android.mobly.snippet.util.SnippetLibException;
@@ -91,7 +91,7 @@ public class SnippetManager {
                 continue;
             }
             Method method = entry.getKey().getMethod("shutdown");
-            if (method.isAnnotationPresent(RpcMainThread.class)) {
+            if (method.isAnnotationPresent(RunOnUiThread.class)) {
                 Log.d("Shutting down " + entry.getKey().getName() + " on the main thread");
                 MainThread.run(new Callable<Void>() {
                     @Override
@@ -113,7 +113,7 @@ public class SnippetManager {
             return object;
         }
         final Constructor<? extends Snippet> constructor = clazz.getConstructor();
-        if (constructor.isAnnotationPresent(RpcMainThread.class)) {
+        if (constructor.isAnnotationPresent(RunOnUiThread.class)) {
             Log.d("Constructing " + clazz + " on the main thread");
             object = MainThread.run(new Callable<Snippet>() {
                 @Override
@@ -131,7 +131,7 @@ public class SnippetManager {
 
     private Object invoke(final Snippet object, final Method method, final Object[] args)
             throws Exception {
-        if (method.isAnnotationPresent(RpcMainThread.class)) {
+        if (method.isAnnotationPresent(RunOnUiThread.class)) {
             Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName()
                       + " on the main thread");
             return MainThread.run(new Callable<Object>() {

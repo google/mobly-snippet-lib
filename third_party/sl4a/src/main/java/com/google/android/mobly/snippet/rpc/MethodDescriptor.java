@@ -63,6 +63,7 @@ public final class MethodDescriptor {
      *
      * @param parameters {@code JSONArray} containing the parameters
      * @return result
+     * @throws Throwable the exception raised from executing the RPC method.
      */
     public Object invoke(SnippetManager manager, final JSONArray parameters) throws Throwable {
         final Type[] parameterTypes = getGenericParameterTypes();
