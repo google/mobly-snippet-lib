@@ -44,15 +44,6 @@ public class JsonRpcServer extends SimpleServer {
     }
 
     @Override
-    public void shutdown() {
-        super.shutdown();
-        // Notify all RPC receiving objects. They may have to clean up some of their state.
-        for (SnippetManager manager : mSnippetManagerFactory.getSnippetManagers().values()) {
-            manager.shutdown();
-        }
-    }
-
-    @Override
     protected void handleRPCConnection(
             Socket sock, Integer UID, BufferedReader reader, PrintWriter writer) throws Exception {
         SnippetManager receiverManager = null;
@@ -82,14 +73,24 @@ public class JsonRpcServer extends SimpleServer {
                 continue;
             } else if (method.equals(CMD_CLOSE_SESSION)) {
                 Log.d("Got shutdown signal");
-                send(writer, JsonRpcResult.empty(id), UID);
                 synchronized (writer) {
-                    receiverManager.shutdown();
+                    // Shut down all RPC receivers.
+                    for (SnippetManager manager :
+                             mSnippetManagerFactory.getSnippetManagers().values()) {
+                        manager.shutdown();
+                    }
+
+                    // Shut down this client connection. As soon as this happens, the client will
+                    // kill us by triggering the 'stop' action from another instrumentation, so no
+                    // other cleanup steps are guaranteed to execute.
+                    send(writer, JsonRpcResult.empty(id), UID);
                     reader.close();
                     writer.close();
                     sock.close();
+
+                    // Shut down this server.
                     shutdown();
-                    mgrs.remove(UID);
+                    mgrs.clear();
                 }
                 return;
             }

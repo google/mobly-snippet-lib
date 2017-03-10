@@ -28,8 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class EventSnippet implements Snippet {
-
     private static class EventSnippetException extends Exception {
+        private static final long serialVersionUID = 1L;
         public EventSnippetException(String msg) {
             super(msg);
         }
