@@ -42,9 +42,13 @@ public class EventCache {
 
     private EventCache() {}
 
-    public static synchronized EventCache getInstance() {
+    public static EventCache getInstance() {
         if (mEventCache == null) {
-            mEventCache = new EventCache();
+            synchronized (EventCache.class) {
+                if (mEventCache == null) {
+                    mEventCache = new EventCache();
+                }
+            }
         }
         return mEventCache;
     }
