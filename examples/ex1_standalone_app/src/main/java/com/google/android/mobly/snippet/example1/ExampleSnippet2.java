@@ -19,10 +19,10 @@ package com.google.android.mobly.snippet.example1;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.Rpc;
 
+import com.google.android.mobly.snippet.rpc.RunOnUiThread;
 import java.io.IOException;
 
 public class ExampleSnippet2 implements Snippet {
-
     @Rpc(description = "Returns the given string with the prefix \"bar\"")
     public String getBar(String input) {
         return "bar " + input;
@@ -31,6 +31,15 @@ public class ExampleSnippet2 implements Snippet {
     @Rpc(description = "Throws an exception")
     public String throwSomething() throws IOException {
         throw new IOException("Example exception from throwSomething()");
+    }
+
+    @Rpc(description = "Throws an exception from the main thread")
+    // @RunOnUiThread makes this method execute on the main thread, but only has effect when
+    // invoked as an RPC. It does not affect how this method executes if invoked directly in Java.
+    // This annotation can also be applied to the constructor and the shutdown() method.
+    @RunOnUiThread
+    public String throwSomethingFromMainThread() throws IOException {
+        throw new IOException("Example exception from throwSomethingFromMainThread()");
     }
 
     @Override

@@ -284,7 +284,7 @@ public abstract class SimpleServer {
         }
     }
 
-    public void shutdown() {
+    public void shutdown() throws Exception {
         // Stop listening on the server socket to ensure that
         // beyond this point there are no incoming requests.
         mStopServer = true;

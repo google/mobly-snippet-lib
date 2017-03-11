@@ -16,52 +16,75 @@
 
 package com.google.android.mobly.snippet.util;
 
-import android.content.Context;
 import android.os.Handler;
-import com.google.android.mobly.snippet.future.FutureResult;
+import android.os.Looper;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 
 public class MainThread {
+    /**
+    * Wraps a {@link Callable} in a {@link Runnable} that has a way to get the return value and
+    * exception after the fact.
+    */
+    private static class CallableWrapper<T> implements Runnable {
+        private final Callable<T> mCallable;
+        private final CountDownLatch mLatch = new CountDownLatch(1);
+        private T mReturnValue;
+        private Throwable mException;
+
+        public CallableWrapper(Callable<T> callable) {
+            mCallable = callable;
+        }
+
+        @Override
+        public final void run() {
+            try {
+                mReturnValue = mCallable.call();
+            } catch (Throwable t) {
+                mException = t;
+            } finally {
+                mLatch.countDown();
+            }
+        }
+
+        public void awaitTermination() throws InterruptedException {
+            mLatch.await();
+        }
+
+        public T getReturnValue() {
+            return mReturnValue;
+        }
+
+        public Throwable getException() {
+            return mException;
+        }
+    }
+
+    private static final Handler sMainThreadHandler = new Handler(Looper.getMainLooper());
 
     private MainThread() {
         // Utility class.
     }
 
-    /**
-     * Executed in the main thread, returns the result of an execution. Anything that runs here
-     * should finish quickly to avoid hanging the UI thread.
-     */
-    public static <T> T run(Context context, final Callable<T> task) {
-        final FutureResult<T> result = new FutureResult<T>();
-        Handler handler = new Handler(context.getMainLooper());
-        handler.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            result.set(task.call());
-                        } catch (Exception e) {
-                            Log.e(e);
-                            result.set(null);
-                        }
-                    }
-                });
-        try {
-            return result.get();
-        } catch (InterruptedException e) {
-            Log.e(e);
-        }
-        return null;
+    /** Executed in the main thread. Returns the result of an execution or any exception thrown. */
+    public static <T> T run(final Callable<T> task) throws Exception {
+        CallableWrapper<T> wrapper = new CallableWrapper<>(task);
+        return runCallableWrapper(wrapper);
     }
 
-    public static void run(Context context, final Runnable task) {
-        Handler handler = new Handler(context.getMainLooper());
-        handler.post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        task.run();
-                    }
-                });
+    private static <T> T runCallableWrapper(CallableWrapper<T> wrapper) throws Exception {
+        sMainThreadHandler.post(wrapper);
+        wrapper.awaitTermination();
+        Throwable exception = wrapper.getException();
+        if (exception != null) {
+            if (exception instanceof RuntimeException) {
+                throw (RuntimeException) exception;
+            }
+            if (exception instanceof Error) {
+                throw (Error) exception;
+            }
+            throw (Exception) exception;
+        }
+        return wrapper.getReturnValue();
     }
 }

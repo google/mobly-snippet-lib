@@ -20,38 +20,49 @@ import android.os.Build;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.MethodDescriptor;
 import com.google.android.mobly.snippet.rpc.RpcMinSdk;
+import com.google.android.mobly.snippet.rpc.RunOnUiThread;
 import com.google.android.mobly.snippet.util.Log;
+import com.google.android.mobly.snippet.util.MainThread;
 import com.google.android.mobly.snippet.util.SnippetLibException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 
 public class SnippetManager {
-    private final Map<Class<? extends Snippet>, Snippet> mReceivers;
+    private final Map<Class<? extends Snippet>, Snippet> mSnippets;
     /** A map of strings to known RPCs. */
-    private final Map<String, MethodDescriptor> mKnownRpcs =
-            new HashMap<String, MethodDescriptor>();
+    private final Map<String, MethodDescriptor> mKnownRpcs;
 
     public SnippetManager(Collection<Class<? extends Snippet>> classList) {
-        mReceivers = new HashMap<>();
+        // Synchronized for multiple connections on the same session. Can't use ConcurrentHashMap
+        // because we have to put in a value of 'null' before the class is constructed, but
+        // ConcurrentHashMap does not allow null values.
+        mSnippets = Collections.synchronizedMap(new HashMap<Class<? extends Snippet>, Snippet>());
+        Map<String, MethodDescriptor> knownRpcs = new HashMap<>();
         for (Class<? extends Snippet> receiverClass : classList) {
-            mReceivers.put(receiverClass, null);
+            mSnippets.put(receiverClass, null);
             Collection<MethodDescriptor> methodList = MethodDescriptor.collectFrom(receiverClass);
             for (MethodDescriptor m : methodList) {
-                if (mKnownRpcs.containsKey(m.getName())) {
+                if (knownRpcs.containsKey(m.getName())) {
                     // We already know an RPC of the same name. We don't catch this anywhere because
                     // this is a programming error.
                     throw new RuntimeException(
                             "An RPC with the name " + m.getName() + " is already known.");
                 }
-                mKnownRpcs.put(m.getName(), m);
+                knownRpcs.put(m.getName(), m);
             }
         }
+        // Does not need to be concurrent because this map is read only, so it is safe to access
+        // from multiple threads. Wrap in an unmodifiableMap to enforce this.
+        mKnownRpcs = Collections.unmodifiableMap(knownRpcs);
     }
 
     public MethodDescriptor getMethodDescriptor(String methodName) {
@@ -73,35 +84,78 @@ public class SnippetManager {
                                 method.getName(), requiredSdkLevel, Build.VERSION.SDK_INT));
             }
         }
+        Snippet object;
         try {
-            Snippet object = get(clazz);
-            return method.invoke(object, args);
+            object = get(clazz);
+            return invoke(object, method, args);
         } catch (InvocationTargetException e) {
             throw e.getCause();
         }
     }
 
-    public void shutdown() {
-        for (Snippet receiver : mReceivers.values()) {
-            try {
-                if (receiver != null) {
-                    receiver.shutdown();
-                }
-            } catch (Exception e) {
-                Log.e("Failed to shut down an Snippet", e);
+    public void shutdown() throws Exception {
+        for (final Entry<Class<? extends Snippet>, Snippet> entry : mSnippets.entrySet()) {
+            if (entry.getValue() == null) {
+                continue;
+            }
+            Method method = entry.getKey().getMethod("shutdown");
+            if (method.isAnnotationPresent(RunOnUiThread.class)) {
+                Log.d("Shutting down " + entry.getKey().getName() + " on the main thread");
+                MainThread.run(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        entry.getValue().shutdown();
+                        return null;
+                    }
+                });
+            } else {
+                Log.d("Shutting down " + entry.getKey().getName());
+                entry.getValue().shutdown();
             }
         }
     }
 
     private Snippet get(Class<? extends Snippet> clazz) throws Exception {
-        Snippet object = mReceivers.get(clazz);
-        if (object != null) {
-            return object;
+        Snippet snippetImpl = mSnippets.get(clazz);
+        if (snippetImpl == null) {
+            // First time calling an RPC for this snippet; construct an instance under lock.
+            synchronized (clazz) {
+                snippetImpl = mSnippets.get(clazz);
+                if (snippetImpl == null) {
+                    final Constructor<? extends Snippet> constructor = clazz.getConstructor();
+                    if (constructor.isAnnotationPresent(RunOnUiThread.class)) {
+                        Log.d("Constructing " + clazz + " on the main thread");
+                        snippetImpl = MainThread.run(new Callable<Snippet>() {
+                            @Override
+                            public Snippet call() throws Exception {
+                                return constructor.newInstance();
+                            }
+                        });
+                    } else {
+                        Log.d("Constructing " + clazz);
+                        snippetImpl = constructor.newInstance();
+                    }
+                    mSnippets.put(clazz, snippetImpl);
+                }
+            }
         }
-        Constructor<? extends Snippet> constructor;
-        constructor = clazz.getConstructor();
-        object = constructor.newInstance();
-        mReceivers.put(clazz, object);
-        return object;
+        return snippetImpl;
+    }
+
+    private Object invoke(final Snippet snippetImpl, final Method method, final Object[] args)
+            throws Exception {
+        if (method.isAnnotationPresent(RunOnUiThread.class)) {
+            Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName()
+                      + " on the main thread");
+            return MainThread.run(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    return method.invoke(snippetImpl, args);
+                }
+            });
+        } else {
+            Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName());
+            return method.invoke(snippetImpl, args);
+        }
     }
 }
