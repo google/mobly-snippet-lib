@@ -23,8 +23,6 @@ import com.google.android.mobly.snippet.rpc.RunOnUiThread;
 import java.io.IOException;
 
 public class ExampleSnippet2 implements Snippet {
-    public ExampleSnippet2() {}
-
     @Rpc(description = "Returns the given string with the prefix \"bar\"")
     public String getBar(String input) {
         return "bar " + input;
