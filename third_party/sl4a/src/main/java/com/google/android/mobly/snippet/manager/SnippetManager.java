@@ -35,7 +35,6 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class SnippetManager {
     private final Map<Class<? extends Snippet>, Snippet> mSnippets;
@@ -43,8 +42,10 @@ public class SnippetManager {
     private final Map<String, MethodDescriptor> mKnownRpcs;
 
     public SnippetManager(Collection<Class<? extends Snippet>> classList) {
-        // Concurrent for multiple connections on the same session.
-        mSnippets = new ConcurrentHashMap<>();
+        // Synchronized for multiple connections on the same session. Can't use ConcurrentHashMap
+        // because we have to put in a value of 'null' before the class is constructed, but
+        // ConcurrentHashMap does not allow null values.
+        mSnippets = Collections.synchronizedMap(new HashMap<Class<? extends Snippet>, Snippet>());
         Map<String, MethodDescriptor> knownRpcs = new HashMap<>();
         for (Class<? extends Snippet> receiverClass : classList) {
             mSnippets.put(receiverClass, null);
