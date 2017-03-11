@@ -115,15 +115,16 @@ public class SnippetManager {
     }
 
     private Snippet get(Class<? extends Snippet> clazz) throws Exception {
-        Snippet object = mSnippets.get(clazz);
-        if (object == null) {
+        Snippet snippetImpl = mSnippets.get(clazz);
+        if (snippetImpl == null) {
+            // First time calling an RPC for this snippet; construct an instance under lock.
             synchronized (clazz) {
-                object = mSnippets.get(clazz);
-                if (object == null) {
+                snippetImpl = mSnippets.get(clazz);
+                if (snippetImpl == null) {
                     final Constructor<? extends Snippet> constructor = clazz.getConstructor();
                     if (constructor.isAnnotationPresent(RunOnUiThread.class)) {
                         Log.d("Constructing " + clazz + " on the main thread");
-                        object = MainThread.run(new Callable<Snippet>() {
+                        snippetImpl = MainThread.run(new Callable<Snippet>() {
                             @Override
                             public Snippet call() throws Exception {
                                 return constructor.newInstance();
@@ -131,16 +132,16 @@ public class SnippetManager {
                         });
                     } else {
                         Log.d("Constructing " + clazz);
-                        object = constructor.newInstance();
+                        snippetImpl = constructor.newInstance();
                     }
-                    mSnippets.put(clazz, object);
+                    mSnippets.put(clazz, snippetImpl);
                 }
             }
         }
-        return object;
+        return snippetImpl;
     }
 
-    private Object invoke(final Snippet object, final Method method, final Object[] args)
+    private Object invoke(final Snippet snippetImpl, final Method method, final Object[] args)
             throws Exception {
         if (method.isAnnotationPresent(RunOnUiThread.class)) {
             Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName()
@@ -148,12 +149,12 @@ public class SnippetManager {
             return MainThread.run(new Callable<Object>() {
                 @Override
                 public Object call() throws Exception {
-                    return method.invoke(object, args);
+                    return method.invoke(snippetImpl, args);
                 }
             });
         } else {
             Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName());
-            return method.invoke(object, args);
+            return method.invoke(snippetImpl, args);
         }
     }
 }
