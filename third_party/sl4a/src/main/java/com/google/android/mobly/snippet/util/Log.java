@@ -27,7 +27,7 @@ public final class Log {
 
     private Log() {}
 
-    public synchronized static void initLogTag(Context context) {
+    public static synchronized void initLogTag(Context context) {
         if (APK_LOG_TAG != null) {
             throw new IllegalStateException("Logger should not be re-initialized");
         }
@@ -38,14 +38,15 @@ public final class Log {
             appInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
         } catch (NameNotFoundException e) {
             throw new IllegalStateException(
-                "Failed to find ApplicationInfo with package name: " + packageName);
+                    "Failed to find ApplicationInfo with package name: " + packageName);
         }
         Bundle bundle = appInfo.metaData;
         APK_LOG_TAG = bundle.getString("mobly-log-tag");
         if (APK_LOG_TAG == null) {
             APK_LOG_TAG = packageName;
-            w("AndroidManifest.xml does not contain metadata field named \"mobly-log-tag\". "
-                + "Using package name for logging instead.");
+            w(
+                    "AndroidManifest.xml does not contain metadata field named \"mobly-log-tag\". "
+                            + "Using package name for logging instead.");
         }
     }
 

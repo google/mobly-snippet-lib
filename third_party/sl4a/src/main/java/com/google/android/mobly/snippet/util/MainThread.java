@@ -23,9 +23,9 @@ import java.util.concurrent.CountDownLatch;
 
 public class MainThread {
     /**
-    * Wraps a {@link Callable} in a {@link Runnable} that has a way to get the return value and
-    * exception after the fact.
-    */
+     * Wraps a {@link Callable} in a {@link Runnable} that has a way to get the return value and
+     * exception after the fact.
+     */
     private static class CallableWrapper<T> implements Runnable {
         private final Callable<T> mCallable;
         private final CountDownLatch mLatch = new CountDownLatch(1);

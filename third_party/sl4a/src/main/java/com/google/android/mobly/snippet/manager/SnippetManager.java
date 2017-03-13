@@ -101,13 +101,14 @@ public class SnippetManager {
             Method method = entry.getKey().getMethod("shutdown");
             if (method.isAnnotationPresent(RunOnUiThread.class)) {
                 Log.d("Shutting down " + entry.getKey().getName() + " on the main thread");
-                MainThread.run(new Callable<Void>() {
-                    @Override
-                    public Void call() throws Exception {
-                        entry.getValue().shutdown();
-                        return null;
-                    }
-                });
+                MainThread.run(
+                        new Callable<Void>() {
+                            @Override
+                            public Void call() throws Exception {
+                                entry.getValue().shutdown();
+                                return null;
+                            }
+                        });
             } else {
                 Log.d("Shutting down " + entry.getKey().getName());
                 entry.getValue().shutdown();
@@ -125,12 +126,14 @@ public class SnippetManager {
                     final Constructor<? extends Snippet> constructor = clazz.getConstructor();
                     if (constructor.isAnnotationPresent(RunOnUiThread.class)) {
                         Log.d("Constructing " + clazz + " on the main thread");
-                        snippetImpl = MainThread.run(new Callable<Snippet>() {
-                            @Override
-                            public Snippet call() throws Exception {
-                                return constructor.newInstance();
-                            }
-                        });
+                        snippetImpl =
+                                MainThread.run(
+                                        new Callable<Snippet>() {
+                                            @Override
+                                            public Snippet call() throws Exception {
+                                                return constructor.newInstance();
+                                            }
+                                        });
                     } else {
                         Log.d("Constructing " + clazz);
                         snippetImpl = constructor.newInstance();
@@ -145,14 +148,19 @@ public class SnippetManager {
     private Object invoke(final Snippet snippetImpl, final Method method, final Object[] args)
             throws Exception {
         if (method.isAnnotationPresent(RunOnUiThread.class)) {
-            Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName()
-                      + " on the main thread");
-            return MainThread.run(new Callable<Object>() {
-                @Override
-                public Object call() throws Exception {
-                    return method.invoke(snippetImpl, args);
-                }
-            });
+            Log.d(
+                    "Invoking RPC method "
+                            + method.getDeclaringClass()
+                            + "#"
+                            + method.getName()
+                            + " on the main thread");
+            return MainThread.run(
+                    new Callable<Object>() {
+                        @Override
+                        public Object call() throws Exception {
+                            return method.invoke(snippetImpl, args);
+                        }
+                    });
         } else {
             Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName());
             return method.invoke(snippetImpl, args);

@@ -20,9 +20,11 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** This annotation will cause the RPC to execute on the main app thread.
+/**
+ * This annotation will cause the RPC to execute on the main app thread.
  *
- * This annotation can be applied to:
+ * <p>This annotation can be applied to:
+ *
  * <ul>
  *   <li>The constructor of a class implementing the {@link Snippet} interface.
  *   <li>A method annotated with the {@link Rpc} or {@link AsyncRpc} annotation.
