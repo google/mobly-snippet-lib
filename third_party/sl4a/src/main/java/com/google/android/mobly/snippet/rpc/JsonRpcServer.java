@@ -76,7 +76,7 @@ public class JsonRpcServer extends SimpleServer {
                 synchronized (writer) {
                     // Shut down all RPC receivers.
                     for (SnippetManager manager :
-                             mSnippetManagerFactory.getSnippetManagers().values()) {
+                            mSnippetManagerFactory.getSnippetManagers().values()) {
                         manager.shutdown();
                     }
 
