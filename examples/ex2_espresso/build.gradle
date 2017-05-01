@@ -35,7 +35,7 @@ dependencies {
     // The 'snippetCompile project' dep is to compile against the snippet lib
     // source in this repo. For your own snippets, you'll want to use the
     // regular 'snippetCompile' dep instead:
-    //snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.0.1'
+    //snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.1.0'
     snippetCompile project(':mobly-snippet-lib')
 
     snippetCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
