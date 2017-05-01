@@ -16,18 +16,16 @@
 
 package com.google.android.mobly.snippet.example2;
 
-import android.support.test.espresso.action.ViewActions;
-import android.support.test.rule.ActivityTestRule;
-
-import com.google.android.mobly.snippet.Snippet;
-import com.google.android.mobly.snippet.rpc.Rpc;
-
-import org.junit.Rule;
-
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+
+import android.support.test.espresso.action.ViewActions;
+import android.support.test.rule.ActivityTestRule;
+import com.google.android.mobly.snippet.Snippet;
+import com.google.android.mobly.snippet.rpc.Rpc;
+import org.junit.Rule;
 
 public class EspressoSnippet implements Snippet {
     @Rule
@@ -39,18 +37,19 @@ public class EspressoSnippet implements Snippet {
         mActivityRule.launchActivity(null /* startIntent */);
     }
 
-    @Rpc(description="Clicks the button for the first time and checks the label change")
-    public void firstClick() {
-        onView(withId(R.id.main_text_view)).check(matches(withText("Hello World!")));
-        click();
-        onView(withId(R.id.main_text_view)).check(matches(withText("Button pressed 1 times")));
-    }
-
-    @Rpc(description="Clicks the button")
-    public void click() {
+    @Rpc(description="Pushes the main app button, and checks the label if this is the first time.")
+    public void pushMainButton(boolean checkFirstRun) {
+        if (checkFirstRun) {
+            onView(withId(R.id.main_text_view)).check(matches(withText("Hello World!")));
+        }
         onView(withId(R.id.main_button)).perform(ViewActions.click());
+        if (checkFirstRun) {
+            onView(withId(R.id.main_text_view)).check(matches(withText("Button pressed 1 times")));
+        }
     }
 
     @Override
-    public void shutdown() {}
+    public void shutdown() {
+        mActivityRule.getActivity().finish();
+    }
 }

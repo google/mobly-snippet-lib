@@ -1,56 +1,37 @@
 # UIAutomator Snippet Example
 
-This tutorial shows you how to create snippets that automate the UI of another app using UIAutomator.
+This example shows you how to create snippets that automate the UI of another
+app using UIAutomator.
 
-## Tutorial
-
-1.  Set up your build rules following the examples in the
-    [Espresso snippet tutorial](../ex2_espresso/README.md).
-
-1.  Instead of Espresso automation code, write UIAutomator code:
-
-    ```java
-    package com.my.app;
-    ...
-    public class UiAutomatorSnippet implements Snippet {
-      @Rpc(description="Clicks the main app button")
-      public void clickButton() {
-        UiObject2 button = mDevice.findObject(By.text("PUSH THE BUTTON!"));
-        button.click();
-      }
-
-      @Override
-      public void shutdown() {}
-    }
-    ```
-
-1.  Follow the rest of the
-    [Espresso snippet tutorial](../ex2_espresso/README.md) to compile and
-    launch your snippet.
-
+See the [Espresso snippet tutorial](../ex2_espresso/README.md) for more
+information about the app this example automates. In this example we are
+automating it without access to its source or classpath.
 
 ## Running the example code
 
 This folder contains a fully working example of a snippet apk that uses
 UIAutomator to automate a simple app.
 
-1.  Compile the example
+1.  Compile the main app and automation
 
-        ./gradlew examples:ex4_uiautomator:assembleSnippetDebug
+        ./gradlew examples:ex2_espresso:assembleDebug examples:ex4_uiautomator:assembleDebug
 
-1.  Install the apk on your phone
+1.  Install the apks on your phone
 
-        adb install -r ./examples/ex4_uiautomator/build/outputs/apk/ex4_uiautomator-snippet-debug.apk
+        adb install -r ./examples/ex2_espresso/build/outputs/apk/ex2_espresso-main-debug.apk
+        adb install -r ./examples/ex4_uiautomator/build/outputs/apk/ex4_uiautomator-debug.apk
 
-1.  Use `snippet_shell` from mobly to trigger `click()`:
+1.  Use `snippet_shell` from mobly to trigger `pushMainButton()`:
 
         snippet_shell.py com.google.android.mobly.snippet.example4
 
         >>> print(s.help())
         Known methods:
-          click() returns void  // Clicks the button
-          firstClick() returns void  // Clicks the button for the first time and checks the label change
+          pushMainButton(boolean) returns void  // Pushes the main app button, and checks the label if this is the first time.
           startMainActivity() returns void  // Opens the main activity of the app
+          uiautomatorDump() returns String  // Perform a UIAutomator dump
 
         >>> s.startMainActivity()
-        >>> s.click()
+        >>> s.pushMainButton(True)
+
+1. Press ctrl+d to exit the shell and terminate the app.
