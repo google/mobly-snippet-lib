@@ -198,6 +198,10 @@ public final class MethodDescriptor {
         return mMethod.isAnnotationPresent(AsyncRpc.class);
     }
 
+    public Class<? extends Snippet> getSnippetClass() {
+        return mClass;
+    }
+
     private String getAnnotationDescription() {
         if (isAsync()) {
             AsyncRpc annotation = mMethod.getAnnotation(AsyncRpc.class);
