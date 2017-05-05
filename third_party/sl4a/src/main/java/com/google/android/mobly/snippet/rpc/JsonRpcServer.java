@@ -142,7 +142,7 @@ public class JsonRpcServer extends SimpleServer {
         }
         StringBuilder result = new StringBuilder();
         for (Map.Entry<String, Set<MethodDescriptor>> entry : methods.entrySet()) {
-            result.append("\nMethods in class ").append(entry.getKey()).append(":\n");
+            result.append("\nRPC Methods in ").append(entry.getKey()).append(":\n");
             for (MethodDescriptor descriptor : entry.getValue()) {
                 result.append("  ").append(descriptor.getHelp()).append("\n");
             }
