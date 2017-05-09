@@ -226,7 +226,8 @@ public final class MethodDescriptor {
         }
         String help =
                 String.format(
-                        "%s(%s) returns %s  // %s",
+                        "%s %s(%s) returns %s  // %s",
+                        isAsync() ? "@AsyncRpc" : "@Rpc",
                         mMethod.getName(),
                         paramBuilder,
                         mMethod.getReturnType().getSimpleName(),
