@@ -61,7 +61,7 @@ public class ExampleScheduleRpcSnippet implements Snippet {
             SnippetEvent event = new SnippetEvent(mCallbackId, this.mMessage);
             try {
                 Thread.sleep(10000);
-		showToast(this.mMessage);
+                showToast(this.mMessage);
             } catch (InterruptedException e) {
                 event.getData().putBoolean("successful", false);
                 event.getData().putString("reason", "Sleep was interrupted.");
