@@ -33,9 +33,7 @@ import org.json.JSONArray;
  *
  * <p>If a device is required to be disconnected (e.g., USB power off), no RPCs can be made while
  * device is offline.
- *
  * <p>However, We still need snippet continue to run and execute previously scheduled RPCs
- *
  * <p>The return value of the scheduled RPC is cached in {@link EventCache} and can be retrieved
  * later after device is back online.
  */
