@@ -61,7 +61,7 @@ public class ExampleScheduleRpcSnippet implements Snippet {
             SnippetEvent event = new SnippetEvent(mCallbackId, this.mMessage);
             try {
                 Thread.sleep(10000);
-                showToast(this.mMessage);
+                showToast(mMessage);
             } catch (InterruptedException e) {
                 event.getData().putBoolean("successful", false);
                 event.getData().putString("reason", "Sleep was interrupted.");
@@ -87,12 +87,12 @@ public class ExampleScheduleRpcSnippet implements Snippet {
     public ExampleScheduleRpcSnippet() {
         mContext = InstrumentationRegistry.getContext();
         mScheduleRpcUtil = new ScheduleRpcUtil(mContext);
-	mHandler = new Handler(mContext.getMainLooper());
+        mHandler = new Handler(mContext.getMainLooper());
     }
 
     @Rpc(description = "Make a toast on screen.")
     public String makeToast(String message) throws InterruptedException {
-	showToast(message);
+        showToast(message);
         return "OK";
     }
 
@@ -118,11 +118,11 @@ public class ExampleScheduleRpcSnippet implements Snippet {
 
     private void showToast(final String message) {
         mHandler.post(
-	    new Runnable() {
-	        @Override
-		public void run() {
-		    Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
-		}
+            new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+                }
             });
     }
 }

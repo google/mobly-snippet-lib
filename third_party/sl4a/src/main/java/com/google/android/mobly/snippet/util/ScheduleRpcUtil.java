@@ -109,13 +109,10 @@ public class ScheduleRpcUtil {
         }
 
         Object returnValue = rpc.invoke(receiverManager, jsonParams);
-        if (!rpc.isAsync()) {
-            // Only cache event for normal RPCs, Async RPC will cache events by itself
-            SnippetEvent event = new SnippetEvent(callbackId, methodName);
-            event.getData().putBoolean("successful", true);
-            event.getData().putString("reason", "");
-            event.getData().putString("result", JsonBuilder.build(returnValue).toString());
-            mEventCache.postEvent(event);
-        }
+        SnippetEvent event = new SnippetEvent(callbackId, methodName);
+        event.getData().putBoolean("successful", true);
+        event.getData().putString("reason", "");
+        event.getData().putString("result", JsonBuilder.build(returnValue).toString());
+        mEventCache.postEvent(event);
     }
 }
