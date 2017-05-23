@@ -42,13 +42,12 @@ public class SnippetRunner extends AndroidJUnitRunner {
     /**
      * Version of the launch and communication protocol between snippet and client.
      *
-     * <p>This should be incremented whenever the snippet bringup process changes in a way which is
-     * not backwards compatible with existing clients.
+     * <p>This should be incremented whenever the snippet bringup process changes.
      *
      * <p>Protocol descriptions:
      *
      * <ul>
-     *   <li>v1 (not reported):
+     *   <li>v0 (not reported):
      *       <ul>
      *         <li>Launch as Instrumentation with SnippetRunner.
      *         <li>No protocol-specific messages reported through instrumentation output.
@@ -56,13 +55,13 @@ public class SnippetRunner extends AndroidJUnitRunner {
      *         <li>'start' action prints nothing.
      *       </ul>
      *
-     *   <li>v2:
+     *   <li>v1: New instrumentation output added to track bringup process
      *       <ul>
-     *         <li>"HELLO &lt;protocol&gt;" added to instrumentation output upon snippet start
-     *         <li>"SERVING &lt;port&gt;" added to instrumentation output once server is ready
+     *         <li>"SNIPPET START, PROTOCOL &lt;protocol&gt;" upon snippet start
+     *         <li>"SNIPPET SERVING, PORT &lt;port&gt;" once server is ready
      *       </ul>
      */
-    public static final int PROTOCOL_VERSION = 2;
+    public static final int PROTOCOL_VERSION = 1;
 
     private static final String ARG_ACTION = "action";
     private static final String ARG_PORT = "port";
@@ -83,7 +82,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
         mArguments = arguments;
 
         // First order of business is to report HELLO to instrumentation output.
-        sendString("HELLO " + PROTOCOL_VERSION);
+        sendString("SNIPPET START, PROTOCOL " + PROTOCOL_VERSION);
 
         // First-run static setup
         Log.initLogTag(getContext());
@@ -137,7 +136,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
         }
         createNotification();
         int actualPort = androidProxy.getPort();
-        sendString("SERVING " + actualPort);
+        sendString("SNIPPET SERVING, PORT " + actualPort);
         Log.i("Snippet server started for process " + Process.myPid() + " on port " + actualPort);
     }
 
