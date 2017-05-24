@@ -1,18 +1,24 @@
 # UIAutomator Snippet Example
 
 This example shows you how to create snippets that automate the UI of another
-app using UIAutomator.
+app using UIAutomator, without access to its source code or classpath.
+
+This snippet is written as a standalone snippet which does not target any other
+app. In particular, it doesn't need to target the app under test, so it doesn't
+need its classpath or to be signed with the same key.
 
 See the [Espresso snippet tutorial](../ex2_espresso/README.md) for more
-information about the app this example automates. In this example we are
-automating it without access to its source or classpath.
+information about the app this example automates.
 
 ## Running the example code
 
 This folder contains a fully working example of a snippet apk that uses
 UIAutomator to automate a simple app.
 
-1.  Compile the main app and automation
+1.  Compile the main app and automation. The main app of ex2 (espresso) is used
+    as the app to automate. Unlike espresso, the uiautomator test does not
+    depend on this apk and does not use its source or classpath, so you must
+    compile and install the app separately.
 
         ./gradlew examples:ex2_espresso:assembleDebug examples:ex4_uiautomator:assembleDebug
 
