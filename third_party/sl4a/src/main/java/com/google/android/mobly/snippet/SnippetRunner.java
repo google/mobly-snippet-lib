@@ -37,31 +37,44 @@ import java.net.SocketException;
  * snippets are launched with 'am instrument'. We're specifically extending {@link
  * AndroidJUnitRunner} because Espresso requires being called through it, since it sets up {@link
  * android.support.test.InstrumentationRegistry} which Espresso requires.
+ *
+ * <p>The launch and communication protocol between snippet and client is versionated and reported
+ * as follows:
+ *
+ * <ul>
+ *   <li>v0 (not reported):
+ *       <ul>
+ *         <li>Launch as Instrumentation with SnippetRunner.
+ *         <li>No protocol-specific messages reported through instrumentation output.
+ *         <li>'stop' action prints 'OK (0 tests)'
+ *         <li>'start' action prints nothing.
+ *       </ul>
+ *
+ *   <li>v1.0: New instrumentation output added to track bringup process
+ *       <ul>
+ *         <li>"SNIPPET START, PROTOCOL &lt;major&gt; &lt;minor&gt;" upon snippet start
+ *         <li>"SNIPPET SERVING, PORT &lt;port&gt;" once server is ready
+ *       </ul>
+ *
+ * </ul>
  */
 public class SnippetRunner extends AndroidJUnitRunner {
+
     /**
-     * Version of the launch and communication protocol between snippet and client.
+     * Major version of the launch and communication protocol.
      *
-     * <p>This should be incremented whenever the snippet bringup process changes.
-     *
-     * <p>Protocol descriptions:
-     *
-     * <ul>
-     *   <li>v0 (not reported):
-     *       <ul>
-     *         <li>Launch as Instrumentation with SnippetRunner.
-     *         <li>No protocol-specific messages reported through instrumentation output.
-     *         <li>'stop' action prints 'OK (0 tests)'
-     *         <li>'start' action prints nothing.
-     *       </ul>
-     *
-     *   <li>v1: New instrumentation output added to track bringup process
-     *       <ul>
-     *         <li>"SNIPPET START, PROTOCOL &lt;protocol&gt;" upon snippet start
-     *         <li>"SNIPPET SERVING, PORT &lt;port&gt;" once server is ready
-     *       </ul>
+     * <p>Incrementing this means that compatibility with clients using the older version is broken.
+     * Avoid breaking compatibility unless there is no other choice.
      */
-    public static final int PROTOCOL_VERSION = 1;
+    public static final int PROTOCOL_MAJOR_VERSION = 1;
+
+    /**
+     * Minor version of the launch and communication protocol.
+     *
+     * <p>Increment this when new features are added to the launch and communication protocol that
+     * are backwards compatible with the old protocol and don't break existing clients.
+     */
+    public static final int PROTOCOL_MINOR_VERSION = 0;
 
     private static final String ARG_ACTION = "action";
     private static final String ARG_PORT = "port";
@@ -81,11 +94,12 @@ public class SnippetRunner extends AndroidJUnitRunner {
     public void onCreate(Bundle arguments) {
         mArguments = arguments;
 
-        // First order of business is to report HELLO to instrumentation output.
-        sendString("SNIPPET START, PROTOCOL " + PROTOCOL_VERSION);
-
         // First-run static setup
         Log.initLogTag(getContext());
+
+        // First order of business is to report HELLO to instrumentation output.
+        sendString(
+                "SNIPPET START, PROTOCOL " + PROTOCOL_MAJOR_VERSION + " " + PROTOCOL_MINOR_VERSION);
 
         // Prevent this runner from triggering any real JUnit tests in the snippet by feeding it a
         // hardcoded empty test class.
@@ -152,6 +166,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
     }
 
     private void sendString(String string) {
+        Log.i("Sending protocol message: " + string);
         Bundle bundle = new Bundle();
         bundle.putString(Instrumentation.REPORT_KEY_STREAMRESULT, string + "\n");
         sendStatus(0, bundle);
