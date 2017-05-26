@@ -1,10 +1,16 @@
+1.2.0:
+  - Snippet protocol is now versionated
+  - Server port can now be allocated on device
+  - Improvements to help() output
+  - Allow close() methods to throw exceptions
+
 1.1.0:
   - Support for asynchronous RPCs
   - Add an optional annotation to cause RPCs to be invoked on the main thread
   - Log tags are now configurable in the manifest
 
 1.0.1:
-  - Ignore regular JUnit tests linked into the snippet lib.
-  - Improved exception handling and reporting.
+  - Ignore regular JUnit tests linked into the snippet lib
+  - Improved exception handling and reporting
 
-1.0.0: Initial release of Mobly Snippet Lib with some examples.
+1.0.0: Initial release of Mobly Snippet Lib with some examples
