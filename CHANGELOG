@@ -1,6 +1,7 @@
 1.2.0:
-  - Snippet protocol is now versionated
-  - Server port can now be allocated on device
+  - Snippet protocol is now versionated and reported to instrumentation output
+  - Snippet startup progress can now be monitored via output
+  - Server port can now be allocated on device and reported via output
   - Improvements to help() output
   - Allow close() methods to throw exceptions
 
