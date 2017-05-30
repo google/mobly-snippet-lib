@@ -41,7 +41,9 @@ public class SnippetManager {
     /** A map of strings to known RPCs. */
     private final Map<String, MethodDescriptor> mKnownRpcs;
 
-    public SnippetManager(Collection<Class<? extends Snippet>> classList) {
+    private static SnippetManager mInstance = null;
+
+    protected SnippetManager(Collection<Class<? extends Snippet>> classList) {
         // Synchronized for multiple connections on the same session. Can't use ConcurrentHashMap
         // because we have to put in a value of 'null' before the class is constructed, but
         // ConcurrentHashMap does not allow null values.
@@ -63,6 +65,13 @@ public class SnippetManager {
         // Does not need to be concurrent because this map is read only, so it is safe to access
         // from multiple threads. Wrap in an unmodifiableMap to enforce this.
         mKnownRpcs = Collections.unmodifiableMap(knownRpcs);
+    }
+
+    public static SnippetManager getInstance(Collection<Class<? extends Snippet>> classList) {
+        if (mInstance == null) {
+            mInstance = new SnippetManager(classList);
+        }
+        return mInstance;
     }
 
     public MethodDescriptor getMethodDescriptor(String methodName) {

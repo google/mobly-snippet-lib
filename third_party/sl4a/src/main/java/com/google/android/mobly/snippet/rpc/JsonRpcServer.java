@@ -22,7 +22,6 @@ import com.google.android.mobly.snippet.util.Log;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,17 +45,12 @@ public class JsonRpcServer extends SimpleServer {
     @Override
     protected void handleRPCConnection(
             Socket sock, Integer UID, BufferedReader reader, PrintWriter writer) throws Exception {
-        SnippetManager receiverManager = null;
-        Map<Integer, SnippetManager> mgrs = mSnippetManagerFactory.getSnippetManagers();
-        synchronized (mgrs) {
-            Log.d("UID " + UID);
-            Log.d("manager map keys: " + mSnippetManagerFactory.getSnippetManagers().keySet());
-            if (mgrs.containsKey(UID)) {
-                Log.d("Look up existing session");
-                receiverManager = mgrs.get(UID);
-            } else {
-                Log.d("Create a new session");
-                receiverManager = mSnippetManagerFactory.create(UID);
+        SnippetManager receiverManager = mSnippetManagerFactory.getSnippetManager();
+        Log.d("UID " + UID);
+        if (receiverManager == null) {
+            Log.d("Create a new session");
+            synchronized (mSnippetManagerFactory) {
+                receiverManager = mSnippetManagerFactory.create();
             }
         }
         String data;
@@ -75,10 +69,7 @@ public class JsonRpcServer extends SimpleServer {
                 Log.d("Got shutdown signal");
                 synchronized (writer) {
                     // Shut down all RPC receivers.
-                    for (SnippetManager manager :
-                            mSnippetManagerFactory.getSnippetManagers().values()) {
-                        manager.shutdown();
-                    }
+                    receiverManager.shutdown();
 
                     // Shut down this client connection. As soon as this happens, the client will
                     // kill us by triggering the 'stop' action from another instrumentation, so no
@@ -90,7 +81,6 @@ public class JsonRpcServer extends SimpleServer {
 
                     // Shut down this server.
                     shutdown();
-                    mgrs.clear();
                 }
                 return;
             }

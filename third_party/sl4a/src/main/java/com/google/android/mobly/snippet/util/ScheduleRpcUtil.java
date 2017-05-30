@@ -48,8 +48,8 @@ public class ScheduleRpcUtil {
 
     public ScheduleRpcUtil(Context context) {
         mcontext = context;
-        mSnippetManagerFactory = new ReflectionSnippetManagerFactory(context);
-        receiverManager = mSnippetManagerFactory.create(0);
+        mSnippetManagerFactory = ReflectionSnippetManagerFactory.getInstance(context);
+        receiverManager = mSnippetManagerFactory.create();
     }
 
     /**

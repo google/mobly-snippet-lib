@@ -27,7 +27,7 @@ public class AndroidProxy {
     private final SnippetManagerFactory mSnippetManagerFactory;
 
     public AndroidProxy(Context context) {
-        mSnippetManagerFactory = new ReflectionSnippetManagerFactory(context);
+        mSnippetManagerFactory = ReflectionSnippetManagerFactory.getInstance(context);
         mJsonRpcServer = new JsonRpcServer(mSnippetManagerFactory);
     }
 

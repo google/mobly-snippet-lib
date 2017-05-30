@@ -20,19 +20,16 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.test.InstrumentationRegistry;
 import android.widget.Toast;
-import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.event.EventCache;
 import com.google.android.mobly.snippet.event.SnippetEvent;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.rpc.Rpc;
+import com.google.android.mobly.snippet.schedulerpc.ScheduleRpcSnippet;
 import com.google.android.mobly.snippet.util.Log;
-import com.google.android.mobly.snippet.util.ScheduleRpcUtil;
 import com.google.android.mobly.snippet.util.SnippetLibException;
 import java.lang.Thread;
-import java.util.List;
-import java.util.UUID;
 
-public class ExampleScheduleRpcSnippet implements Snippet {
+public class ExampleScheduleRpcSnippet extends ScheduleRpcSnippet {
 
     /**
      * This is a sample asynchronous task.
@@ -58,7 +55,7 @@ public class ExampleScheduleRpcSnippet implements Snippet {
          */
         public void run() {
             Log.d("Sleeping for 10s before posting an event.");
-            SnippetEvent event = new SnippetEvent(mCallbackId, this.mMessage);
+            SnippetEvent event = new SnippetEvent(mCallbackId, mMessage);
             try {
                 Thread.sleep(10000);
                 showToast(mMessage);
@@ -69,14 +66,13 @@ public class ExampleScheduleRpcSnippet implements Snippet {
             }
             event.getData().putBoolean("successful", true);
             event.getData().putString("result", "OK");
-            event.getData().putString("eventName", this.mMessage);
+            event.getData().putString("eventName", mMessage);
             mEventCache.postEvent(event);
         }
     }
 
     private final Context mContext;
     private final EventCache mEventCache = EventCache.getInstance();
-    private ScheduleRpcUtil mScheduleRpcUtil;
 
     /**
      * Since the APIs here deal with UI, most of them have to be called in a thread that has called
@@ -86,7 +82,6 @@ public class ExampleScheduleRpcSnippet implements Snippet {
 
     public ExampleScheduleRpcSnippet() {
         mContext = InstrumentationRegistry.getContext();
-        mScheduleRpcUtil = new ScheduleRpcUtil(mContext);
         mHandler = new Handler(mContext.getMainLooper());
     }
 
@@ -102,15 +97,6 @@ public class ExampleScheduleRpcSnippet implements Snippet {
         Runnable asyncTask = new AsyncTask(callbackId, "asyncMakeToast");
         Thread thread = new Thread(asyncTask);
         thread.start();
-    }
-
-    @AsyncRpc(description = "Delay the given RPC by provided milli-seconds.")
-    public void scheduleRpc(
-        String callbackId, String methodName, long delayTimerMs, String[] params)
-        throws SnippetLibException, Throwable {
-        Log.i("scheduleTestActionSnippetRpc: ");
-        Log.w("scheduleTestActionSnippetRpc: ");
-        mScheduleRpcUtil.scheduleRpc(callbackId, methodName, delayTimerMs, params);
     }
 
     @Override

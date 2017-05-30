@@ -16,10 +16,9 @@
 
 package com.google.android.mobly.snippet.manager;
 
-import java.util.Map;
-
 public interface SnippetManagerFactory {
-    SnippetManager create(Integer UID);
 
-    Map<Integer, SnippetManager> getSnippetManagers();
+    SnippetManager create();
+
+    SnippetManager getSnippetManager();
 }

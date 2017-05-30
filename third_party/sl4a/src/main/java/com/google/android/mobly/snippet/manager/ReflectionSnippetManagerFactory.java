@@ -23,35 +23,40 @@ import android.os.Bundle;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.event.EventSnippet;
 import com.google.android.mobly.snippet.util.Log;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
     private static final String METADATA_TAG_NAME = "mobly-snippets";
+    private static ReflectionSnippetManagerFactory mInstance = null;
 
     private final Context mContext;
     private final Set<Class<? extends Snippet>> mClasses;
-    private final Map<Integer, SnippetManager> mSnippetManagers;
+    private SnippetManager mSnippetManager;
 
-    public ReflectionSnippetManagerFactory(Context context) {
+    protected ReflectionSnippetManagerFactory(Context context) {
+        Log.i("Creating ReflectionSnippetManagerFactory instance: ");
         mContext = context;
         mClasses = loadSnippets();
-        mSnippetManagers = new HashMap<>();
+    }
+
+    public static ReflectionSnippetManagerFactory getInstance(Context context) {
+        if (mInstance == null) {
+            mInstance = new ReflectionSnippetManagerFactory(context);
+        }
+        return mInstance;
     }
 
     @Override
-    public SnippetManager create(Integer UID) {
-        SnippetManager manager = new SnippetManager(mClasses);
-        mSnippetManagers.put(UID, manager);
-        return manager;
+    public SnippetManager create() {
+        Log.i("Creating SnippetManager class");
+        mSnippetManager = SnippetManager.getInstance(mClasses);
+        return mSnippetManager;
     }
 
     @Override
-    public Map<Integer, SnippetManager> getSnippetManagers() {
-        return Collections.unmodifiableMap(mSnippetManagers);
+    public SnippetManager getSnippetManager() {
+        return mSnippetManager;
     }
 
     private Set<Class<? extends Snippet>> loadSnippets() {
