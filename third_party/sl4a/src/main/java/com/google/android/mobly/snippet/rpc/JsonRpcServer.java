@@ -19,6 +19,7 @@ package com.google.android.mobly.snippet.rpc;
 import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 import com.google.android.mobly.snippet.util.Log;
+import com.google.android.mobly.snippet.util.RpcUtil;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -32,6 +33,8 @@ public class JsonRpcServer extends SimpleServer {
     private static final String CMD_HELP = "help";
 
     private final SnippetManagerFactory mSnippetManagerFactory;
+    private final SnippetManager mReceiverManager;
+    private final RpcUtil mRpcUtil;
 
     /**
      * Construct a {@link JsonRpcServer} connected to the provided {@link SnippetManager}.
@@ -40,19 +43,14 @@ public class JsonRpcServer extends SimpleServer {
      */
     public JsonRpcServer(SnippetManagerFactory managerFactory) {
         mSnippetManagerFactory = managerFactory;
+        mReceiverManager = mSnippetManagerFactory.getSnippetManager();
+        mRpcUtil = new RpcUtil(mReceiverManager);
     }
 
     @Override
     protected void handleRPCConnection(
             Socket sock, Integer UID, BufferedReader reader, PrintWriter writer) throws Exception {
-        SnippetManager receiverManager = mSnippetManagerFactory.getSnippetManager();
         Log.d("UID " + UID);
-        if (receiverManager == null) {
-            Log.d("Create a new session");
-            synchronized (mSnippetManagerFactory) {
-                receiverManager = mSnippetManagerFactory.create();
-            }
-        }
         String data;
         while ((data = reader.readLine()) != null) {
             Log.v("Session " + UID + " Received: " + data);
@@ -63,13 +61,13 @@ public class JsonRpcServer extends SimpleServer {
 
             // Handle builtin commands
             if (method.equals(CMD_HELP)) {
-                help(writer, id, receiverManager, UID);
+                help(writer, id, mReceiverManager, UID);
                 continue;
             } else if (method.equals(CMD_CLOSE_SESSION)) {
                 Log.d("Got shutdown signal");
                 synchronized (writer) {
                     // Shut down all RPC receivers.
-                    receiverManager.shutdown();
+                    mReceiverManager.shutdown();
 
                     // Shut down this client connection. As soon as this happens, the client will
                     // kill us by triggering the 'stop' action from another instrumentation, so no
@@ -84,31 +82,7 @@ public class JsonRpcServer extends SimpleServer {
                 }
                 return;
             }
-
-            MethodDescriptor rpc = receiverManager.getMethodDescriptor(method);
-            if (rpc == null) {
-                send(writer, JsonRpcResult.error(id, new RpcError("Unknown RPC: " + method)), UID);
-                continue;
-            }
-            try {
-                /** If calling an {@link AsyncRpc}, put the message ID as the first param. */
-                if (rpc.isAsync()) {
-                    String callbackId = String.format("%d-%d", UID, id);
-                    JSONArray newParams = new JSONArray();
-                    newParams.put(callbackId);
-                    for (int i = 0; i < params.length(); i++) {
-                        newParams.put(params.get(i));
-                    }
-                    Object returnValue = rpc.invoke(receiverManager, newParams);
-                    send(writer, JsonRpcResult.callback(id, returnValue, callbackId), UID);
-                } else {
-                    Object returnValue = rpc.invoke(receiverManager, params);
-                    send(writer, JsonRpcResult.result(id, returnValue), UID);
-                }
-            } catch (Throwable t) {
-                Log.e("Invocation error.", t);
-                send(writer, JsonRpcResult.error(id, t), UID);
-            }
+            send(writer, mRpcUtil.invokeRpc(method, params, id, UID), UID);
         }
     }
 

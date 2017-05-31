@@ -22,6 +22,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.event.EventSnippet;
+import com.google.android.mobly.snippet.schedulerpc.ScheduleRpcSnippet;
 import com.google.android.mobly.snippet.util.Log;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,10 +30,10 @@ import java.util.Set;
 public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
     private static final String METADATA_TAG_NAME = "mobly-snippets";
     private static ReflectionSnippetManagerFactory mInstance = null;
+    private static SnippetManager mSnippetManager;
 
     private final Context mContext;
     private final Set<Class<? extends Snippet>> mClasses;
-    private SnippetManager mSnippetManager;
 
     protected ReflectionSnippetManagerFactory(Context context) {
         Log.i("Creating ReflectionSnippetManagerFactory instance: ");
@@ -48,14 +49,12 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
     }
 
     @Override
-    public SnippetManager create() {
-        Log.i("Creating SnippetManager class");
-        mSnippetManager = SnippetManager.getInstance(mClasses);
-        return mSnippetManager;
-    }
-
-    @Override
     public SnippetManager getSnippetManager() {
+        if (mSnippetManager == null) {
+            synchronized (SnippetManager.class) {
+                mSnippetManager = SnippetManager.getInstance(mClasses);
+            }
+        }
         return mSnippetManager;
     }
 
@@ -84,6 +83,8 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
         Set<Class<? extends Snippet>> receiverSet = new HashSet<>();
         /** Add the event snippet class which is provided within the Snippet Lib. */
         receiverSet.add(EventSnippet.class);
+        /** Add the schedule RPC snippet class which is provided within the Snippet Lib. */
+        receiverSet.add(ScheduleRpcSnippet.class);
         for (String snippetClassName : snippetClassNames) {
             try {
                 Log.i("Trying to load Snippet class: " + snippetClassName);

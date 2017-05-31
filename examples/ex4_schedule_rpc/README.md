@@ -26,11 +26,11 @@ This folder contains a fully working example of a standalone snippet apk.
         Wait for the message to show up on the screen
 
         >>> callback.waitAndGet('makeToast').data
-        {u'result': u'OK', u'reason': u'', u'successful': True}
+        {u'callback': u'null', u'error': u'null', u'result': u'OK', u'id': u'0'}
 
         >>> callback = s.scheduleRpc('asyncMakeToast', 5000, ['message'])
 
         Wait for the message to show up on the screen
 
         >>> callback.waitAndGet('asyncMakeToast').data
-        {u'result': u'OK', u'eventName': u'asyncMakeToast', u'successful': True}
+        {u'callback': u'1-1', u'error': u'null', u'result': u'null', u'id': u'0'}

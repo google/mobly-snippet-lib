@@ -20,16 +20,16 @@ import android.content.Context;
 import android.os.Handler;
 import android.support.test.InstrumentationRegistry;
 import android.widget.Toast;
+import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.event.EventCache;
 import com.google.android.mobly.snippet.event.SnippetEvent;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.rpc.Rpc;
-import com.google.android.mobly.snippet.schedulerpc.ScheduleRpcSnippet;
 import com.google.android.mobly.snippet.util.Log;
 import com.google.android.mobly.snippet.util.SnippetLibException;
 import java.lang.Thread;
 
-public class ExampleScheduleRpcSnippet extends ScheduleRpcSnippet {
+public class ExampleScheduleRpcSnippet implements Snippet {
 
     /**
      * This is a sample asynchronous task.
@@ -93,7 +93,7 @@ public class ExampleScheduleRpcSnippet extends ScheduleRpcSnippet {
 
     @AsyncRpc(description = "Make a toast on screen after some time.")
     public void asyncMakeToast(String callbackId, String message)
-        throws SnippetLibException, Throwable {
+        throws Throwable {
         Runnable asyncTask = new AsyncTask(callbackId, "asyncMakeToast");
         Thread thread = new Thread(asyncTask);
         thread.start();
