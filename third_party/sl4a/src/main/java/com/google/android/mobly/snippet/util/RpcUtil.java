@@ -76,8 +76,8 @@ public class RpcUtil {
                             for (String param : params) {
                                 newParams.put(param);
                             }
-                            JSONObject obj = invokeRpc(
-                                    methodName, newParams, DEFAULT_ID, callbackId);
+                            JSONObject obj =
+                                    invokeRpc(methodName, newParams, DEFAULT_ID, callbackId);
                             // Cache RPC method return value.
                             for (int i = 0; i < obj.names().length(); i++) {
                                 String key = obj.names().getString(i);
