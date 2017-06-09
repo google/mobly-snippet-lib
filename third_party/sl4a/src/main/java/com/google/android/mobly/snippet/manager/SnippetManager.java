@@ -21,7 +21,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.event.EventSnippet;
 import com.google.android.mobly.snippet.rpc.MethodDescriptor;
@@ -46,22 +45,19 @@ import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 public class SnippetManager {
+    private static final String METADATA_TAG_NAME = "mobly-snippets";
     private final Map<Class<? extends Snippet>, Snippet> mSnippets;
     /** A map of strings to known RPCs. */
     private final Map<String, MethodDescriptor> mKnownRpcs;
-    private final Context mContext;
 
-    private static final String METADATA_TAG_NAME = "mobly-snippets";
     private static SnippetManager mInstance = null;
 
-    private SnippetManager(Context context) {
+    private SnippetManager(Collection<Class<? extends Snippet>> classList) {
         // Synchronized for multiple connections on the same session. Can't use ConcurrentHashMap
         // because we have to put in a value of 'null' before the class is constructed, but
         // ConcurrentHashMap does not allow null values.
-        mContext = context;
         mSnippets = Collections.synchronizedMap(new HashMap<Class<? extends Snippet>, Snippet>());
         Map<String, MethodDescriptor> knownRpcs = new HashMap<>();
-        Collection<Class<? extends Snippet>> classList = loadSnippets();
         for (Class<? extends Snippet> receiverClass : classList) {
             mSnippets.put(receiverClass, null);
             Collection<MethodDescriptor> methodList = MethodDescriptor.collectFrom(receiverClass);
@@ -84,7 +80,8 @@ public class SnippetManager {
         if (mInstance != null) {
             throw new IllegalStateException("SnippetManager should not be re-initialized");
         }
-        mInstance = new SnippetManager(context);
+        Collection<Class<? extends Snippet>> classList = findSnippetClassesFromMetadata(context);
+        mInstance = new SnippetManager(classList);
     }
 
     public static SnippetManager getInstance() {
@@ -145,6 +142,49 @@ public class SnippetManager {
         }
     }
 
+    private static Set<Class<? extends Snippet>> findSnippetClassesFromMetadata(Context context) {
+        ApplicationInfo appInfo;
+        try {
+            appInfo =
+                    context.getPackageManager()
+                            .getApplicationInfo(
+                                    context.getPackageName(), PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new IllegalStateException(
+                    "Failed to find ApplicationInfo with package name: "
+                            + context.getPackageName());
+        }
+        Bundle metadata = appInfo.metaData;
+        String snippets = metadata.getString(METADATA_TAG_NAME);
+        if (snippets == null) {
+            throw new IllegalStateException(
+                    "AndroidManifest.xml does not contain a <metadata> tag with "
+                            + "name=\""
+                            + METADATA_TAG_NAME
+                            + "\"");
+        }
+        String[] snippetClassNames = snippets.split("\\s*,\\s*");
+        Set<Class<? extends Snippet>> receiverSet = new HashSet<>();
+        /** Add the event snippet class which is provided within the Snippet Lib. */
+        receiverSet.add(EventSnippet.class);
+        /** Add the schedule RPC snippet class which is provided within the Snippet Lib. */
+        receiverSet.add(ScheduleRpcSnippet.class);
+        for (String snippetClassName : snippetClassNames) {
+            try {
+                Log.i("Trying to load Snippet class: " + snippetClassName);
+                Class<?> snippetClass = Class.forName(snippetClassName);
+                receiverSet.add((Class<? extends Snippet>) snippetClass);
+            } catch (ClassNotFoundException e) {
+                Log.e("Failed to find class " + snippetClassName);
+                throw new RuntimeException(e);
+            }
+        }
+        if (receiverSet.isEmpty()) {
+            throw new IllegalStateException("Found no subclasses of Snippet.");
+        }
+        return receiverSet;
+    }
+
     private Snippet get(Class<? extends Snippet> clazz) throws Exception {
         Snippet snippetImpl = mSnippets.get(clazz);
         if (snippetImpl == null) {
@@ -194,48 +234,5 @@ public class SnippetManager {
             Log.d("Invoking RPC method " + method.getDeclaringClass() + "#" + method.getName());
             return method.invoke(snippetImpl, args);
         }
-    }
-
-    private Set<Class<? extends Snippet>> loadSnippets() {
-        ApplicationInfo appInfo;
-        try {
-            appInfo =
-                    mContext.getPackageManager()
-                            .getApplicationInfo(
-                                    mContext.getPackageName(), PackageManager.GET_META_DATA);
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new IllegalStateException(
-                    "Failed to find ApplicationInfo with package name: "
-                            + mContext.getPackageName());
-        }
-        Bundle metadata = appInfo.metaData;
-        String snippets = metadata.getString(METADATA_TAG_NAME);
-        if (snippets == null) {
-            throw new IllegalStateException(
-                    "AndroidManifest.xml does not contain a <metadata> tag with "
-                            + "name=\""
-                            + METADATA_TAG_NAME
-                            + "\"");
-        }
-        String[] snippetClassNames = snippets.split("\\s*,\\s*");
-        Set<Class<? extends Snippet>> receiverSet = new HashSet<>();
-        /** Add the event snippet class which is provided within the Snippet Lib. */
-        receiverSet.add(EventSnippet.class);
-        /** Add the schedule RPC snippet class which is provided within the Snippet Lib. */
-        receiverSet.add(ScheduleRpcSnippet.class);
-        for (String snippetClassName : snippetClassNames) {
-            try {
-                Log.i("Trying to load Snippet class: " + snippetClassName);
-                Class<?> snippetClass = Class.forName(snippetClassName);
-                receiverSet.add((Class<? extends Snippet>) snippetClass);
-            } catch (ClassNotFoundException e) {
-                Log.e("Failed to find class " + snippetClassName);
-                throw new RuntimeException(e);
-            }
-        }
-        if (receiverSet.isEmpty()) {
-            throw new IllegalStateException("Found no subclasses of Snippet.");
-        }
-        return receiverSet;
     }
 }

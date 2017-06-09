@@ -16,7 +16,6 @@
 
 package com.google.android.mobly.snippet.rpc;
 
-import android.content.Context;
 import java.io.IOException;
 
 public class AndroidProxy {
