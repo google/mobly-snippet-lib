@@ -27,7 +27,7 @@ import com.google.android.mobly.snippet.util.Log;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
+public class ReflectionSnippetManagerFactory {
     private static final String METADATA_TAG_NAME = "mobly-snippets";
     private static ReflectionSnippetManagerFactory mInstance = null;
     private static SnippetManager mSnippetManager;
@@ -35,7 +35,7 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
     private final Context mContext;
     private final Set<Class<? extends Snippet>> mClasses;
 
-    protected ReflectionSnippetManagerFactory(Context context) {
+    private ReflectionSnippetManagerFactory(Context context) {
         Log.i("Creating ReflectionSnippetManagerFactory instance.");
         mContext = context;
         mClasses = loadSnippets();
@@ -55,11 +55,6 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
             throw new IllegalStateException("getInstance() called before init()");
         }
         return mInstance;
-    }
-
-    @Override
-    public SnippetManager createSnippetManager() {
-        return SnippetManager.getInstance();
     }
 
     private Set<Class<? extends Snippet>> loadSnippets() {

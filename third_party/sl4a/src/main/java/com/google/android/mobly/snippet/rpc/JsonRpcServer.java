@@ -17,7 +17,6 @@
 package com.google.android.mobly.snippet.rpc;
 
 import com.google.android.mobly.snippet.manager.SnippetManager;
-import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 import com.google.android.mobly.snippet.util.Log;
 import com.google.android.mobly.snippet.util.RpcUtil;
 import java.io.BufferedReader;
@@ -32,18 +31,12 @@ public class JsonRpcServer extends SimpleServer {
     private static final String CMD_CLOSE_SESSION = "closeSl4aSession";
     private static final String CMD_HELP = "help";
 
-    private final SnippetManagerFactory mSnippetManagerFactory;
     private final SnippetManager mReceiverManager;
     private final RpcUtil mRpcUtil;
 
-    /**
-     * Construct a {@link JsonRpcServer} connected to the provided {@link SnippetManager}.
-     *
-     * @param managerFactory the {@link SnippetManager} to register with the server
-     */
-    public JsonRpcServer(SnippetManagerFactory managerFactory) {
-        mSnippetManagerFactory = managerFactory;
-        mReceiverManager = mSnippetManagerFactory.createSnippetManager();
+    /** Construct a {@link JsonRpcServer} connected to the provided {@link SnippetManager}. */
+    public JsonRpcServer() {
+        mReceiverManager = SnippetManager.getInstance();
         mRpcUtil = new RpcUtil(mReceiverManager);
     }
 

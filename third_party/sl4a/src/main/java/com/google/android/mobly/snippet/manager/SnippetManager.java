@@ -67,7 +67,7 @@ public class SnippetManager {
         mKnownRpcs = Collections.unmodifiableMap(knownRpcs);
     }
 
-    public static synchronized void init(Collection<Class<? extends Snippet>> classList) {
+    static synchronized void init(Collection<Class<? extends Snippet>> classList) {
         if (mInstance != null) {
             throw new IllegalStateException("SnippetManager should not be re-initialized");
         }

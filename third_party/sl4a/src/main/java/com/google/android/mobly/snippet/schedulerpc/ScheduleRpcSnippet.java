@@ -17,9 +17,7 @@
 package com.google.android.mobly.snippet.schedulerpc;
 
 import com.google.android.mobly.snippet.Snippet;
-import com.google.android.mobly.snippet.manager.ReflectionSnippetManagerFactory;
 import com.google.android.mobly.snippet.manager.SnippetManager;
-import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.util.RpcUtil;
 import org.json.JSONArray;
@@ -27,13 +25,11 @@ import org.json.JSONArray;
 /** Snippet that provides {@link AsyncRpc} to schedule other RPCs. */
 public class ScheduleRpcSnippet implements Snippet {
 
-    private final SnippetManagerFactory mSnippetManagerFactory;
     private final SnippetManager mReceiverManager;
     private final RpcUtil mRpcUtil;
 
     public ScheduleRpcSnippet() {
-        mSnippetManagerFactory = ReflectionSnippetManagerFactory.getInstance();
-        mReceiverManager = mSnippetManagerFactory.createSnippetManager();
+        mReceiverManager = SnippetManager.getInstance();
         mRpcUtil = new RpcUtil(mReceiverManager);
     }
 

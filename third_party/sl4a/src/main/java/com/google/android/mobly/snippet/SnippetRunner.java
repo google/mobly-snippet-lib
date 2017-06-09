@@ -95,7 +95,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
     }
 
     private void startServer(int port) {
-        AndroidProxy androidProxy = new AndroidProxy(getContext());
+        AndroidProxy androidProxy = new AndroidProxy();
         try {
             androidProxy.startLocal(port);
         } catch (SocketException e) {
