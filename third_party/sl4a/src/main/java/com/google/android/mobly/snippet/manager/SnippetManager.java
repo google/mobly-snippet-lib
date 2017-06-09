@@ -67,11 +67,16 @@ public class SnippetManager {
         mKnownRpcs = Collections.unmodifiableMap(knownRpcs);
     }
 
-    public static SnippetManager getInstance(Collection<Class<? extends Snippet>> classList) {
-        synchronized (SnippetManager.class) {
-            if (mInstance == null) {
-                mInstance = new SnippetManager(classList);
-            }
+    public static synchronized void init(Collection<Class<? extends Snippet>> classList) {
+        if (mInstance != null) {
+            throw new IllegalStateException("SnippetManager should not be re-initialized");
+        }
+        mInstance = new SnippetManager(classList);
+    }
+
+    public static SnippetManager getInstance() {
+        if (mInstance == null) {
+            throw new IllegalStateException("getInstance() called before init()");
         }
         return mInstance;
     }

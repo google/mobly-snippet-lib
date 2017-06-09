@@ -39,6 +39,7 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
         Log.i("Creating ReflectionSnippetManagerFactory instance.");
         mContext = context;
         mClasses = loadSnippets();
+        SnippetManager.init(mClasses);
     }
 
     public static synchronized void init(Context context) {
@@ -58,12 +59,7 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
 
     @Override
     public SnippetManager createSnippetManager() {
-        synchronized (this) {
-            if (mSnippetManager == null) {
-                mSnippetManager = SnippetManager.getInstance(mClasses);
-            }
-        }
-        return mSnippetManager;
+        return SnippetManager.getInstance();
     }
 
     private Set<Class<? extends Snippet>> loadSnippets() {
