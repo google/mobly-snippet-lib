@@ -25,6 +25,7 @@ import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.util.RpcUtil;
 import com.google.android.mobly.snippet.util.SnippetLibException;
+import org.json.JSONArray;
 
 /** Snippet that provides {@link AsyncRpc} to schedule other RPCs. */
 public class ScheduleRpcSnippet implements Snippet {
@@ -37,13 +38,13 @@ public class ScheduleRpcSnippet implements Snippet {
     public ScheduleRpcSnippet() {
         mContext = InstrumentationRegistry.getContext();
         mSnippetManagerFactory = ReflectionSnippetManagerFactory.getInstance(mContext);
-        mReceiverManager = mSnippetManagerFactory.getSnippetManager();
+        mReceiverManager = mSnippetManagerFactory.createSnippetManager();
         mRpcUtil = new RpcUtil(mReceiverManager);
     }
 
     @AsyncRpc(description = "Delay the given RPC by provided milli-seconds.")
     public void scheduleRpc(
-            String callbackId, String methodName, long delayTimerMs, String[] params)
+            String callbackId, String methodName, long delayTimerMs, JSONArray params)
             throws Throwable {
         if (methodName.equals("scheduleRpc")) {
             throw new SnippetLibException(

@@ -17,5 +17,5 @@
 package com.google.android.mobly.snippet.manager;
 
 public interface SnippetManagerFactory {
-    SnippetManager getSnippetManager();
+    SnippetManager createSnippetManager();
 }

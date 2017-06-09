@@ -43,7 +43,7 @@ public class SnippetManager {
 
     private static SnippetManager mInstance = null;
 
-    protected SnippetManager(Collection<Class<? extends Snippet>> classList) {
+    private SnippetManager(Collection<Class<? extends Snippet>> classList) {
         // Synchronized for multiple connections on the same session. Can't use ConcurrentHashMap
         // because we have to put in a value of 'null' before the class is constructed, but
         // ConcurrentHashMap does not allow null values.
@@ -68,8 +68,10 @@ public class SnippetManager {
     }
 
     public static SnippetManager getInstance(Collection<Class<? extends Snippet>> classList) {
-        if (mInstance == null) {
-            mInstance = new SnippetManager(classList);
+        synchronized (SnippetManager.class) {
+            if (mInstance == null) {
+                mInstance = new SnippetManager(classList);
+            }
         }
         return mInstance;
     }

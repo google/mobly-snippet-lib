@@ -36,22 +36,24 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
     private final Set<Class<? extends Snippet>> mClasses;
 
     protected ReflectionSnippetManagerFactory(Context context) {
-        Log.i("Creating ReflectionSnippetManagerFactory instance: ");
+        Log.i("Creating ReflectionSnippetManagerFactory instance.");
         mContext = context;
         mClasses = loadSnippets();
     }
 
     public static ReflectionSnippetManagerFactory getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new ReflectionSnippetManagerFactory(context);
+        synchronized (ReflectionSnippetManagerFactory.class) {
+            if (mInstance == null) {
+                mInstance = new ReflectionSnippetManagerFactory(context);
+            }
         }
         return mInstance;
     }
 
     @Override
-    public SnippetManager getSnippetManager() {
-        if (mSnippetManager == null) {
-            synchronized (SnippetManager.class) {
+    public SnippetManager createSnippetManager() {
+        synchronized (this) {
+            if (mSnippetManager == null) {
                 mSnippetManager = SnippetManager.getInstance(mClasses);
             }
         }

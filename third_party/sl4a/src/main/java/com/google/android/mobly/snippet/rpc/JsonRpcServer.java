@@ -43,7 +43,7 @@ public class JsonRpcServer extends SimpleServer {
      */
     public JsonRpcServer(SnippetManagerFactory managerFactory) {
         mSnippetManagerFactory = managerFactory;
-        mReceiverManager = mSnippetManagerFactory.getSnippetManager();
+        mReceiverManager = mSnippetManagerFactory.createSnippetManager();
         mRpcUtil = new RpcUtil(mReceiverManager);
     }
 
@@ -82,7 +82,8 @@ public class JsonRpcServer extends SimpleServer {
                 }
                 return;
             }
-            send(writer, mRpcUtil.invokeRpc(method, params, id, UID), UID);
+            JSONObject returnValue = mRpcUtil.invokeRpc(method, params, id, UID);
+            send(writer, returnValue, UID);
         }
     }
 

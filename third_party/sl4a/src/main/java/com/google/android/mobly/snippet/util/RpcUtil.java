@@ -62,7 +62,7 @@ public class RpcUtil {
             final String callbackId,
             final String methodName,
             final long delayMs,
-            final String[] params)
+            final JSONArray params)
             throws Throwable {
         Timer timer = new Timer();
         TimerTask task =
@@ -71,13 +71,7 @@ public class RpcUtil {
                     public void run() {
                         SnippetEvent event = new SnippetEvent(callbackId, methodName);
                         try {
-                            // Convert {@link String} array parameters to {@link JSONArray}.
-                            JSONArray newParams = new JSONArray();
-                            for (String param : params) {
-                                newParams.put(param);
-                            }
-                            JSONObject obj =
-                                    invokeRpc(methodName, newParams, DEFAULT_ID, callbackId);
+                            JSONObject obj = invokeRpc(methodName, params, DEFAULT_ID, callbackId);
                             // Cache RPC method return value.
                             for (int i = 0; i < obj.names().length(); i++) {
                                 String key = obj.names().getString(i);
@@ -94,9 +88,9 @@ public class RpcUtil {
     }
 
     /**
-     * Invoke the RPC to be scheduled.
+     * Invoke the RPC.
      *
-     * @param methodName The RPC name to be scheduled.
+     * @param methodName The RPC name to be invoked.
      * @param params Array of the parameters to the RPC
      * @param id The ID that identifies an RPC
      * @param UID Globally unique session ID.
@@ -107,9 +101,9 @@ public class RpcUtil {
     }
 
     /**
-     * Invoke the RPC to be scheduled.
+     * Invoke the RPC.
      *
-     * @param methodName The RPC name to be scheduled.
+     * @param methodName The RPC name to be invoked.
      * @param params Array of the parameters to the RPC
      * @param id The ID that identifies an RPC
      * @param callbackId The callback ID used to cache RPC results.
