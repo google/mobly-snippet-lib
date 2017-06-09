@@ -78,7 +78,8 @@ public class RpcUtil {
                                 event.getData().putString(key, obj.get(key).toString());
                             }
                         } catch (JSONException e) {
-                            event.getData().putString("error", e.getMessage());
+                            String stackTrace = JsonRpcResult.getStackTrace(e);
+                            event.getData().putString("error", stackTrace);
                         } finally {
                             mEventCache.postEvent(event);
                         }

@@ -21,6 +21,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Process;
 import android.support.test.runner.AndroidJUnitRunner;
+import com.google.android.mobly.snippet.manager.ReflectionSnippetManagerFactory;
 import com.google.android.mobly.snippet.rpc.AndroidProxy;
 import com.google.android.mobly.snippet.util.EmptyTestClass;
 import com.google.android.mobly.snippet.util.Log;
@@ -57,7 +58,9 @@ public class SnippetRunner extends AndroidJUnitRunner {
         mArguments = arguments;
 
         // First-run static setup
-        Log.initLogTag(getContext());
+        Context context = getContext();
+        Log.initLogTag(context);
+        ReflectionSnippetManagerFactory.init(context);
 
         // Prevent this runner from triggering any real JUnit tests in the snippet by feeding it a
         // hardcoded empty test class.

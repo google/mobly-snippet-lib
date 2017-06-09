@@ -60,16 +60,20 @@ public class JsonRpcResult {
     }
 
     public static JSONObject error(int id, Throwable t) throws JSONException {
-        StringWriter stackTraceWriter = new StringWriter();
-        stackTraceWriter.write("\n-------------- Java Stacktrace ---------------\n");
-        t.printStackTrace(new PrintWriter(stackTraceWriter));
-        stackTraceWriter.write("----------------------------------------------");
-        String stackTrace = stackTraceWriter.toString();
+        String stackTrace = getStackTrace(t);
         JSONObject json = new JSONObject();
         json.put("id", id);
         json.put("result", JSONObject.NULL);
         json.put("callback", JSONObject.NULL);
         json.put("error", stackTrace);
         return json;
+    }
+
+    public static String getStackTrace(Throwable throwable) {
+        StringWriter stackTraceWriter = new StringWriter();
+        stackTraceWriter.write("\n-------------- Java Stacktrace ---------------\n");
+        throwable.printStackTrace(new PrintWriter(stackTraceWriter));
+        stackTraceWriter.write("----------------------------------------------");
+        return stackTraceWriter.toString();
     }
 }

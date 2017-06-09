@@ -16,28 +16,23 @@
 
 package com.google.android.mobly.snippet.schedulerpc;
 
-import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.manager.ReflectionSnippetManagerFactory;
 import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.util.RpcUtil;
-import com.google.android.mobly.snippet.util.SnippetLibException;
 import org.json.JSONArray;
 
 /** Snippet that provides {@link AsyncRpc} to schedule other RPCs. */
 public class ScheduleRpcSnippet implements Snippet {
 
-    private final Context mContext;
     private final SnippetManagerFactory mSnippetManagerFactory;
     private final SnippetManager mReceiverManager;
     private final RpcUtil mRpcUtil;
 
     public ScheduleRpcSnippet() {
-        mContext = InstrumentationRegistry.getContext();
-        mSnippetManagerFactory = ReflectionSnippetManagerFactory.getInstance(mContext);
+        mSnippetManagerFactory = ReflectionSnippetManagerFactory.getInstance();
         mReceiverManager = mSnippetManagerFactory.createSnippetManager();
         mRpcUtil = new RpcUtil(mReceiverManager);
     }
@@ -46,10 +41,6 @@ public class ScheduleRpcSnippet implements Snippet {
     public void scheduleRpc(
             String callbackId, String methodName, long delayTimerMs, JSONArray params)
             throws Throwable {
-        if (methodName.equals("scheduleRpc")) {
-            throw new SnippetLibException(
-                    String.format("Cannot schedule RPC method: scheduleRpc()"));
-        }
         mRpcUtil.scheduleRpc(callbackId, methodName, delayTimerMs, params);
     }
 

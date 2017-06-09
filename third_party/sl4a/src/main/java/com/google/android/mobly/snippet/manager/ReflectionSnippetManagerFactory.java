@@ -41,11 +41,17 @@ public class ReflectionSnippetManagerFactory implements SnippetManagerFactory {
         mClasses = loadSnippets();
     }
 
-    public static ReflectionSnippetManagerFactory getInstance(Context context) {
-        synchronized (ReflectionSnippetManagerFactory.class) {
-            if (mInstance == null) {
-                mInstance = new ReflectionSnippetManagerFactory(context);
-            }
+    public static synchronized void init(Context context) {
+        if (mInstance != null) {
+            throw new IllegalStateException(
+                    "ReflectionSnippetManagerFactory should not be re-initialized");
+        }
+        mInstance = new ReflectionSnippetManagerFactory(context);
+    }
+
+    public static ReflectionSnippetManagerFactory getInstance() {
+        if (mInstance == null) {
+            throw new IllegalStateException("getInstance() called before init()");
         }
         return mInstance;
     }
