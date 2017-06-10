@@ -30,7 +30,7 @@ public class ScheduleRpcSnippet implements Snippet {
 
     public ScheduleRpcSnippet() {
         mReceiverManager = SnippetManager.getInstance();
-        mRpcUtil = new RpcUtil(mReceiverManager);
+        mRpcUtil = new RpcUtil();
     }
 
     @AsyncRpc(description = "Delay the given RPC by provided milli-seconds.")

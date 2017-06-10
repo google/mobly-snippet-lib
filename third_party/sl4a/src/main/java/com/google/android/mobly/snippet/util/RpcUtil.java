@@ -46,8 +46,8 @@ public class RpcUtil {
     private final SnippetManager mReceiverManager;
     private final EventCache mEventCache = EventCache.getInstance();
 
-    public RpcUtil(SnippetManager receiverManager) {
-        mReceiverManager = receiverManager;
+    public RpcUtil() {
+        mReceiverManager = SnippetManager.getInstance();
     }
 
     /**

@@ -16,14 +16,15 @@
 
 package com.google.android.mobly.snippet.rpc;
 
+import android.content.Context;
 import java.io.IOException;
 
 public class AndroidProxy {
 
     private final JsonRpcServer mJsonRpcServer;
 
-    public AndroidProxy() {
-        mJsonRpcServer = new JsonRpcServer();
+    public AndroidProxy(Context context) {
+        mJsonRpcServer = new JsonRpcServer(context);
     }
 
     public void startLocal(int port) throws IOException {

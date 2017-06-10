@@ -16,6 +16,7 @@
 
 package com.google.android.mobly.snippet.rpc;
 
+import android.content.Context;
 import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.util.Log;
 import com.google.android.mobly.snippet.util.RpcUtil;
@@ -31,13 +32,13 @@ public class JsonRpcServer extends SimpleServer {
     private static final String CMD_CLOSE_SESSION = "closeSl4aSession";
     private static final String CMD_HELP = "help";
 
-    private final SnippetManager mReceiverManager;
+    private final SnippetManager mSnippetManager;
     private final RpcUtil mRpcUtil;
 
     /** Construct a {@link JsonRpcServer} connected to the provided {@link SnippetManager}. */
-    public JsonRpcServer() {
-        mReceiverManager = SnippetManager.getInstance();
-        mRpcUtil = new RpcUtil(mReceiverManager);
+    public JsonRpcServer(Context context) {
+        mSnippetManager = SnippetManager.initSnippetManager(context);
+        mRpcUtil = new RpcUtil();
     }
 
     @Override
@@ -54,13 +55,13 @@ public class JsonRpcServer extends SimpleServer {
 
             // Handle builtin commands
             if (method.equals(CMD_HELP)) {
-                help(writer, id, mReceiverManager, UID);
+                help(writer, id, mSnippetManager, UID);
                 continue;
             } else if (method.equals(CMD_CLOSE_SESSION)) {
                 Log.d("Got shutdown signal");
                 synchronized (writer) {
                     // Shut down all RPC receivers.
-                    mReceiverManager.shutdown();
+                    mSnippetManager.shutdown();
 
                     // Shut down this client connection. As soon as this happens, the client will
                     // kill us by triggering the 'stop' action from another instrumentation, so no

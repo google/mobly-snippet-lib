@@ -21,7 +21,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Process;
 import android.support.test.runner.AndroidJUnitRunner;
-import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.rpc.AndroidProxy;
 import com.google.android.mobly.snippet.util.EmptyTestClass;
 import com.google.android.mobly.snippet.util.Log;
@@ -58,9 +57,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
         mArguments = arguments;
 
         // First-run static setup
-        Context context = getContext();
-        Log.initLogTag(context);
-        SnippetManager.initSnippetManager(context);
+        Log.initLogTag(getContext());
 
         // Prevent this runner from triggering any real JUnit tests in the snippet by feeding it a
         // hardcoded empty test class.
@@ -95,7 +92,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
     }
 
     private void startServer(int port) {
-        AndroidProxy androidProxy = new AndroidProxy();
+        AndroidProxy androidProxy = new AndroidProxy(getContext());
         try {
             androidProxy.startLocal(port);
         } catch (SocketException e) {

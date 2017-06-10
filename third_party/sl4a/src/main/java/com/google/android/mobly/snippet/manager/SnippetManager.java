@@ -51,6 +51,7 @@ public class SnippetManager {
     private final Map<String, MethodDescriptor> mKnownRpcs;
 
     private static SnippetManager mInstance = null;
+    private boolean mShutdown = false;
 
     private SnippetManager(Collection<Class<? extends Snippet>> classList) {
         // Synchronized for multiple connections on the same session. Can't use ConcurrentHashMap
@@ -76,17 +77,21 @@ public class SnippetManager {
         mKnownRpcs = Collections.unmodifiableMap(knownRpcs);
     }
 
-    public static synchronized void initSnippetManager(Context context) {
+    public static synchronized SnippetManager initSnippetManager(Context context) {
         if (mInstance != null) {
             throw new IllegalStateException("SnippetManager should not be re-initialized");
         }
         Collection<Class<? extends Snippet>> classList = findSnippetClassesFromMetadata(context);
         mInstance = new SnippetManager(classList);
+        return mInstance;
     }
 
     public static SnippetManager getInstance() {
         if (mInstance == null) {
             throw new IllegalStateException("getInstance() called before init()");
+        }
+        if (mInstance.isShutdown()) {
+            throw new IllegalStateException("shutdown() called before getInstance()");
         }
         return mInstance;
     }
@@ -140,6 +145,12 @@ public class SnippetManager {
                 entry.getValue().shutdown();
             }
         }
+        mSnippets.clear();
+        mShutdown = true;
+    }
+
+    public boolean isShutdown() {
+        return mShutdown;
     }
 
     private static Set<Class<? extends Snippet>> findSnippetClassesFromMetadata(Context context) {

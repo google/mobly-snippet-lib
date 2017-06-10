@@ -65,7 +65,6 @@ public class ExampleScheduleRpcSnippet implements Snippet {
                 mEventCache.postEvent(event);
             }
             event.getData().putBoolean("successful", true);
-            event.getData().putString("result", "OK");
             event.getData().putString("eventName", mMessage);
             mEventCache.postEvent(event);
         }
