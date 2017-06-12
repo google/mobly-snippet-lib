@@ -40,8 +40,9 @@ import org.json.JSONObject;
  * later after device is back online.
  */
 public class RpcUtil {
-
-    // To call {@link scheduleRpc} from snippet, default ID is used.
+    // RPC ID is used for reporting responses back to the client. However, the results of
+    // scheduled RPCs are reported back to the client via events instead of through synchronous
+    // responses, so the RPC ID is unused. We pass an arbitrary value of 0.
     private static final int DEFAULT_ID = 0;
     private final SnippetManager mReceiverManager;
     private final EventCache mEventCache = EventCache.getInstance();
