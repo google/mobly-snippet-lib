@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.android.mobly.snippet.example4;
+package com.google.android.mobly.snippet.example5;
 
 import android.content.Context;
 import android.os.Handler;

@@ -30,11 +30,11 @@ This folder contains a fully working example of a standalone snippet apk.
 
 1.  Compile the example
 
-        ./gradlew examples:ex4_schedule_rpc:assembleDebug
+        ./gradlew examples:ex5_schedule_rpc:assembleDebug
 
 1.  Install the apk on your phone
 
-        adb install -r ./examples/ex4_schedule_rpc/build/outputs/apk/ex4_schedule_rpc-debug.apk
+        adb install -r ./examples/ex5_schedule_rpc/build/outputs/apk/ex5_schedule_rpc-debug.apk
 
 1.  Use `snippet_shell` from mobly to trigger `tryEvent()`:
 
