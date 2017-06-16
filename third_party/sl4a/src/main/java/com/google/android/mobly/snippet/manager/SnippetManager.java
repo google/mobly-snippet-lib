@@ -50,7 +50,7 @@ public class SnippetManager {
     /** A map of strings to known RPCs. */
     private final Map<String, MethodDescriptor> mKnownRpcs;
 
-    private static SnippetManager mInstance = null;
+    private static SnippetManager sInstance = null;
     private boolean mShutdown = false;
 
     private SnippetManager(Collection<Class<? extends Snippet>> classList) {
@@ -78,22 +78,22 @@ public class SnippetManager {
     }
 
     public static synchronized SnippetManager initSnippetManager(Context context) {
-        if (mInstance != null) {
+        if (sInstance != null) {
             throw new IllegalStateException("SnippetManager should not be re-initialized");
         }
         Collection<Class<? extends Snippet>> classList = findSnippetClassesFromMetadata(context);
-        mInstance = new SnippetManager(classList);
-        return mInstance;
+        sInstance = new SnippetManager(classList);
+        return sInstance;
     }
 
     public static SnippetManager getInstance() {
-        if (mInstance == null) {
+        if (sInstance == null) {
             throw new IllegalStateException("getInstance() called before init()");
         }
-        if (mInstance.isShutdown()) {
+        if (sInstance.isShutdown()) {
             throw new IllegalStateException("shutdown() called before getInstance()");
         }
-        return mInstance;
+        return sInstance;
     }
 
     public MethodDescriptor getMethodDescriptor(String methodName) {

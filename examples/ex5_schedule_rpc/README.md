@@ -13,9 +13,9 @@ Therefore we need to schedule phone call RPCs before Monsoon starts.
 
 In this scenario, test steps would be:
 
-1. Schedule s.makePhonecCall('123456') after, e.g., 10 seconds, such as:
+1. Schedule s.makePhoneCall('123456') after, e.g., 10 seconds, such as:
 
-        s.scheduleRpc('makePhonecCall', 10000, ['123456'])
+        s.scheduleRpc('makePhoneCall', 10000, ['123456'])
 
 2. Start Monsoon device to collect battery data, at the same time, USB is turned off.
 3. After 10 seconds, phone call starts while USB is off.
