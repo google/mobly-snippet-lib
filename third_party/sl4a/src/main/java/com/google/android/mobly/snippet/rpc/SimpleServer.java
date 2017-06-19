@@ -192,8 +192,12 @@ public abstract class SimpleServer {
      */
     public void startLocal(int port) throws IOException {
         InetAddress address = getPrivateInetAddress();
-        mServer = new ServerSocket(port, 5, address);
+        mServer = new ServerSocket(port, 5 /* backlog */, address);
         start();
+    }
+
+    public int getPort() {
+        return mServer.getLocalPort();
     }
 
     private void start() {

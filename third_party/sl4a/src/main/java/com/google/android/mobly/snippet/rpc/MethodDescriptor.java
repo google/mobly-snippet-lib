@@ -198,6 +198,10 @@ public final class MethodDescriptor {
         return mMethod.isAnnotationPresent(AsyncRpc.class);
     }
 
+    public Class<? extends Snippet> getSnippetClass() {
+        return mClass;
+    }
+
     private String getAnnotationDescription() {
         if (isAsync()) {
             AsyncRpc annotation = mMethod.getAnnotation(AsyncRpc.class);
@@ -222,7 +226,8 @@ public final class MethodDescriptor {
         }
         String help =
                 String.format(
-                        "%s(%s) returns %s  // %s",
+                        "%s %s(%s) returns %s  // %s",
+                        isAsync() ? "@AsyncRpc" : "@Rpc",
                         mMethod.getName(),
                         paramBuilder,
                         mMethod.getReturnType().getSimpleName(),

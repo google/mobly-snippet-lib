@@ -83,10 +83,25 @@ public class JsonRpcServer extends SimpleServer {
 
     private void help(PrintWriter writer, int id, SnippetManager receiverManager, Integer UID)
             throws JSONException {
-        StringBuilder result = new StringBuilder("Known methods:\n");
+        // Create a map from class simple name to the methods inside it.
+        Map<String, Set<MethodDescriptor>> methods = new TreeMap<>();
         for (String method : receiverManager.getMethodNames()) {
             MethodDescriptor descriptor = receiverManager.getMethodDescriptor(method);
-            result.append("  ").append(descriptor.getHelp()).append("\n");
+            String snippetClassName = descriptor.getSnippetClass().getSimpleName();
+            Set<MethodDescriptor> snippetClassMethods = methods.get(snippetClassName);
+            if (snippetClassMethods == null) {
+                // Preserve insertion order (alphabetical)
+                snippetClassMethods = new LinkedHashSet<>();
+                methods.put(snippetClassName, snippetClassMethods);
+            }
+            snippetClassMethods.add(descriptor);
+        }
+        StringBuilder result = new StringBuilder();
+        for (Map.Entry<String, Set<MethodDescriptor>> entry : methods.entrySet()) {
+            result.append("\nRPCs provided by ").append(entry.getKey()).append(":\n");
+            for (MethodDescriptor descriptor : entry.getValue()) {
+                result.append("  ").append(descriptor.getHelp()).append("\n");
+            }
         }
         send(writer, JsonRpcResult.result(id, result), UID);
     }
