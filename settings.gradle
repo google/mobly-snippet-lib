@@ -1,2 +1,5 @@
-include ':mobly-snippet-lib', ':examples:ex1_standalone_app', ':examples:ex2_espresso', ':examples:ex3_async_event', ':examples:ex5_schedule_rpc'
+include (
+':mobly-snippet-lib', ':examples:ex1_standalone_app', ':examples:ex2_espresso',
+':examples:ex3_async_event', ':examples:ex4_uiautomator', ':examples:ex5_schedule_rpc')
 project(":mobly-snippet-lib").projectDir = file('third_party/sl4a')
+
