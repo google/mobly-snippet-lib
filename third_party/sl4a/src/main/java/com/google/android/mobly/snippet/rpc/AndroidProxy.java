@@ -17,18 +17,14 @@
 package com.google.android.mobly.snippet.rpc;
 
 import android.content.Context;
-import com.google.android.mobly.snippet.manager.ReflectionSnippetManagerFactory;
-import com.google.android.mobly.snippet.manager.SnippetManagerFactory;
 import java.io.IOException;
 
 public class AndroidProxy {
 
     private final JsonRpcServer mJsonRpcServer;
-    private final SnippetManagerFactory mSnippetManagerFactory;
 
     public AndroidProxy(Context context) {
-        mSnippetManagerFactory = new ReflectionSnippetManagerFactory(context);
-        mJsonRpcServer = new JsonRpcServer(mSnippetManagerFactory);
+        mJsonRpcServer = new JsonRpcServer(context);
     }
 
     public void startLocal(int port) throws IOException {
