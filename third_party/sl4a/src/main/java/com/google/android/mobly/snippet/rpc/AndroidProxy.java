@@ -30,4 +30,8 @@ public class AndroidProxy {
     public void startLocal(int port) throws IOException {
         mJsonRpcServer.startLocal(port);
     }
+
+    public int getPort() {
+        return mJsonRpcServer.getPort();
+    }
 }

@@ -1,8 +1,10 @@
 # Espresso Snippet Example
 
-This tutorial shows you how to create snippets that automate the UI of another app using Espresso.
+This tutorial shows you how to create snippets that automate the UI of another
+app using Espresso.
 
-The same approach can be used for any snippet that needs to access the classes or resources of another app.
+The same approach can be used for any snippet that needs to access the classes
+or resources of another app.
 
 ## Overview
 
@@ -31,7 +33,7 @@ The snippet code cannot run from a regular test apk because it requires a custom
 
     ```
     dependencies {
-      snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.1.0'
+      snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.2.0'
     }
     ```
 
@@ -48,8 +50,8 @@ The snippet code cannot run from a regular test apk because it requires a custom
     package com.my.app;
     ...
     public class EspressoSnippet implements Snippet {
-      @Rpc(description="Clicks the main app button")
-      public void clickButton() {
+      @Rpc(description="Pushes the main app button.")
+      public void pushMainButton() {
         onView(withId(R.id.main_button)).perform(click());
       }
 
@@ -95,7 +97,7 @@ The snippet code cannot run from a regular test apk because it requires a custom
 
     ```python
     def test_click_button(self):
-      self.dut1.snippet.clickButton()
+      self.dut1.snippet.clickMainButton()
     ```
 
 ## Running the example code
@@ -111,15 +113,16 @@ to automate a simple app.
 
         adb install -r ./examples/ex2_espresso/build/outputs/apk/ex2_espresso-snippet-debug.apk
 
-1.  Use `snippet_shell` from mobly to trigger `click()`:
+1.  Use `snippet_shell` from mobly to trigger `pushMainButton()`:
 
         snippet_shell.py com.google.android.mobly.snippet.example2
 
         >>> print(s.help())
         Known methods:
-          click() returns void  // Clicks the button
-          firstClick() returns void  // Clicks the button for the first time and checks the label change
+          pushMainButton(boolean) returns void  // Pushes the main app button, and checks the label if this is the first time.
           startMainActivity() returns void  // Opens the main activity of the app
 
         >>> s.startMainActivity()
-        >>> s.click()
+        >>> s.pushMainButton(True)
+
+1. Press ctrl+d to exit the shell and terminate the app.

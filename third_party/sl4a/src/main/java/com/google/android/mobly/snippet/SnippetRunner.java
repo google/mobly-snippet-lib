@@ -15,6 +15,7 @@
  */
 package com.google.android.mobly.snippet;
 
+import android.app.Instrumentation;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -36,8 +37,45 @@ import java.net.SocketException;
  * snippets are launched with 'am instrument'. We're specifically extending {@link
  * AndroidJUnitRunner} because Espresso requires being called through it, since it sets up {@link
  * android.support.test.InstrumentationRegistry} which Espresso requires.
+ *
+ * <p>The launch and communication protocol between snippet and client is versionated and reported
+ * as follows:
+ *
+ * <ul>
+ *   <li>v0 (not reported):
+ *       <ul>
+ *         <li>Launch as Instrumentation with SnippetRunner.
+ *         <li>No protocol-specific messages reported through instrumentation output.
+ *         <li>'stop' action prints 'OK (0 tests)'
+ *         <li>'start' action prints nothing.
+ *       </ul>
+ *
+ *   <li>v1.0: New instrumentation output added to track bringup process
+ *       <ul>
+ *         <li>"SNIPPET START, PROTOCOL &lt;major&gt; &lt;minor&gt;" upon snippet start
+ *         <li>"SNIPPET SERVING, PORT &lt;port&gt;" once server is ready
+ *       </ul>
+ *
+ * </ul>
  */
 public class SnippetRunner extends AndroidJUnitRunner {
+
+    /**
+     * Major version of the launch and communication protocol.
+     *
+     * <p>Incrementing this means that compatibility with clients using the older version is broken.
+     * Avoid breaking compatibility unless there is no other choice.
+     */
+    public static final int PROTOCOL_MAJOR_VERSION = 1;
+
+    /**
+     * Minor version of the launch and communication protocol.
+     *
+     * <p>Increment this when new features are added to the launch and communication protocol that
+     * are backwards compatible with the old protocol and don't break existing clients.
+     */
+    public static final int PROTOCOL_MINOR_VERSION = 0;
+
     private static final String ARG_ACTION = "action";
     private static final String ARG_PORT = "port";
 
@@ -59,6 +97,10 @@ public class SnippetRunner extends AndroidJUnitRunner {
         // First-run static setup
         Log.initLogTag(getContext());
 
+        // First order of business is to report HELLO to instrumentation output.
+        sendString(
+                "SNIPPET START, PROTOCOL " + PROTOCOL_MAJOR_VERSION + " " + PROTOCOL_MINOR_VERSION);
+
         // Prevent this runner from triggering any real JUnit tests in the snippet by feeding it a
         // hardcoded empty test class.
         mArguments.putString("class", EmptyTestClass.class.getCanonicalName());
@@ -78,10 +120,10 @@ public class SnippetRunner extends AndroidJUnitRunner {
         switch (action) {
             case START:
                 String servicePort = mArguments.getString(ARG_PORT);
-                if (servicePort == null) {
-                    throw new IllegalArgumentException("\"--e port <port>\" was not specified");
+                int port = 0 /* auto chosen */;
+                if (servicePort != null) {
+                    port = Integer.parseInt(servicePort);
                 }
-                int port = Integer.parseInt(servicePort);
                 startServer(port);
                 break;
             case STOP:
@@ -98,18 +140,18 @@ public class SnippetRunner extends AndroidJUnitRunner {
         } catch (SocketException e) {
             if (e.getMessage().equals("Permission denied")) {
                 throw new RuntimeException(
-                        "Failed to start server on port "
-                                + port
-                                + ". No permission to create a socket. Does the *MAIN* app manifest "
-                                + "declare the INTERNET permission?",
+                        "Failed to start server. No permission to create a socket. Does the *MAIN* "
+                                + "app manifest declare the INTERNET permission?",
                         e);
             }
-            throw new RuntimeException("Failed to start server on port " + port, e);
+            throw new RuntimeException("Failed to start server", e);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to start server on port " + port, e);
+            throw new RuntimeException("Failed to start server", e);
         }
         createNotification();
-        Log.i("Snippet server started for process " + Process.myPid() + " on port " + port);
+        int actualPort = androidProxy.getPort();
+        sendString("SNIPPET SERVING, PORT " + actualPort);
+        Log.i("Snippet server started for process " + Process.myPid() + " on port " + actualPort);
     }
 
     private void createNotification() {
@@ -121,5 +163,12 @@ public class SnippetRunner extends AndroidJUnitRunner {
         mNotification = builder.getNotification();
         mNotification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
         mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+    }
+
+    private void sendString(String string) {
+        Log.i("Sending protocol message: " + string);
+        Bundle bundle = new Bundle();
+        bundle.putString(Instrumentation.REPORT_KEY_STREAMRESULT, string + "\n");
+        sendStatus(0, bundle);
     }
 }
