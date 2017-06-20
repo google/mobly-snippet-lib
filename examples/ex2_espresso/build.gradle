@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.3"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.google.android.mobly.snippet.example2"
@@ -16,6 +16,11 @@ android {
     productFlavors {
         main {}
         snippet {}
+    }
+    lintOptions {
+        abortOnError true
+        checkAllWarnings true
+        warningsAsErrors true
     }
 }
 

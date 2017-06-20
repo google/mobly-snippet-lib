@@ -18,7 +18,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '24.0.3'
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         minSdkVersion 11
@@ -29,6 +29,11 @@ android {
         project.group = GROUP_ID
         project.archivesBaseName = ARTIFACT_ID
         project.version = VERSION_NAME
+    }
+    lintOptions {
+        abortOnError true
+        checkAllWarnings true
+        warningsAsErrors true
     }
 }
 
