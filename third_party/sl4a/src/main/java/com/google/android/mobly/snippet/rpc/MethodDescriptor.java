@@ -91,8 +91,8 @@ public final class MethodDescriptor {
      * @return TODO
      */
     // TODO(damonkohler): This signature is a bit weird (auto-refactored). The obvious alternative
-    // would be to work on one supplied parameter and return the converted parameter. However, that's
-    // problematic because you lose the ability to call the getXXX methods on the JSON array.
+    // would be to work on one supplied parameter and return the converted parameter. However,
+    // that's problematic because you lose the ability to call the getXXX methods on the JSON array.
     //@VisibleForTesting
     static Object convertParameter(final JSONArray parameters, int index, Type type)
             throws JSONException, RpcError {
@@ -105,7 +105,7 @@ public final class MethodDescriptor {
                 try {
                     return parameters.getBoolean(index);
                 } catch (JSONException e) {
-                    return new Boolean(parameters.getInt(index) != 0);
+                    return parameters.getInt(index) != 0;
                 }
             } else if (type == Long.class || type == long.class) {
                 return parameters.getLong(index);

@@ -26,9 +26,10 @@ import com.google.android.mobly.snippet.event.SnippetEvent;
 import com.google.android.mobly.snippet.rpc.AsyncRpc;
 import com.google.android.mobly.snippet.rpc.Rpc;
 import com.google.android.mobly.snippet.util.Log;
-import com.google.android.mobly.snippet.util.SnippetLibException;
-import java.lang.Thread;
 
+/**
+ * Demonstrates how to schedule an RPC.
+ */
 public class ExampleScheduleRpcSnippet implements Snippet {
 
     /**
@@ -50,9 +51,10 @@ public class ExampleScheduleRpcSnippet implements Snippet {
         /**
          * Sleeps for 10s then make toast and post a {@link SnippetEvent} with some data.
          *
-         * If the sleep is interrupted, a {@link SnippetEvent} signaling failure will be posted
+         * <p>If the sleep is interrupted, a {@link SnippetEvent} signaling failure will be posted
          * instead.
          */
+        @Override
         public void run() {
             Log.d("Sleeping for 10s before posting an event.");
             SnippetEvent event = new SnippetEvent(mCallbackId, mMessage);
