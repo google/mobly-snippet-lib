@@ -28,7 +28,7 @@ import com.google.android.mobly.snippet.rpc.Rpc;
 import com.google.android.mobly.snippet.util.Log;
 
 /**
- * Demonstrates how to schedule an RPC call.
+ * Demonstrates how to schedule an RPC.
  */
 public class ExampleScheduleRpcSnippet implements Snippet {
 
