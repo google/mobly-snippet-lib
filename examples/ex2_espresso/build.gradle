@@ -17,6 +17,11 @@ android {
         main {}
         snippet {}
     }
+    lintOptions {
+        abortOnError true
+        checkAllWarnings true
+        warningsAsErrors true
+    }
 }
 
 dependencies {

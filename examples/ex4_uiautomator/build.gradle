@@ -11,6 +11,11 @@ android {
         versionCode 1
         versionName "0.0.1"
     }
+    lintOptions {
+        abortOnError true
+        checkAllWarnings true
+        warningsAsErrors true
+    }
 }
 
 dependencies {
