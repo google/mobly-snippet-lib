@@ -1,6 +1,8 @@
-# Standalone App Snippet Example
+# Standalone Snippet App Example
 
-This tutorial shows you how to create a standalone Mobly snippet app.
+This tutorial shows you how to create a standalone Mobly snippet app. To create
+a snippet app that controls (instruments) another app under test, please see
+(Example 2](../ex2_espresso/README.md).
 
 ## Tutorial
 

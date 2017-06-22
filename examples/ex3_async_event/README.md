@@ -1,4 +1,4 @@
-# Async Event Rpc Example
+# Async Event RPC Example
 
 This example shows you how to use the @AsyncRpc annotation of Mobly snippet lib
 to handle asynchronous callbacks.

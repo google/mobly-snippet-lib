@@ -58,5 +58,6 @@ mobly snippet lib along with detailed tutorials.
 *   [ex4_uiautomator](examples/ex4_uiautomator): Example of how to create
     snippets that automate the UI actions using UIAutomator. Unlike Espresso
     UIAutomator works even without access to app source code.
-*   [ex5_schedule_rpc](examples/ex5_schedule_rpc): Example of how to use
-    the `scheduleRpc` RPC to handle RPC scheduling.
+*   [ex5_schedule_rpc](examples/ex5_schedule_rpc): Example of how to use the
+    'scheduleRpc' RPC to execute another RPC at a later time, potentially after
+    device disconnection.

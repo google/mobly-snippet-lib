@@ -1,15 +1,18 @@
-# Async Event Rpc Example
+# Scheduling RPCs Example
 
 This example shows you how to use the `scheduleRpc` RPC which is built into
 Mobly snippet lib to handle RPC scheduling.
 
 ## Why this is needed?
 
-Some tests may need to keep USB off while performing test actions. For example,
-for battery test (with Monsoon devices), we may want to measure battery consumption for certain
-test actions (e.g., phone calls). While a phone call is in progress, Monsoon device turns off USB
-and starts to collect battery data. However, regular snippet RPC won't work while USB is off.
-Therefore we need to schedule phone call RPCs before Monsoon starts.
+Some tests may need t snippet RPC to execute when the snippet client is unable
+to reach the device, e.g., performing test actions while USB is disconnected.
+For example, for battery testing (with Monsoon devices), we may want to measure
+power consumed during certain test actions (e.g., phone calls). However
+a Monsoon device turns off USB during battery data measurement, and a regular
+snippet RPC won't work when the client is not connected to the device.
+Therefore, prior to starting the Monsoon measurement we need to schedule a phone
+call RPC prior to soccur during the measurement period.
 
 In this scenario, test steps would be:
 
