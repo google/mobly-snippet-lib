@@ -1,11 +1,13 @@
 # UIAutomator Snippet Example
 
-This example shows you how to create snippets that automate the UI of another
-app using UIAutomator, without access to its source code or classpath.
+This example shows you how to create snippets that control the UI of a device
+across system and multiple app views using UIAutomator. Unlike Espresso-based
+UI automation, it does not require access to app source code.
 
-This snippet is written as a standalone snippet which does not target any other
-app. In particular, it doesn't need to target the app under test, so it doesn't
-need its classpath or to be signed with the same key.
+This snippet is written as a [standalone snippet](../ex1_standalone_app/README.md)
+and does not target another app. In particular, it doesn't need to target the
+app under test, so it doesn't need its classpath or to be signed with the same
+key.
 
 See the [Espresso snippet tutorial](../ex2_espresso/README.md) for more
 information about the app this example automates.

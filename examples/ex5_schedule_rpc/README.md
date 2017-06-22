@@ -1,7 +1,7 @@
 # Async Event Rpc Example
 
-This example shows you how to use the ScheduleRpcUtil.java of Mobly snippet lib
-to handle RPC scheduling.
+This example shows you how to use the `scheduleRpc` RPC which is built into
+Mobly snippet lib to handle RPC scheduling.
 
 ## Why this is needed?
 

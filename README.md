@@ -51,5 +51,12 @@ mobly snippet lib along with detailed tutorials.
 *   [ex1_standalone_app](examples/ex1_standalone_app): Basic example of a
     snippet which is compiled into its own standalone apk.
 *   [ex2_espresso](examples/ex2_espresso): Example of a snippet which
-    instruments a main app to drive its UI using
+    instruments a primary app to drive its UI using
     [Espresso](https://google.github.io/android-testing-support-library/docs/espresso/).
+*   [ex3_async_event](examples/ex3_async_event): Example of how to use the
+    @AsyncRpc annotation to handle asynchornous callbacks.
+*   [ex4_uiautomator](examples/ex4_uiautomator): Example of how to create
+    snippets that automate the UI actions using UIAutomator. Unlike Espresso
+    UIAutomator works even without access to app source code.
+*   [ex5_schedule_rpc](examples/ex5_schedule_rpc): Example of how to use
+    the `scheduleRpc` RPC to handle RPC scheduling.

@@ -1,9 +1,9 @@
 # Async Event Rpc Example
 
-This example shows you how to use the @AsyncRpc of Mobly snippet lib
-to handle asynchornous callbacks.
+This example shows you how to use the @AsyncRpc annotation of Mobly snippet lib
+to handle asynchronous callbacks.
 
-See the source code ExampleAsyncSnippet.java for details.
+See the source code `ExampleAsyncSnippet.java` for details.
 
 ## Running the example code
 

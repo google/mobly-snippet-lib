@@ -1,7 +1,6 @@
 # Standalone App Snippet Example
 
-This tutorial shows you how to create a standalone Mobly snippet app, which runs
-by itself and doesn't instrument a main app.
+This tutorial shows you how to create a standalone Mobly snippet app.
 
 ## Tutorial
 
