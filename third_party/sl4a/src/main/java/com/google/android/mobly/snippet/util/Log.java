@@ -56,9 +56,21 @@ public final class Log {
             throw new IllegalStateException("Logging called before initLogTag()");
         }
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        String fullClassName = stackTraceElements[4].getClassName();
+        String fullClassName = null;
+        int lineNumber = 0;
+        // Walk up the stack and look for the first class name that is neither us nor
+        // android.util.Log: that's the caller.
+        // Do not used hard-coded stack depth: that does not work all the time because of proguard
+        // inline optimization.
+        for (StackTraceElement element : stackTraceElements) {
+          fullClassName = element.getClassName();
+          if (!fullClassName.equals(Log.class.getName()) &&
+              !fullClassName.equals(android.util.Log.class.getName())) {
+            lineNumber = element.getLineNumber();
+            break;
+          }
+        }
         String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-        int lineNumber = stackTraceElements[4].getLineNumber();
         return logTag + "." + className + ":" + lineNumber;
     }
 
