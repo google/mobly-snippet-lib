@@ -139,7 +139,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
             androidProxy.startLocal(port);
         } catch (SocketException e) {
             if ("Permission denied".equals(e.getMessage())) {
-	        throw new RuntimeException(
+                throw new RuntimeException(
                         "Failed to start server. No permission to create a socket. Does the *MAIN* "
                                 + "app manifest declare the INTERNET permission?",
                         e);
