@@ -1,6 +1,6 @@
 # Scheduling RPCs Example
 
-This example shows you how to use the `scheduleRpc` RPC which is built into
+This example shows you how to use `scheduleRpc` which is built into
 Mobly snippet lib to handle RPC scheduling.
 
 ## Why this is needed?

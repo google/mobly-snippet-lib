@@ -3,7 +3,7 @@
 This tutorial shows you how to create snippets that automate the UI of another
 app using Espresso.
 
-The same approach can be used  to create any snippet app that needs to access
+The same approach can be used to create any snippet app that needs to access
 the classes or resources of any other single app.
 
 ## Overview
