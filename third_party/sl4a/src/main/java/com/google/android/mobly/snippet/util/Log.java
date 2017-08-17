@@ -25,6 +25,9 @@ import android.os.Bundle;
 public final class Log {
     public static volatile String APK_LOG_TAG = null;
 
+    private static final String MY_CLASS_NAME = Log.class.getName();
+    private static final String ANDROID_LOG_CLASS_NAME = android.util.Log.class.getName();
+
     private Log() {}
 
     public static synchronized void initLogTag(Context context) {
@@ -56,6 +59,8 @@ public final class Log {
             throw new IllegalStateException("Logging called before initLogTag()");
         }
         StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+
+        boolean isCallerClassNameFound = false;
         String fullClassName = null;
         int lineNumber = 0;
         // Walk up the stack and look for the first class name that is neither us nor
@@ -64,14 +69,21 @@ public final class Log {
         // inline optimization.
         for (StackTraceElement element : stackTraceElements) {
           fullClassName = element.getClassName();
-          if (!fullClassName.equals(Log.class.getName()) &&
-              !fullClassName.equals(android.util.Log.class.getName())) {
+          if (!fullClassName.equals(MY_CLASS_NAME) &&
+              !fullClassName.equals(ANDROID_LOG_CLASS_NAME)) {
             lineNumber = element.getLineNumber();
+            isCallerClassNameFound = true;
             break;
           }
         }
-        String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-        return logTag + "." + className + ":" + lineNumber;
+
+        if (!isCallerClassNameFound) {
+          // Failed to determine caller's class name, fall back the the minimal one.
+          return logTag;
+        } else {
+          String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
+          return logTag + "." + className + ":" + lineNumber;
+        }
     }
 
     public static void v(String message) {
