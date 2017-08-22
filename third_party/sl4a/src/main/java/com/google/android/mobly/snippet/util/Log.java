@@ -23,7 +23,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 
 public final class Log {
-    public static volatile String APK_LOG_TAG = null;
+    public static volatile String apkLogTag = null;
 
     private static final String MY_CLASS_NAME = Log.class.getName();
     private static final String ANDROID_LOG_CLASS_NAME = android.util.Log.class.getName();
@@ -31,7 +31,7 @@ public final class Log {
     private Log() {}
 
     public static synchronized void initLogTag(Context context) {
-        if (APK_LOG_TAG != null) {
+        if (apkLogTag != null) {
             throw new IllegalStateException("Logger should not be re-initialized");
         }
         String packageName = context.getPackageName();
@@ -44,9 +44,9 @@ public final class Log {
                     "Failed to find ApplicationInfo with package name: " + packageName);
         }
         Bundle bundle = appInfo.metaData;
-        APK_LOG_TAG = bundle.getString("mobly-log-tag");
-        if (APK_LOG_TAG == null) {
-            APK_LOG_TAG = packageName;
+        apkLogTag = bundle.getString("mobly-log-tag");
+        if (apkLogTag == null) {
+            apkLogTag = packageName;
             w(
                     "AndroidManifest.xml does not contain metadata field named \"mobly-log-tag\". "
                             + "Using package name for logging instead.");
@@ -54,7 +54,7 @@ public final class Log {
     }
 
     private static String getTag() {
-        String logTag = APK_LOG_TAG;
+        String logTag = apkLogTag;
         if (logTag == null) {
             throw new IllegalStateException("Logging called before initLogTag()");
         }
