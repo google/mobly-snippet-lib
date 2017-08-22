@@ -97,7 +97,7 @@ The snippet code cannot run from a regular test apk because it requires a custom
 
     ```python
     def test_click_button(self):
-      self.dut1.snippet.clickMainButton()
+      self.dut1.snippet.pushMainButton()
     ```
 
 ## Running the example code
