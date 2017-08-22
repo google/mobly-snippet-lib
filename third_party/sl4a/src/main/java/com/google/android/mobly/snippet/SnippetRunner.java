@@ -144,8 +144,8 @@ public class SnippetRunner extends AndroidJUnitRunner {
                                 + "app manifest declare the INTERNET permission?",
                         e);
             }
-	    throw new RuntimeException("Failed to start server", e);
-	} catch (IOException e) {
+            throw new RuntimeException("Failed to start server", e);
+        } catch (IOException e) {
             throw new RuntimeException("Failed to start server", e);
         }
         createNotification();
