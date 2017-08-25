@@ -67,7 +67,9 @@ public final class Log {
         // android.util.Log: that's the caller.
         // Do not used hard-coded stack depth: that does not work all the time because of proguard
         // inline optimization.
-        for (StackTraceElement element : stackTraceElements) {
+        // Skip the first 2 entries added by Thread.currentThread().getStackTrace().
+        for (int i = 2; i < stackTraceElements.length; i++) {
+          StackTraceElement element = stackTraceElements[i];
           fullClassName = element.getClassName();
           if (!fullClassName.equals(MY_CLASS_NAME) &&
               !fullClassName.equals(ANDROID_LOG_CLASS_NAME)) {
