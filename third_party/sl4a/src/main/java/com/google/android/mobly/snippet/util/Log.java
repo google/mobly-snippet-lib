@@ -28,6 +28,12 @@ public final class Log {
     private static final String MY_CLASS_NAME = Log.class.getName();
     private static final String ANDROID_LOG_CLASS_NAME = android.util.Log.class.getName();
 
+    // Skip the first two entries in stack trace when trying to infer the caller.
+    // The first two entries are:
+    // - dalvik.system.VMStack.getThreadStackTrace(Native Method)
+    // - java.lang.Thread.getStackTrace(Thread.java:580)
+    private static final int STACK_TRACE_WALK_START_INDEX = 2;
+
     private Log() {}
 
     public static synchronized void initLogTag(Context context) {
@@ -67,8 +73,7 @@ public final class Log {
         // android.util.Log: that's the caller.
         // Do not used hard-coded stack depth: that does not work all the time because of proguard
         // inline optimization.
-        // Skip the first 2 entries added by Thread.currentThread().getStackTrace().
-        for (int i = 2; i < stackTraceElements.length; i++) {
+        for (int i = STACK_TRACE_WALK_START_INDEX; i < stackTraceElements.length; i++) {
           StackTraceElement element = stackTraceElements[i];
           fullClassName = element.getClassName();
           if (!fullClassName.equals(MY_CLASS_NAME) &&
