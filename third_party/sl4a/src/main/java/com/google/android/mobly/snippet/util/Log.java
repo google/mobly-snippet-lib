@@ -32,6 +32,9 @@ public final class Log {
     // The first two entries are:
     // - dalvik.system.VMStack.getThreadStackTrace(Native Method)
     // - java.lang.Thread.getStackTrace(Thread.java:580)
+    // The {@code getStackTrace()} function returns the stack trace at where the trace is collected
+    // (inisde the JNI function {@code getThreadStackTrace()} instead of at where the {@code
+    // getStackTrace()} is called (althrought this is the natual expectation).
     private static final int STACK_TRACE_WALK_START_INDEX = 2;
 
     private Log() {}
