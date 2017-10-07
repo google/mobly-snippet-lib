@@ -18,10 +18,10 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
-        minSdkVersion 11
+        minSdkVersion 15
         targetSdkVersion 24
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
@@ -29,11 +29,21 @@ android {
         project.group = GROUP_ID
         project.archivesBaseName = ARTIFACT_ID
         project.version = VERSION_NAME
+        jackOptions {
+            enabled true
+        }
     }
+
     lintOptions {
-        abortOnError true
+        abortOnError false
         checkAllWarnings true
         warningsAsErrors true
+        disable 'HardwareIds','MissingApplicationIcon','GoogleAppIndexingWarning','InvalidPackage','OldTargetApi'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
