@@ -21,16 +21,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import org.json.JSONException;
@@ -39,8 +33,7 @@ import org.json.JSONObject;
 /** A simple server. */
 public abstract class SimpleServer {
     private static int threadIndex = 0;
-    private final ConcurrentHashMap<Integer, ConnectionThread> mConnectionThreads =
-            new ConcurrentHashMap<Integer, ConnectionThread>();
+    private final ConcurrentHashMap<Integer, ConnectionThread> mConnectionThreads = new ConcurrentHashMap<>();
     private final List<SimpleServerObserver> mObservers = new ArrayList<>();
     private volatile boolean mStopServer = false;
     private ServerSocket mServer;
@@ -132,56 +125,6 @@ public abstract class SimpleServer {
                 }
             }
         }
-    }
-
-    /** Returns the number of active connections to this server. */
-    public int getNumberOfConnections() {
-        return mConnectionThreads.size();
-    }
-
-    public static InetAddress getPrivateInetAddress() throws UnknownHostException, SocketException {
-
-        InetAddress candidate = null;
-        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-        for (NetworkInterface netint : Collections.list(nets)) {
-            if (!netint.isLoopback() || !netint.isUp()) { // Ignore if localhost or not active
-                continue;
-            }
-            Enumeration<InetAddress> addresses = netint.getInetAddresses();
-            for (InetAddress address : Collections.list(addresses)) {
-                if (address instanceof Inet4Address) {
-                    Log.d("local address " + address);
-                    return address; // Prefer ipv4
-                }
-                candidate = address; // Probably an ipv6
-            }
-        }
-        if (candidate != null) {
-            return candidate; // return ipv6 address if no suitable ipv6
-        }
-        return InetAddress.getLocalHost(); // No damn matches. Give up, return local host.
-    }
-
-    public static InetAddress getPublicInetAddress() throws UnknownHostException, SocketException {
-
-        InetAddress candidate = null;
-        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-        for (NetworkInterface netint : Collections.list(nets)) {
-            if (netint.isLoopback() || !netint.isUp()) { // Ignore if localhost or not active
-                continue;
-            }
-            Enumeration<InetAddress> addresses = netint.getInetAddresses();
-            for (InetAddress address : Collections.list(addresses)) {
-                if (address instanceof Inet4Address) {
-                    return address; // Prefer ipv4
-                }
-                candidate = address; // Probably an ipv6
-            }
-        }
-        if (candidate != null) {
-            return candidate; // return ipv6 address if no suitable ipv6
-        }
-        return InetAddress.getLocalHost(); // No damn matches. Give up, return local host.
     }
 
     /**
