@@ -8,7 +8,7 @@ android {
         minSdkVersion 18
         targetSdkVersion 22
         versionCode 1
-        versionName "0.0.1"
+        versionName "0.0.2"
     }
     lintOptions {
         abortOnError false
@@ -24,7 +24,8 @@ dependencies {
     // 'compile' dep instead:
     //compile 'com.google.android.mobly:mobly-snippet-lib:1.2.0'
     implementation project(':mobly-snippet-lib')
-
-    implementation 'com.android.support:appcompat-v7:24.2.1'
-    implementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
+    implementation 'junit:junit:4.12'
+    implementation 'com.android.support.test:runner:1.0.1'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
 }

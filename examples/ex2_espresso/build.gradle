@@ -26,20 +26,21 @@ android {
         abortOnError false
         checkAllWarnings true
         warningsAsErrors true
-        disable 'HardwareIds','MissingApplicationIcon','GoogleAppIndexingWarning','InvalidPackage','OldTargetApi'
+        disable 'HardcodedText', 'UnusedIds','MissingApplicationIcon','GoogleAppIndexingWarning','InvalidPackage','OldTargetApi'
     }
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:24.2.1'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.test:runner:1.0.1'
 
     // The androidTest package is not for snippet support; it shows an example
     // of an instrumentation test coexisting with a snippet in the same
     // codebase.
-    androidTestImplementation 'com.android.support:support-annotations:24.2.1'
+    androidTestImplementation 'com.android.support:support-annotations:26.1.0'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test:rules:1.0.1'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
@@ -49,6 +50,6 @@ dependencies {
     //snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.2.0'
     snippetImplementation project(':mobly-snippet-lib')
 
-    snippetImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
-    snippetImplementation 'com.android.support:support-annotations:24.2.1'
+    snippetImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    snippetImplementation 'com.android.support:support-annotations:26.1.0'
 }

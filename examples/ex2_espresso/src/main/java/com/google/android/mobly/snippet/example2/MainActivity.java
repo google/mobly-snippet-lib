@@ -16,6 +16,7 @@
 
 package com.google.android.mobly.snippet.example2;
 
+import java.util.Locale;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mNumPressed++;
-                mTextView.setText("Button pressed " + mNumPressed + " times");
+                mTextView.setText(String.format(Locale.ROOT, "Button pressed %d times.", mNumPressed));
             }
         });
     }

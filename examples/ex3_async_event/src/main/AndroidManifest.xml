@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.google.android.mobly.snippet.example3">
 
-    <application>
+    <application android:allowBackup="false">
         <meta-data
             android:name="mobly-snippets"
             android:value="com.google.android.mobly.snippet.example3.ExampleAsyncSnippet" />
