@@ -19,9 +19,9 @@ android {
 }
 
 dependencies {
-    // The 'compile project' dep is to compile against the snippet lib source in
+    // The 'implementation project' dep is to compile against the snippet lib source in
     // this repo. For your own snippets, you'll want to use the regular
-    // 'compile' dep instead:
-    //compile 'com.google.android.mobly:mobly-snippet-lib:1.2.0'
+    // 'implementation' dep instead:
+    //implementation 'com.google.android.mobly:mobly-snippet-lib:1.3.0'
     implementation project(':mobly-snippet-lib')
 }

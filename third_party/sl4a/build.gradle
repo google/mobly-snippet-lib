@@ -33,9 +33,6 @@ android {
         project.group = GROUP_ID
         project.archivesBaseName = ARTIFACT_ID
         project.version = VERSION_NAME
-//        jackOptions {
-//            enabled false  // Can't use for library projects.
-//        }
     }
 
     splits {
