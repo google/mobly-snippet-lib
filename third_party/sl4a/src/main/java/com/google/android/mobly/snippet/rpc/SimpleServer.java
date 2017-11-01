@@ -134,7 +134,7 @@ public abstract class SimpleServer {
         }
     }
 
-    public static InetAddress getPrivateInetAddress() throws UnknownHostException, SocketException {
+    private InetAddress getPrivateInetAddress() throws UnknownHostException, SocketException {
 
         InetAddress candidate = null;
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
