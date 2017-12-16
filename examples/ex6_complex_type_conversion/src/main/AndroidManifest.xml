@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.google.android.mobly.snippet.example6">
+
+    <application>
+        <!-- Required: list of all classes with @Rpc methods. -->
+        <meta-data
+            android:name="mobly-snippets"
+            android:value="com.google.android.mobly.snippet.example6.ExampleSnippet" />
+        <!-- Optional: a class used for converting Java objects to/from JSON. -->
+        <meta-data
+            android:name="mobly-object-converter"
+            android:value="com.google.android.mobly.snippet.example6.ExampleObjectConverter" />
+        <meta-data
+          android:name="mobly-log-tag"
+          android:value="MoblySnippetLibExample6" />
+    </application>
+
+    <instrumentation
+        android:name="com.google.android.mobly.snippet.SnippetRunner"
+        android:targetPackage="com.google.android.mobly.snippet.example6" />
+</manifest>

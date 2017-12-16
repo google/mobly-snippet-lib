@@ -21,6 +21,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelUuid;
+import com.google.android.mobly.snippet.manager.SnippetObjectConverterManager;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -35,6 +36,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonBuilder {
+
+    private JsonBuilder() {}
 
     @SuppressWarnings("unchecked")
     public static Object build(Object data) throws JSONException {
@@ -69,11 +72,11 @@ public class JsonBuilder {
             return data;
         }
         if (data instanceof Set<?>) {
-            List<Object> items = new ArrayList<Object>((Set<?>) data);
+            List<Object> items = new ArrayList<>((Set<?>) data);
             return buildJsonList(items);
         }
         if (data instanceof Collection<?>) {
-            List<Object> items = new ArrayList<Object>((Collection<?>) data);
+            List<Object> items = new ArrayList<>((Collection<?>) data);
             return buildJsonList(items);
         }
         if (data instanceof List<?>) {
@@ -86,8 +89,7 @@ public class JsonBuilder {
             return buildJsonIntent((Intent) data);
         }
         if (data instanceof Map<?, ?>) {
-            // TODO(damonkohler): I would like to make this a checked cast if
-            // possible.
+            // TODO(damonkohler): I would like to make this a checked cast if possible.
             return buildJsonMap((Map<String, ?>) data);
         }
         if (data instanceof ParcelUuid) {
@@ -112,7 +114,11 @@ public class JsonBuilder {
         if (data instanceof Object[]) {
             return buildJSONArray((Object[]) data);
         }
-
+        // Try with custom converter provided by user.
+        Object result = SnippetObjectConverterManager.getInstance().objectToJson(data);
+        if (result != null) {
+            return result;
+        }
         return data.toString();
     }
 
@@ -194,9 +200,5 @@ public class JsonBuilder {
 
     private static JSONObject buildUri(Uri uri) throws JSONException {
         return new JSONObject().put("Uri", build((uri != null) ? uri.toString() : ""));
-    }
-
-    private JsonBuilder() {
-        // This is a utility class.
     }
 }

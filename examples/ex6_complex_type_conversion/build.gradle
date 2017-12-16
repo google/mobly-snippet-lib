@@ -1,0 +1,27 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
+
+    defaultConfig {
+        applicationId "com.google.android.mobly.snippet.example6"
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 1
+        versionName "0.0.1"
+    }
+    lintOptions {
+        abortOnError true
+        checkAllWarnings true
+        warningsAsErrors true
+    }
+}
+
+dependencies {
+    // The 'implementation project' dep is to compile against the snippet lib source in
+    // this repo. For your own snippets, you'll want to use the regular
+    // 'implementation' dep instead:
+    //implementation 'com.google.android.mobly:mobly-snippet-lib:1.2.0'
+    implementation project(':mobly-snippet-lib')
+}
