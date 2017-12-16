@@ -40,7 +40,7 @@ import org.json.JSONObject;
 public abstract class SimpleServer {
     private static int threadIndex = 0;
     private final ConcurrentHashMap<Integer, ConnectionThread> mConnectionThreads =
-            new ConcurrentHashMap<>();
+            new ConcurrentHashMap<Integer, ConnectionThread>();
     private final List<SimpleServerObserver> mObservers = new ArrayList<>();
     private volatile boolean mStopServer = false;
     private ServerSocket mServer;
@@ -134,7 +134,12 @@ public abstract class SimpleServer {
         }
     }
 
-    private InetAddress getPrivateInetAddress() throws UnknownHostException, SocketException {
+    /** Returns the number of active connections to this server. */
+    public int getNumberOfConnections() {
+        return mConnectionThreads.size();
+    }
+
+    public static InetAddress getPrivateInetAddress() throws UnknownHostException, SocketException {
 
         InetAddress candidate = null;
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
@@ -146,6 +151,28 @@ public abstract class SimpleServer {
             for (InetAddress address : Collections.list(addresses)) {
                 if (address instanceof Inet4Address) {
                     Log.d("local address " + address);
+                    return address; // Prefer ipv4
+                }
+                candidate = address; // Probably an ipv6
+            }
+        }
+        if (candidate != null) {
+            return candidate; // return ipv6 address if no suitable ipv6
+        }
+        return InetAddress.getLocalHost(); // No damn matches. Give up, return local host.
+    }
+
+    public static InetAddress getPublicInetAddress() throws UnknownHostException, SocketException {
+
+        InetAddress candidate = null;
+        Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+        for (NetworkInterface netint : Collections.list(nets)) {
+            if (netint.isLoopback() || !netint.isUp()) { // Ignore if localhost or not active
+                continue;
+            }
+            Enumeration<InetAddress> addresses = netint.getInetAddresses();
+            for (InetAddress address : Collections.list(addresses)) {
+                if (address instanceof Inet4Address) {
                     return address; // Prefer ipv4
                 }
                 candidate = address; // Probably an ipv6
