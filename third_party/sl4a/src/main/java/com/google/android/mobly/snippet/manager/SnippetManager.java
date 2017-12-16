@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -111,8 +112,11 @@ public class SnippetManager {
             if (Build.VERSION.SDK_INT < requiredSdkLevel) {
                 throw new SnippetLibException(
                         String.format(
+                                Locale.US,
                                 "%s requires API level %d, current level is %d",
-                                method.getName(), requiredSdkLevel, Build.VERSION.SDK_INT));
+                                method.getName(),
+                                requiredSdkLevel,
+                                Build.VERSION.SDK_INT));
             }
         }
         Snippet object;

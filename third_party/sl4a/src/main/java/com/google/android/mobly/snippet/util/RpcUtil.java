@@ -22,6 +22,7 @@ import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.rpc.JsonRpcResult;
 import com.google.android.mobly.snippet.rpc.MethodDescriptor;
 import com.google.android.mobly.snippet.rpc.RpcError;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import org.json.JSONArray;
@@ -99,7 +100,7 @@ public class RpcUtil {
      */
     public JSONObject invokeRpc(String methodName, JSONArray params, int id, Integer UID)
             throws JSONException {
-        return invokeRpc(methodName, params, id, String.format("%d-%d", UID, id));
+        return invokeRpc(methodName, params, id, String.format(Locale.US, "%d-%d", UID, id));
     }
 
     /**

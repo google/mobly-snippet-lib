@@ -8,20 +8,16 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.google.android.mobly.snippet.example2.MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/main_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Hello World!" />
-        <Button
-            android:id="@+id/main_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Push the button!" />
-    </LinearLayout>
+<TextView
+    android:id="@+id/main_text_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:text="Hello World!" />
+
+<Button
+    android:id="@+id/main_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Push the button!" />
 </RelativeLayout>
