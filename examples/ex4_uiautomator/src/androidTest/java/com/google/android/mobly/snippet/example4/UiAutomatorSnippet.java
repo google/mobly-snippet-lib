@@ -16,11 +16,11 @@
 
 package com.google.android.mobly.snippet.example4;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Assert.assertEquals;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
+import android.support.test.InstrumentationRegistery;
 import android.support.test.uiautomator.By;
 import android.support.test.uiautomator.UiDevice;
 import android.support.test.uiautomator.UiObject2;
