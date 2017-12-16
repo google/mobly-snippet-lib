@@ -1,46 +1,39 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
-    flavorDimensions "examples"
+    compileSdkVersion 24
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.google.android.mobly.snippet.example2"
-        minSdkVersion 15
-        targetSdkVersion 22
+        minSdkVersion 11
+        targetSdkVersion 24
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     productFlavors {
-        main {
-            dimension "examples"
-        }
-        snippet {
-            dimension "examples"
-        }
+        main {}
+        snippet {}
     }
-
     lintOptions {
         abortOnError true
         checkAllWarnings true
         warningsAsErrors true
-        disable 'HardcodedText', 'UnusedIds','MissingApplicationIcon','GoogleAppIndexingWarning','InvalidPackage','OldTargetApi'
     }
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.test:runner:1.0.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
 
     // The androidTest package is not for snippet support; it shows an example
     // of an instrumentation test coexisting with a snippet in the same
     // codebase.
-    androidTestImplementation 'com.android.support:support-annotations:26.1.0'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test:rules:1.0.1'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
+    androidTestCompile 'com.android.support:support-annotations:24.2.1'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
@@ -48,8 +41,8 @@ dependencies {
     // source in this repo. For your own snippets, you'll want to use the
     // regular 'snippetCompile' dep instead:
     //snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.2.0'
-    snippetImplementation project(':mobly-snippet-lib')
+    snippetCompile project(':mobly-snippet-lib')
 
-    snippetImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    snippetImplementation 'com.android.support:support-annotations:26.1.0'
+    snippetCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    snippetCompile 'com.android.support:support-annotations:24.2.1'
 }

@@ -77,22 +77,22 @@ public final class Log {
         // Do not used hard-coded stack depth: that does not work all the time because of proguard
         // inline optimization.
         for (int i = STACK_TRACE_WALK_START_INDEX; i < stackTraceElements.length; i++) {
-            StackTraceElement element = stackTraceElements[i];
-            fullClassName = element.getClassName();
-            if (!fullClassName.equals(MY_CLASS_NAME)
-                    && !fullClassName.equals(ANDROID_LOG_CLASS_NAME)) {
-                lineNumber = element.getLineNumber();
-                isCallerClassNameFound = true;
-                break;
-            }
+          StackTraceElement element = stackTraceElements[i];
+          fullClassName = element.getClassName();
+          if (!fullClassName.equals(MY_CLASS_NAME) &&
+              !fullClassName.equals(ANDROID_LOG_CLASS_NAME)) {
+            lineNumber = element.getLineNumber();
+            isCallerClassNameFound = true;
+            break;
+          }
         }
 
         if (!isCallerClassNameFound) {
-            // Failed to determine caller's class name, fall back the the minimal one.
-            return logTag;
+          // Failed to determine caller's class name, fall back the the minimal one.
+          return logTag;
         } else {
-            String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
-            return logTag + "." + className + ":" + lineNumber;
+          String className = fullClassName.substring(fullClassName.lastIndexOf(".") + 1);
+          return logTag + "." + className + ":" + lineNumber;
         }
     }
 

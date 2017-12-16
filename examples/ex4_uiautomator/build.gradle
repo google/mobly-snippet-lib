@@ -1,20 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 24
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.google.android.mobly.snippet.example4"
         minSdkVersion 18
-        targetSdkVersion 22
+        targetSdkVersion 24
         versionCode 1
-        versionName "0.0.2"
+        versionName "0.0.1"
     }
     lintOptions {
-        abortOnError false
+        abortOnError true
         checkAllWarnings true
         warningsAsErrors true
-        disable 'HardwareIds','MissingApplicationIcon','GoogleAppIndexingWarning','InvalidPackage','OldTargetApi'
     }
 }
 
@@ -23,9 +23,8 @@ dependencies {
     // this repo. For your own snippets, you'll want to use the regular
     // 'compile' dep instead:
     //compile 'com.google.android.mobly:mobly-snippet-lib:1.2.0'
-    implementation project(':mobly-snippet-lib')
-    implementation 'junit:junit:4.12'
-    implementation 'com.android.support.test:runner:1.0.1'
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.test.uiautomator:uiautomator-v18:2.1.3'
+    compile project(':mobly-snippet-lib')
+
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support.test.uiautomator:uiautomator-v18:2.1.2'
 }
