@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -226,6 +227,7 @@ public final class MethodDescriptor {
         }
         String help =
                 String.format(
+                        Locale.US,
                         "%s %s(%s) returns %s  // %s",
                         isAsync() ? "@AsyncRpc" : "@Rpc",
                         mMethod.getName(),

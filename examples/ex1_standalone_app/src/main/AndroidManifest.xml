@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.google.android.mobly.snippet.example1">
 
-    <application>
+    <application android:allowBackup="false">
         <!-- Required: list of all classes with @Rpc methods. -->
         <meta-data
             android:name="mobly-snippets"
