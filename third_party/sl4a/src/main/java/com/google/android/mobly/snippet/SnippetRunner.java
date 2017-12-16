@@ -28,6 +28,7 @@ import com.google.android.mobly.snippet.util.Log;
 import com.google.android.mobly.snippet.util.NotificationIdFactory;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.Locale;
 
 /**
  * A launcher that starts the snippet server as an instrumentation so that it has access to the
@@ -116,7 +117,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
         if (actionStr == null) {
             throw new IllegalArgumentException("\"--e action <action>\" was not specified");
         }
-        Action action = Action.valueOf(actionStr.toUpperCase());
+        Action action = Action.valueOf(actionStr.toUpperCase(Locale.ROOT));
         switch (action) {
             case START:
                 String servicePort = mArguments.getString(ARG_PORT);

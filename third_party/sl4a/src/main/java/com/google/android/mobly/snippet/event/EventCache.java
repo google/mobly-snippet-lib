@@ -19,6 +19,7 @@ package com.google.android.mobly.snippet.event;
 import com.google.android.mobly.snippet.util.Log;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -54,7 +55,7 @@ public class EventCache {
     }
 
     public static String getQueueId(String callbackId, String name) {
-        return String.format(EVENT_DEQUE_ID_TEMPLATE, callbackId, name);
+        return String.format(Locale.US, EVENT_DEQUE_ID_TEMPLATE, callbackId, name);
     }
 
     public LinkedBlockingDeque<SnippetEvent> getEventDeque(String qId) {
@@ -84,11 +85,13 @@ public class EventCache {
                 SnippetEvent retiredEvent = q.removeFirst();
                 Log.v(
                         String.format(
+                                Locale.US,
                                 "Retired event %s due to deque reaching the size limit (%s).",
-                                retiredEvent, EVENT_DEQUE_MAX_SIZE));
+                                retiredEvent,
+                                EVENT_DEQUE_MAX_SIZE));
             }
         }
-        Log.v(String.format("Posted event(%s)", qId));
+        Log.v(String.format(Locale.US, "Posted event(%s)", qId));
     }
 
     /** Clears all cached events. */

@@ -1,44 +1,68 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
     }
 }
 
 plugins {
     id 'com.github.sherter.google-java-format' version '0.6'
+    id 'com.github.dcendents.android-maven' version '2.0'
 }
+
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
+
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
 
     defaultConfig {
-        minSdkVersion 11
-        targetSdkVersion 24
+        minSdkVersion 15
+        targetSdkVersion 22
+        // testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
+
         // Need to set up some project properties to publish to bintray.
         project.group = GROUP_ID
         project.archivesBaseName = ARTIFACT_ID
         project.version = VERSION_NAME
     }
+
+    splits {
+        abi {
+          enable true
+          reset()
+          // Specifies a list of ABIs that Gradle should create APKs for.
+          include "arm64-v8a", "armeabi-v7a", "armeabi"
+          universalApk true
+        }
+    }
+
     lintOptions {
-        abortOnError true
+        abortOnError false
         checkAllWarnings true
         warningsAsErrors true
+        disable 'HardwareIds','MissingApplicationIcon','GoogleAppIndexingWarning','InvalidPackage','OldTargetApi'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
 dependencies {
-    compile 'com.android.support.test:runner:0.5'
+    // implementation fileTree(include: ['*.jar'], dir: 'libs')
+    // implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'junit:junit:4.12'
+    implementation 'com.android.support.test:runner:1.0.1'
 }
 
 googleJavaFormat {
@@ -143,3 +167,26 @@ bintray {
         }
     }
 }
+
+// Open lint's HTML report in your default browser or viewer.
+task openLintReport(type: Exec) {
+    def lint_report = "build/reports/lint-results.html"
+    def cmd = "cat"
+    def platform = System.getProperty('os.name').toLowerCase(Locale.ROOT)
+    if (platform.contains("linux")) {
+        cmd = "xdg-open"
+    } else if (platform.contains("mac os x")) {
+        cmd = "open"
+    } else if (platform.contains("windows")) {
+        cmd = "launch"
+    }
+    commandLine cmd, lint_report
+}
+
+task presubmit {
+    dependsOn { ['googleJavaFormat', 'lint', 'openLintReport'] }
+    doLast {
+        println "Fix any lint issues you see. When it looks good, submit the pull request."
+    }
+}
+
