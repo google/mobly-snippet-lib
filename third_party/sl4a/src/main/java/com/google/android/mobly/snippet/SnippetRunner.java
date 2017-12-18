@@ -160,9 +160,9 @@ public class SnippetRunner extends AndroidJUnitRunner {
                 .setTicker(null)
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle("Snippet Service");
-        Notification mNotification = builder.getNotification();
-        mNotification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
-        mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+        Notification notification = builder.getNotification();
+        notification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     private void sendString(String string) {
