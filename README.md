@@ -62,5 +62,5 @@ mobly snippet lib along with detailed tutorials.
     'scheduleRpc' RPC to execute another RPC at a later time, potentially after
     device disconnection.
 *   [ex6_complex_type_conversion](examples/ex6_complex_type_conversion): Example of how to pass a
-    non-primitive type to the Rpc methods and return non-promitive type from Rpc methods by
+    non-primitive type to the Rpc methods and return non-primitive type from Rpc methods by
     supplying a type converter.

@@ -95,6 +95,7 @@ public class JsonBuilder {
         if (data instanceof ParcelUuid) {
             return data.toString();
         }
+        // TODO(xpconanfan): Deprecate the following default non-primitive type builders.
         if (data instanceof InetSocketAddress) {
             return buildInetSocketAddress((InetSocketAddress) data);
         }

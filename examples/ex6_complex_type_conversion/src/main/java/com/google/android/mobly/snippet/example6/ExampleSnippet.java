@@ -43,8 +43,6 @@ public class ExampleSnippet implements Snippet {
 
     /**
      * Demonstrates serialization/de-serialization of a collection of custom type objects.
-     * @param objects
-     * @return
      */
     @Rpc(description = "Update values for multiple CustomType objects.")
     public ArrayList<CustomType> updateValues(ArrayList<CustomType> objects, String newValue) {
