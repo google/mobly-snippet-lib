@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.net.Uri;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.manager.SnippetManager;
+import com.google.android.mobly.snippet.manager.SnippetObjectConverterManager;
 import com.google.android.mobly.snippet.util.AndroidUtil;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -36,7 +37,7 @@ public final class MethodDescriptor {
     private final Method mMethod;
     private final Class<? extends Snippet> mClass;
 
-    public MethodDescriptor(Class<? extends Snippet> clazz, Method method) {
+    private MethodDescriptor(Class<? extends Snippet> clazz, Method method) {
         mClass = clazz;
         mMethod = method;
     }
@@ -86,16 +87,12 @@ public final class MethodDescriptor {
         return manager.invoke(mClass, mMethod, args);
     }
 
-    /**
-     * Converts a parameter from JSON into a Java Object.
-     *
-     * @return TODO
-     */
+    /** Converts a parameter from JSON into a Java Object. */
     // TODO(damonkohler): This signature is a bit weird (auto-refactored). The obvious alternative
     // would be to work on one supplied parameter and return the converted parameter. However,
     // that's problematic because you lose the ability to call the getXXX methods on the JSON array.
     //@VisibleForTesting
-    static Object convertParameter(final JSONArray parameters, int index, Type type)
+    private static Object convertParameter(final JSONArray parameters, int index, Type type)
             throws JSONException, RpcError {
         try {
             // We must handle null and numbers explicitly because we cannot magically cast them. We
@@ -116,6 +113,8 @@ public final class MethodDescriptor {
                 return parameters.getInt(index);
             } else if (type == Intent.class) {
                 return buildIntent(parameters.getJSONObject(index));
+            } else if (type == String.class) {
+                return parameters.getString(index);
             } else if (type == Integer[].class || type == int[].class) {
                 JSONArray list = parameters.getJSONArray(index);
                 Integer[] result = new Integer[list.length()];
@@ -140,6 +139,13 @@ public final class MethodDescriptor {
             } else if (type == JSONObject.class) {
                 return parameters.getJSONObject(index);
             } else {
+                // Try any custom converter provided.
+                Object object =
+                        SnippetObjectConverterManager.getInstance()
+                                .jsonToObject(parameters.getJSONObject(index), type);
+                if (object != null) {
+                    return object;
+                }
                 // Magically cast the parameter to the right Java type.
                 return ((Class<?>) type).cast(parameters.get(index));
             }
@@ -154,7 +160,7 @@ public final class MethodDescriptor {
         }
     }
 
-    public static Object buildIntent(JSONObject jsonObject) throws JSONException {
+    private static Object buildIntent(JSONObject jsonObject) throws JSONException {
         Intent intent = new Intent();
         if (jsonObject.has("action")) {
             intent.setAction(jsonObject.getString("action"));
@@ -191,7 +197,7 @@ public final class MethodDescriptor {
         return mMethod.getName();
     }
 
-    public Type[] getGenericParameterTypes() {
+    private Type[] getGenericParameterTypes() {
         return mMethod.getGenericParameterTypes();
     }
 
@@ -199,7 +205,7 @@ public final class MethodDescriptor {
         return mMethod.isAnnotationPresent(AsyncRpc.class);
     }
 
-    public Class<? extends Snippet> getSnippetClass() {
+    Class<? extends Snippet> getSnippetClass() {
         return mClass;
     }
 
@@ -216,7 +222,7 @@ public final class MethodDescriptor {
      *
      * @return derived help string
      */
-    public String getHelp() {
+    String getHelp() {
         StringBuilder paramBuilder = new StringBuilder();
         Class<?>[] parameterTypes = mMethod.getParameterTypes();
         for (int i = 0; i < parameterTypes.length; i++) {
@@ -225,15 +231,13 @@ public final class MethodDescriptor {
             }
             paramBuilder.append(parameterTypes[i].getSimpleName());
         }
-        String help =
-                String.format(
-                        Locale.US,
-                        "%s %s(%s) returns %s  // %s",
-                        isAsync() ? "@AsyncRpc" : "@Rpc",
-                        mMethod.getName(),
-                        paramBuilder,
-                        mMethod.getReturnType().getSimpleName(),
-                        getAnnotationDescription());
-        return help;
+        return String.format(
+                Locale.US,
+                "%s %s(%s) returns %s  // %s",
+                isAsync() ? "@AsyncRpc" : "@Rpc",
+                mMethod.getName(),
+                paramBuilder,
+                mMethod.getReturnType().getSimpleName(),
+                getAnnotationDescription());
     }
 }

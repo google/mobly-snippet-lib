@@ -22,6 +22,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import com.google.android.mobly.snippet.Snippet;
+import com.google.android.mobly.snippet.SnippetObjectConverter;
 import com.google.android.mobly.snippet.event.EventSnippet;
 import com.google.android.mobly.snippet.rpc.MethodDescriptor;
 import com.google.android.mobly.snippet.rpc.RpcMinSdk;
@@ -46,10 +47,21 @@ import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 public class SnippetManager {
-    private static final String METADATA_TAG_NAME = "mobly-snippets";
+    /**
+     * Name of the XML tag specifying what snippet classes to look for RPCs in.
+     *
+     * <p>Comma delimited list of full package names for classes that implements the Snippet
+     * interface.
+     */
+    private static final String TAG_NAME_SNIPPET_LIST = "mobly-snippets";
+    /** Name of the XML tag specifying the custom object converter class to use. */
+    private static final String TAG_NAME_OBJECT_CONVERTER = "mobly-object-converter";
+
     private final Map<Class<? extends Snippet>, Snippet> mSnippets;
     /** A map of strings to known RPCs. */
     private final Map<String, MethodDescriptor> mKnownRpcs;
+    /** The converter used to serialize and deserialize objects. */
+    private SnippetObjectConverter mObjectConverter;
 
     private static SnippetManager sInstance = null;
     private boolean mShutdown = false;
@@ -82,6 +94,8 @@ public class SnippetManager {
         if (sInstance != null) {
             throw new IllegalStateException("SnippetManager should not be re-initialized");
         }
+        // Add custom object converter if user provided one.
+        SnippetObjectConverterManager.addConverter(findSnippetObjectConverterFromMetadata(context));
         Collection<Class<? extends Snippet>> classList = findSnippetClassesFromMetadata(context);
         sInstance = new SnippetManager(classList);
         return sInstance;
@@ -158,7 +172,7 @@ public class SnippetManager {
         return mShutdown;
     }
 
-    private static Set<Class<? extends Snippet>> findSnippetClassesFromMetadata(Context context) {
+    private static Bundle findMetadata(Context context) {
         ApplicationInfo appInfo;
         try {
             appInfo =
@@ -170,13 +184,31 @@ public class SnippetManager {
                     "Failed to find ApplicationInfo with package name: "
                             + context.getPackageName());
         }
-        Bundle metadata = appInfo.metaData;
-        String snippets = metadata.getString(METADATA_TAG_NAME);
+        return appInfo.metaData;
+    }
+
+    private static Class<? extends SnippetObjectConverter> findSnippetObjectConverterFromMetadata(
+            Context context) {
+        String className = findMetadata(context).getString(TAG_NAME_OBJECT_CONVERTER);
+        if (className == null) {
+            Log.i("No object converter provided.");
+            return null;
+        }
+        try {
+            return (Class<? extends SnippetObjectConverter>) Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            Log.e("Failed to find class " + className);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Set<Class<? extends Snippet>> findSnippetClassesFromMetadata(Context context) {
+        String snippets = findMetadata(context).getString(TAG_NAME_SNIPPET_LIST);
         if (snippets == null) {
             throw new IllegalStateException(
                     "AndroidManifest.xml does not contain a <metadata> tag with "
                             + "name=\""
-                            + METADATA_TAG_NAME
+                            + TAG_NAME_SNIPPET_LIST
                             + "\"");
         }
         String[] snippetClassNames = snippets.split("\\s*,\\s*");
