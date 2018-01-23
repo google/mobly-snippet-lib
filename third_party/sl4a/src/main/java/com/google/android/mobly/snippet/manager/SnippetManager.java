@@ -98,6 +98,7 @@ public class SnippetManager {
         Class<? extends SnippetObjectConverter> converterClazz =
                 findSnippetObjectConverterFromMetadata(context);
         if (converterClazz != null) {
+            Log.d("Found custom converter class, adding...");
             SnippetObjectConverterManager.addConverter(converterClazz);
         }
         Collection<Class<? extends Snippet>> classList = findSnippetClassesFromMetadata(context);
