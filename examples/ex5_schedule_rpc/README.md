@@ -41,11 +41,11 @@ This folder contains a fully working example of a standalone snippet apk.
 
 1.  Install the apk on your phone
 
-        adb install -r ./examples/ex5_schedule_rpc/build/outputs/apk/ex5_schedule_rpc-debug.apk
+        adb install -r ./examples/ex5_schedule_rpc/build/outputs/apk/debug/ex5_schedule_rpc-debug.apk
 
 1.  Use `snippet_shell` from mobly to trigger `tryEvent()`:
 
-        snippet_shell.py com.google.android.mobly.snippet.example4
+        snippet_shell.py com.google.android.mobly.snippet.example5
 
         >>> callback = s.scheduleRpc('makeToast', 5000, ['message'])
 

@@ -15,7 +15,7 @@ This folder contains a fully working example of a standalone snippet apk.
 
 1.  Install the apk on your phone
 
-        adb install -r ./examples/ex3_async_event/build/outputs/apk/ex3_async_event-debug.apk
+        adb install -r ./examples/ex3_async_event/build/outputs/apk/debug/ex3_async_event-debug.apk
 
 1.  Use `snippet_shell` from mobly to trigger `tryEvent()`:
 

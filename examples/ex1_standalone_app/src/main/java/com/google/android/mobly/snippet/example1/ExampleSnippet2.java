@@ -20,11 +20,19 @@ import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.Rpc;
 
 import com.google.android.mobly.snippet.rpc.RunOnUiThread;
+
+import org.json.JSONArray;
+
 import java.io.IOException;
 
 public class ExampleSnippet2 implements Snippet {
     @Rpc(description = "Returns the given string with the prefix \"bar\"")
     public String getBar(String input) {
+        return "bar " + input;
+    }
+
+    @Rpc(description = "Returns the given JSON array with the prefix \"bar\"")
+    public String getJSONArray(JSONArray input) {
         return "bar " + input;
     }
 

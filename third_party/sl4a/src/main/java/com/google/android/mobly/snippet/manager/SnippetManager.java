@@ -60,8 +60,6 @@ public class SnippetManager {
     private final Map<Class<? extends Snippet>, Snippet> mSnippets;
     /** A map of strings to known RPCs. */
     private final Map<String, MethodDescriptor> mKnownRpcs;
-    /** The converter used to serialize and deserialize objects. */
-    private SnippetObjectConverter mObjectConverter;
 
     private static SnippetManager sInstance = null;
     private boolean mShutdown = false;

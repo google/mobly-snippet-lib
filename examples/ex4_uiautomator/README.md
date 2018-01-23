@@ -26,8 +26,8 @@ UIAutomator to automate a simple app.
 
 1.  Install the apks on your phone
 
-        adb install -r ./examples/ex2_espresso/build/outputs/apk/ex2_espresso-main-debug.apk
-        adb install -r ./examples/ex4_uiautomator/build/outputs/apk/ex4_uiautomator-debug.apk
+        adb install -r ./examples/ex2_espresso/build/outputs/apk/debug/ex2_espresso-main-debug.apk
+        adb install -r ./examples/ex4_uiautomator/build/outputs/apk/debug/ex4_uiautomator-debug.apk
 
 1.  Use `snippet_shell` from mobly to trigger `pushMainButton()`:
 

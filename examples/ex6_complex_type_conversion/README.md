@@ -96,7 +96,7 @@ This folder contains a fully working example of a standalone snippet apk.
 
 1.  Install the apk on your phone
 
-        adb install -r ./examples/ex6_complex_type_conversion/build/outputs/apk/ex6_complex_type_conversion-debug.apk
+        adb install -r ./examples/ex6_complex_type_conversion/build/outputs/apk/debug/ex6_complex_type_conversion-debug.apk
 
 1.  Use Mobly's `snippet_shell` from mobly to trigger the Rpc methods:
 

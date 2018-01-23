@@ -18,7 +18,6 @@ package com.google.android.mobly.snippet.rpc;
 
 import android.content.ComponentName;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import com.google.android.mobly.snippet.manager.SnippetObjectConverterManager;
@@ -197,9 +196,5 @@ public class JsonBuilder {
         url.put("Port", data.getPort());
         url.put("Protocol", data.getProtocol());
         return url;
-    }
-
-    private static JSONObject buildUri(Uri uri) throws JSONException {
-        return new JSONObject().put("Uri", build((uri != null) ? uri.toString() : ""));
     }
 }

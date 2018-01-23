@@ -93,7 +93,7 @@ This folder contains a fully working example of a standalone snippet apk.
 
 1.  Install the apk on your phone
 
-        adb install -r ./examples/ex1_standalone_app/build/outputs/apk/ex1_standalone_app-debug.apk
+        adb install -r ./examples/ex1_standalone_app/build/outputs/apk/debug/ex1_standalone_app-debug.apk
 
 1.  Use `snippet_shell` from mobly to trigger `getFoo()`:
 

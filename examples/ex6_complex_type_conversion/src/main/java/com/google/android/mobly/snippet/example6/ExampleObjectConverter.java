@@ -1,7 +1,5 @@
 package com.google.android.mobly.snippet.example6;
 
-import android.os.Bundle;
-
 import com.google.android.mobly.snippet.SnippetObjectConverter;
 
 import org.json.JSONException;
