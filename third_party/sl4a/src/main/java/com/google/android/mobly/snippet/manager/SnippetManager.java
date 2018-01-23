@@ -95,7 +95,11 @@ public class SnippetManager {
             throw new IllegalStateException("SnippetManager should not be re-initialized");
         }
         // Add custom object converter if user provided one.
-        SnippetObjectConverterManager.addConverter(findSnippetObjectConverterFromMetadata(context));
+        Class<? extends SnippetObjectConverter> converterClazz =
+                findSnippetObjectConverterFromMetadata(context);
+        if (converterClazz != null) {
+            SnippetObjectConverterManager.addConverter(converterClazz);
+        }
         Collection<Class<? extends Snippet>> classList = findSnippetClassesFromMetadata(context);
         sInstance = new SnippetManager(classList);
         return sInstance;
