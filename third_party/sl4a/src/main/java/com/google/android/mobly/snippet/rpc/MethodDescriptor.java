@@ -138,6 +138,8 @@ public final class MethodDescriptor {
                 return result;
             } else if (type == JSONObject.class) {
                 return parameters.getJSONObject(index);
+            } else if (type == JSONArray.class) {
+                return parameters.getJSONArray(index);
             } else {
                 // Try any custom converter provided.
                 Object object =
