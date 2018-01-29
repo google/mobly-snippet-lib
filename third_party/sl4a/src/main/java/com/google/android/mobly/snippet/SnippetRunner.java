@@ -67,7 +67,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
      * <p>Incrementing this means that compatibility with clients using the older version is broken.
      * Avoid breaking compatibility unless there is no other choice.
      */
-    public static final int PROTOCOL_MAJOR_VERSION = 1;
+    private static final int PROTOCOL_MAJOR_VERSION = 1;
 
     /**
      * Minor version of the launch and communication protocol.
@@ -75,7 +75,7 @@ public class SnippetRunner extends AndroidJUnitRunner {
      * <p>Increment this when new features are added to the launch and communication protocol that
      * are backwards compatible with the old protocol and don't break existing clients.
      */
-    public static final int PROTOCOL_MINOR_VERSION = 0;
+    private static final int PROTOCOL_MINOR_VERSION = 0;
 
     private static final String ARG_ACTION = "action";
     private static final String ARG_PORT = "port";
@@ -83,13 +83,12 @@ public class SnippetRunner extends AndroidJUnitRunner {
     private enum Action {
         START,
         STOP
-    };
+    }
 
     private static final int NOTIFICATION_ID = NotificationIdFactory.create();
 
     private Bundle mArguments;
     private NotificationManager mNotificationManager;
-    private Notification mNotification;
 
     @Override
     public void onCreate(Bundle arguments) {
@@ -161,9 +160,9 @@ public class SnippetRunner extends AndroidJUnitRunner {
                 .setTicker(null)
                 .setWhen(System.currentTimeMillis())
                 .setContentTitle("Snippet Service");
-        mNotification = builder.getNotification();
-        mNotification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
-        mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+        Notification notification = builder.getNotification();
+        notification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     private void sendString(String string) {
