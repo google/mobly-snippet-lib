@@ -129,13 +129,13 @@ public class SnippetRunner extends AndroidJUnitRunner {
         Action action = Action.valueOf(actionStr.toUpperCase(Locale.ROOT));
         switch (action) {
             case START:
+                initChannel();
                 String servicePort = mArguments.getString(ARG_PORT);
                 int port = 0 /* auto chosen */;
                 if (servicePort != null) {
                     port = Integer.parseInt(servicePort);
                 }
                 startServer(port);
-                initChannel();
                 break;
             case STOP:
                 mNotificationManager.cancel(NOTIFICATION_ID);
@@ -170,7 +170,8 @@ public class SnippetRunner extends AndroidJUnitRunner {
         Notification.Builder builder;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             builder = new Notification.Builder(getTargetContext());
-        } else {builder = new Notification.Builder(getTargetContext(), SNIPPET_CHANNEL_ID);
+        } else {
+            builder = new Notification.Builder(getTargetContext(), SNIPPET_CHANNEL_ID);
         }
 
         builder.setSmallIcon(android.R.drawable.btn_star)
