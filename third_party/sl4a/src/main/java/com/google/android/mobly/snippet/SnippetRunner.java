@@ -129,7 +129,6 @@ public class SnippetRunner extends AndroidJUnitRunner {
         Action action = Action.valueOf(actionStr.toUpperCase(Locale.ROOT));
         switch (action) {
             case START:
-                initChannel();
                 String servicePort = mArguments.getString(ARG_PORT);
                 int port = 0 /* auto chosen */;
                 if (servicePort != null) {
@@ -170,21 +169,26 @@ public class SnippetRunner extends AndroidJUnitRunner {
         Notification.Builder builder;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             builder = new Notification.Builder(getTargetContext());
-        } else {
-            builder = new Notification.Builder(getTargetContext(), SNIPPET_CHANNEL_ID);
-        }
-
-        builder.setSmallIcon(android.R.drawable.btn_star)
-                .setTicker(null)
-                .setWhen(System.currentTimeMillis())
-                .setContentTitle("Snippet Service");
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builder.setSmallIcon(android.R.drawable.btn_star)
+                    .setTicker(null)
+                    .setWhen(System.currentTimeMillis())
+                    .setContentTitle("Snippet Service");
             mNotification = builder.getNotification();
         } else {
+            // Create a new channel for notifications. Needed for versions >= O
+            NotificationChannel channel = new NotificationChannel(
+                    SNIPPET_CHANNEL_ID, SNIPPET_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(SNIPPET_CHANNEL_DESC);
+            mNotificationManager.createNotificationChannel(channel);
+
+            // Build notification
+            builder = new Notification.Builder(getTargetContext(), SNIPPET_CHANNEL_ID);
+            builder.setSmallIcon(android.R.drawable.btn_star)
+                    .setTicker(null)
+                    .setWhen(System.currentTimeMillis())
+                    .setContentTitle("Snippet Service");
             mNotification = builder.build();
         }
-
         mNotification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
         mNotificationManager.notify(NOTIFICATION_ID, mNotification);
     }
@@ -194,21 +198,5 @@ public class SnippetRunner extends AndroidJUnitRunner {
         Bundle bundle = new Bundle();
         bundle.putString(Instrumentation.REPORT_KEY_STREAMRESULT, string + "\n");
         sendStatus(0, bundle);
-    }
-
-    /**
-     * Creates a new channel for posting notifications. This is required for versions >= O (26).
-     */
-    private void initChannel() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            // We only need to create channels for versions >= O (26)
-            return;
-        }
-
-        // Create a new channel for notifications
-        NotificationChannel channel = new NotificationChannel(
-                SNIPPET_CHANNEL_ID, SNIPPET_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-        channel.setDescription(SNIPPET_CHANNEL_DESC);
-        mNotificationManager.createNotificationChannel(channel);
     }
 }
