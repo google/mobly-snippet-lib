@@ -85,9 +85,9 @@ public class SnippetRunner extends AndroidJUnitRunner {
     /**
      * Values needed to create a notification channel. This applies to versions > O (26).
      */
-    private static final String SNIPPET_CHANNEL_ID = "msl_channel";
-    private static final String SNIPPET_CHANNEL_DESC = "Channel reserved for mobly-snippet-lib.";
-    private static final CharSequence SNIPPET_CHANNEL_NAME = "msl";
+    private static final String NOTIFICATION_CHANNEL_ID = "msl_channel";
+    private static final String NOTIFICATION_CHANNEL_DESC = "Channel reserved for mobly-snippet-lib.";
+    private static final CharSequence NOTIFICATION_CHANNEL_NAME = "msl";
 
     private enum Action {
         START,
@@ -177,12 +177,12 @@ public class SnippetRunner extends AndroidJUnitRunner {
         } else {
             // Create a new channel for notifications. Needed for versions >= O
             NotificationChannel channel = new NotificationChannel(
-                    SNIPPET_CHANNEL_ID, SNIPPET_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription(SNIPPET_CHANNEL_DESC);
+                    NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(NOTIFICATION_CHANNEL_DESC);
             mNotificationManager.createNotificationChannel(channel);
 
             // Build notification
-            builder = new Notification.Builder(getTargetContext(), SNIPPET_CHANNEL_ID);
+            builder = new Notification.Builder(getTargetContext(), NOTIFICATION_CHANNEL_ID);
             builder.setSmallIcon(android.R.drawable.btn_star)
                     .setTicker(null)
                     .setWhen(System.currentTimeMillis())
