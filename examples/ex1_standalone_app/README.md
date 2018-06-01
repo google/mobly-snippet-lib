@@ -2,7 +2,7 @@
 
 This tutorial shows you how to create a standalone Mobly snippet app. To create
 a snippet app that controls (instruments) another app under test, please see
-(Example 2](../ex2_espresso/README.md).
+[Example 2](../ex2_espresso/README.md).
 
 ## Tutorial
 
@@ -25,7 +25,7 @@ a snippet app that controls (instruments) another app under test, please see
     public class ExampleSnippet implements Snippet {
       @Rpc(description='Returns a string containing the given number.')
       public String getFoo(Integer input) {
-        return 'foo ' + input;
+        return "foo " + input;
       }
 
       @Override
