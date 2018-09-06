@@ -38,8 +38,8 @@ and allows you to get either the test app's or the main app's context from
 `InstrumentationRegistry`.
 
 Once started, the special runner starts a web server which listens for requests
-to trigger snippets. The server's handler locates the corrsponding methods by
-reflection, runs them, and returns results over the tcp socket. All common
+to trigger snippets. The server's handler locates the corresponding methods by
+reflection, runs them, and returns results over the TCP socket. All common
 built-in variable types are supported as arguments.
 
 
@@ -54,7 +54,7 @@ mobly snippet lib along with detailed tutorials.
     instruments a primary app to drive its UI using
     [Espresso](https://google.github.io/android-testing-support-library/docs/espresso/).
 *   [ex3_async_event](examples/ex3_async_event): Example of how to use the
-    @AsyncRpc annotation to handle asynchornous callbacks.
+    @AsyncRpc annotation to handle asynchronous callbacks.
 *   [ex4_uiautomator](examples/ex4_uiautomator): Example of how to create
     snippets that automate the UI actions using UIAutomator. Unlike Espresso
     UIAutomator works even without access to app source code.
