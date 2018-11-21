@@ -44,7 +44,7 @@ public class EspressoSnippet implements Snippet {
         }
         onView(withId(R.id.main_button)).perform(ViewActions.click());
         if (checkFirstRun) {
-            onView(withId(R.id.main_text_view)).check(matches(withText("Button pressed 1 times")));
+            onView(withId(R.id.main_text_view)).check(matches(withText("Button pressed 1 times.")));
         }
     }
 
