@@ -43,6 +43,6 @@ public class EspressoTest {
     public void espressoTest() {
         onView(withId(R.id.main_text_view)).check(matches(withText("Hello World!")));
         onView(withId(R.id.main_button)).perform(ViewActions.click());
-        onView(withId(R.id.main_text_view)).check(matches(withText("Button pressed 1 times")));
+        onView(withId(R.id.main_text_view)).check(matches(withText("Button pressed 1 times.")));
     }
 }
