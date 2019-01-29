@@ -111,7 +111,7 @@ to automate a simple app.
 
 1.  Install the apk on your phone
 
-        adb install -r ./examples/ex2_espresso/build/outputs/apk/debug/ex2_espresso-snippet-debug.apk
+        adb install -r ./examples/ex2_espresso/build/outputs/apk/snippet/debug/ex2_espresso-snippet-debug.apk
 
 1.  Use `snippet_shell` from mobly to trigger `pushMainButton()`:
 
