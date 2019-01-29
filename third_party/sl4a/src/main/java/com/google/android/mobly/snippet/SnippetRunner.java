@@ -21,7 +21,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Process;
-import android.support.test.runner.AndroidJUnitRunner;
+import androidx.test.runner.AndroidJUnitRunner;
 import com.google.android.mobly.snippet.rpc.AndroidProxy;
 import com.google.android.mobly.snippet.util.EmptyTestClass;
 import com.google.android.mobly.snippet.util.Log;
@@ -34,10 +34,9 @@ import java.util.Locale;
  * A launcher that starts the snippet server as an instrumentation so that it has access to the
  * target app's context.
  *
- * <p>We have to extend some subclass of {@link android.test.InstrumentationTestRunner} because
- * snippets are launched with 'am instrument'. We're specifically extending {@link
- * AndroidJUnitRunner} because Espresso requires being called through it, since it sets up {@link
- * android.support.test.InstrumentationRegistry} which Espresso requires.
+ * <p>We have to extend some subclass of {@link androidx.test.runner.AndroidJUnitRunner} because
+ * snippets are launched with 'am instrument', and snippet APKs need to access {@link
+ * androidx.test.platform.app.InstrumentationRegistry}.
  *
  * <p>The launch and communication protocol between snippet and client is versionated and reported
  * as follows:

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
     flavorDimensions "examples"
 
     defaultConfig {
@@ -10,7 +10,7 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "0.0.1"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     productFlavors {
@@ -31,15 +31,15 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support.test:runner:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.1.0-alpha01'
+    implementation 'androidx.test:runner:1.1.1'
 
     // The androidTest package is not for snippet support; it shows an example
     // of an instrumentation test coexisting with a snippet in the same
     // codebase.
-    androidTestImplementation 'com.android.support:support-annotations:27.1.1'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.1', {
+    androidTestImplementation 'androidx.annotation:annotation:1.0.1'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
@@ -49,7 +49,7 @@ dependencies {
     //snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.3.0'
     snippetImplementation project(':mobly-snippet-lib')
 
-    snippetImplementation 'com.android.support:support-annotations:27.1.1'
-    snippetImplementation 'com.android.support.test:rules:1.0.2'
-    snippetImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    snippetImplementation 'androidx.annotation:annotation:1.0.1'
+    snippetImplementation 'androidx.test:rules:1.1.1'
+    snippetImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 }

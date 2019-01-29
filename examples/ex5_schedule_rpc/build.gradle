@@ -23,5 +23,5 @@ dependencies {
     // this repo. For your own snippets, you'll want to use the regular 'compile' dep instead:
     // compile 'com.google.android.mobly:mobly-snippet-lib:1.3.0'
     implementation project(':mobly-snippet-lib')
-    implementation 'com.android.support.test:runner:1.0.2'
+    implementation 'androidx.test:runner:1.1.1'
 }
