@@ -50,13 +50,11 @@ import java.util.Locale;
  *         <li>'stop' action prints 'OK (0 tests)'
  *         <li>'start' action prints nothing.
  *       </ul>
- *
  *   <li>v1.0: New instrumentation output added to track bringup process
  *       <ul>
  *         <li>"SNIPPET START, PROTOCOL &lt;major&gt; &lt;minor&gt;" upon snippet start
  *         <li>"SNIPPET SERVING, PORT &lt;port&gt;" once server is ready
  *       </ul>
- *
  * </ul>
  */
 public class SnippetRunner extends AndroidJUnitRunner {

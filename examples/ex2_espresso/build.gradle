@@ -7,14 +7,14 @@ android {
     defaultConfig {
         applicationId "com.google.android.mobly.snippet.example2"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 26
         versionCode 1
         versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     productFlavors {
-        main {
+        original {
             dimension "examples"
         }
         snippet {

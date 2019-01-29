@@ -40,9 +40,8 @@ public class EventSnippet implements Snippet {
     private final EventCache mEventCache = EventCache.getInstance();
 
     @Rpc(
-        description =
-                "Blocks until an event of a specified type has been received. The returned event is removed from the cache. Default timeout is 60s."
-    )
+            description =
+                    "Blocks until an event of a specified type has been received. The returned event is removed from the cache. Default timeout is 60s.")
     public JSONObject eventWaitAndGet(
             String callbackId, String eventName, @Nullable Integer timeout)
             throws InterruptedException, JSONException, EventSnippetException {
@@ -61,11 +60,10 @@ public class EventSnippet implements Snippet {
     }
 
     @Rpc(
-        description =
-                "Gets and removes all the events of a certain name that have been received so far. "
-                        + "Non-blocking. Potentially racey since it does not guarantee no event of "
-                        + "the same name will occur after the call."
-    )
+            description =
+                    "Gets and removes all the events of a certain name that have been received so far. "
+                            + "Non-blocking. Potentially racey since it does not guarantee no event of "
+                            + "the same name will occur after the call.")
     public List<JSONObject> eventGetAll(String callbackId, String eventName)
             throws InterruptedException, JSONException {
         String qId = EventCache.getQueueId(callbackId, eventName);
