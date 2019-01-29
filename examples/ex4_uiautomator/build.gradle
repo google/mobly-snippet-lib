@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    // This has to match what the appcompat dep expects.
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.google.android.mobly.snippet.example4"
         minSdkVersion 18
-        targetSdkVersion 22
+        targetSdkVersion 26
         versionCode 1
         versionName "0.0.2"
     }

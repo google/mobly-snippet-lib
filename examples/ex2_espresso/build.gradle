@@ -18,6 +18,7 @@ android {
             dimension "examples"
         }
         snippet {
+            testApplicationId "com.google.android.mobly.snippet.example2.snippet"
             dimension "examples"
         }
     }

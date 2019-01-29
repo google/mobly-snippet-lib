@@ -20,7 +20,8 @@ import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
 import android.content.Intent;
-import androidx.test.InstrumentationRegistry;
+
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.By;
 import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject2;
@@ -53,7 +54,7 @@ public class UiAutomatorSnippet implements Snippet {
     private final UiDevice mDevice;
 
     public UiAutomatorSnippet() {
-        mContext = InstrumentationRegistry.getContext();
+        mContext = InstrumentationRegistry.getInstrumentation().getContext();
         mDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
     }
 
