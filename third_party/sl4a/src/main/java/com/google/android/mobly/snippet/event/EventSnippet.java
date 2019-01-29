@@ -16,7 +16,7 @@
 
 package com.google.android.mobly.snippet.event;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.rpc.Rpc;
 import java.util.ArrayList;

@@ -18,7 +18,7 @@ package com.google.android.mobly.snippet.example5;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 import android.widget.Toast;
 import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.event.EventCache;
