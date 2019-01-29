@@ -10,7 +10,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.github.sherter.google-java-format' version '0.6'
+    id 'com.github.sherter.google-java-format' version '0.8'
     id 'com.github.dcendents.android-maven' version '2.0'
 }
 
@@ -76,8 +76,6 @@ task sourcesJar(type: Jar) {
 
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(
-        android.getBootClasspath().join(File.pathSeparator))
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

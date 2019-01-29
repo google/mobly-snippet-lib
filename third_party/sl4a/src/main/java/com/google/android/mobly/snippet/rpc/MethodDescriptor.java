@@ -91,7 +91,7 @@ public final class MethodDescriptor {
     // TODO(damonkohler): This signature is a bit weird (auto-refactored). The obvious alternative
     // would be to work on one supplied parameter and return the converted parameter. However,
     // that's problematic because you lose the ability to call the getXXX methods on the JSON array.
-    //@VisibleForTesting
+    // @VisibleForTesting
     private static Object convertParameter(final JSONArray parameters, int index, Type type)
             throws JSONException, RpcError {
         try {
