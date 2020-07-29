@@ -122,6 +122,13 @@ public final class MethodDescriptor {
                     result[i] = list.getInt(i);
                 }
                 return result;
+            } else if (type == Long[].class || type == long[].class) {
+                JSONArray list = parameters.getJSONArray(index);
+                Long[] result = new Long[list.length()];
+                for (int i = 0; i < list.length(); i++) {
+                    result[i] = list.getLong(i);
+                }
+                return result;
             } else if (type == Byte.class || type == byte[].class) {
                 JSONArray list = parameters.getJSONArray(index);
                 byte[] result = new byte[list.length()];
