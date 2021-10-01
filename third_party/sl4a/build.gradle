@@ -20,11 +20,11 @@ apply plugin: 'com.jfrog.bintray'
 
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 26
+        minSdkVersion 26
+        targetSdkVersion 31
         versionCode VERSION_CODE.toInteger()
         versionName VERSION_NAME
 
@@ -60,8 +60,8 @@ android {
 dependencies {
     // implementation fileTree(include: ['*.jar'], dir: 'libs')
     // implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'junit:junit:4.12'
-    implementation 'androidx.test:runner:1.1.1'
+    implementation 'junit:junit:4.13.2'
+    implementation 'androidx.test:runner:1.4.0'
 }
 
 googleJavaFormat {
