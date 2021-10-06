@@ -198,8 +198,8 @@ public class SnippetManager {
             return null;
         }
         try {
-            return (Class<? extends SnippetObjectConverter>) Class.forName(className);
-        } catch (ClassNotFoundException e) {
+            return Class.forName(className).asSubclass(SnippetObjectConverter.class);
+        } catch (ClassNotFoundException | ClassCastException e) {
             Log.e("Failed to find class " + className);
             throw new RuntimeException(e);
         }
@@ -223,9 +223,10 @@ public class SnippetManager {
         for (String snippetClassName : snippetClassNames) {
             try {
                 Log.i("Trying to load Snippet class: " + snippetClassName);
-                Class<?> snippetClass = Class.forName(snippetClassName);
-                receiverSet.add((Class<? extends Snippet>) snippetClass);
-            } catch (ClassNotFoundException e) {
+                Class<? extends Snippet> snippetClass =
+                        Class.forName(snippetClassName).asSubclass(Snippet.class);
+                receiverSet.add(snippetClass);
+            } catch (ClassNotFoundException | ClassCastException e) {
                 Log.e("Failed to find class " + snippetClassName);
                 throw new RuntimeException(e);
             }

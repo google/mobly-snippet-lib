@@ -17,8 +17,10 @@ package com.google.android.mobly.snippet;
 
 import android.app.Instrumentation;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Process;
 import androidx.test.runner.AndroidJUnitRunner;
@@ -76,6 +78,13 @@ public class SnippetRunner extends AndroidJUnitRunner {
 
     private static final String ARG_ACTION = "action";
     private static final String ARG_PORT = "port";
+
+    /**
+     * Values needed to create a notification channel. This applies to versions > O (26).
+     */
+    private static final String NOTIFICATION_CHANNEL_ID = "msl_channel";
+    private static final String NOTIFICATION_CHANNEL_DESC = "Channel reserved for mobly-snippet-lib.";
+    private static final CharSequence NOTIFICATION_CHANNEL_NAME = "msl";
 
     private enum Action {
         START,
@@ -152,13 +161,31 @@ public class SnippetRunner extends AndroidJUnitRunner {
         Log.i("Snippet server started for process " + Process.myPid() + " on port " + actualPort);
     }
 
+    @SuppressWarnings("deprecation") // Depreciated calls needed for versions < O (26)
     private void createNotification() {
-        Notification.Builder builder = new Notification.Builder(getTargetContext());
-        builder.setSmallIcon(android.R.drawable.btn_star)
-                .setTicker(null)
-                .setWhen(System.currentTimeMillis())
-                .setContentTitle("Snippet Service");
-        mNotification = builder.getNotification();
+        Notification.Builder builder;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            builder = new Notification.Builder(getTargetContext());
+            builder.setSmallIcon(android.R.drawable.btn_star)
+                    .setTicker(null)
+                    .setWhen(System.currentTimeMillis())
+                    .setContentTitle("Snippet Service");
+            mNotification = builder.getNotification();
+        } else {
+            // Create a new channel for notifications. Needed for versions >= O
+            NotificationChannel channel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription(NOTIFICATION_CHANNEL_DESC);
+            mNotificationManager.createNotificationChannel(channel);
+
+            // Build notification
+            builder = new Notification.Builder(getTargetContext(), NOTIFICATION_CHANNEL_ID);
+            builder.setSmallIcon(android.R.drawable.btn_star)
+                    .setTicker(null)
+                    .setWhen(System.currentTimeMillis())
+                    .setContentTitle("Snippet Service");
+            mNotification = builder.build();
+        }
         mNotification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
         mNotificationManager.notify(NOTIFICATION_ID, mNotification);
     }
