@@ -1,3 +1,10 @@
+1.3.1:
+  - Migrate from android.support to androidx library
+  - Add a default close() method
+  - Support for long arrays as parameters
+  - Use newer Notification methods for Android O and above
+  - Various minor fixes
+
 1.3.0:
   - Support for RPC scheduling
   - Support for custom converters of non-primitive types
