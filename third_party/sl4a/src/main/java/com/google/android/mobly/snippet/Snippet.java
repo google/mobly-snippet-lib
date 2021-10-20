@@ -18,5 +18,6 @@ package com.google.android.mobly.snippet;
 
 public interface Snippet {
     /** Invoked when the receiver is shut down. */
-    default void shutdown() throws Exception {};
+    default void shutdown() throws Exception {}
+    ;
 }

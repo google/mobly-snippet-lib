@@ -1,23 +1,17 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 }
 
 plugins {
-    id 'com.github.sherter.google-java-format' version '0.8'
-    id 'com.github.dcendents.android-maven' version '2.0'
+    id 'com.github.sherter.google-java-format' version '0.9'
+    id 'maven-publish'
+    id 'signing'
 }
 
-
 apply plugin: 'com.android.library'
-apply plugin: 'com.jfrog.bintray'
-
 
 android {
     compileSdkVersion 31
@@ -58,8 +52,6 @@ android {
 }
 
 dependencies {
-    // implementation fileTree(include: ['*.jar'], dir: 'libs')
-    // implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'junit:junit:4.13.2'
     implementation 'androidx.test:runner:1.4.0'
 }
@@ -75,6 +67,11 @@ task sourcesJar(type: Jar) {
 
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.addStringOption('encoding', 'UTF-8')
+    options.addStringOption('charSet', 'UTF-8')
+    failOnError false
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -87,87 +84,64 @@ artifacts {
     archives sourcesJar
 }
 
-// bintray packaging information
-install {
-    repositories.mavenInstaller {
-        pom.project {
-            name ARTIFACT_ID
-            description
-                'Android library for triggering device-side code from ' +
-                'host-side Mobly tests.'
-            url 'https://github.com/google/mobly-snippet-lib'
 
-            packaging 'aar'
-            groupId GROUP_ID
-            artifactId ARTIFACT_ID
-            version VERSION_NAME
-            name ARTIFACT_ID
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId GROUP_ID
+                artifactId ARTIFACT_ID
+                version VERSION_NAME
+                from components.release
 
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
+                artifact sourcesJar
+                artifact javadocJar
+
+                pom {
+                    name = ARTIFACT_ID
+                    description = 'Android library for triggering device-side ' +
+                                  'code from host-side Mobly tests.'
+                    url = 'https://github.com/google/mobly-snippet-lib'
+                    licenses {
+                        license {
+                            name = 'The Apache Software License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution = 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = 'The Mobly Team'
+                        }
+                    }
+                    scm {
+                        connection = 'https://github.com/google/mobly-snippet-lib.git'
+                        url = 'https://github.com/google/mobly-snippet-lib'
+                    }
                 }
             }
-            scm {
-                connection 'https://github.com/google/mobly-snippet-lib.git'
-                url 'https://github.com/google/mobly-snippet-lib'
+        }
+
+        repositories {
+            maven {
+                def releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                credentials {
+                    username ossrhUsername
+                    password ossrhPassword
+                }
             }
         }
     }
-}
-
-// Try loading bintray.properties. It's okay if this fails; we might not be
-// uploading.
-def bintrayPropFile = project.rootProject.file('bintray.properties')
-if (bintrayPropFile.exists()) {
-    Properties prop = new Properties()
-    prop.load(new FileInputStream(bintrayPropFile))
-    project.ext.bintrayUser = prop.user
-    project.ext.bintrayKey = prop.key
-} else {
-    project.ext.bintrayUser = null
-    project.ext.bintrayKey = null
-}
-
-gradle.taskGraph.whenReady { graph ->
-    if (graph.hasTask(bintrayUpload)) {
-        if (project.bintrayUser == null || project.bintrayKey == null) {
-            if (bintrayPropFile.exists()) {
-                throw new IllegalArgumentException(
-                    bintrayPropFile.toString()
-                    + ' does not contain "user" or "key" props')
-            } else {
-                throw new FileNotFoundException(
-                    'bintray.properties not found at path: ' + bintrayPropFile)
-            }
-        }
-    }
-}
-
-bintray {
-    user = project.bintrayUser
-    key = project.bintrayKey
-    configurations = ['archives']
-    pkg {
-        repo = 'mobly'
-        name = ARTIFACT_ID
-        userOrg = 'google'
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/google/mobly-snippet-lib.git'
-        version {
-            name = VERSION_NAME
-            desc = 'Mobly Snippet Lib ' + VERSION_NAME
-            released  = new Date()
-            vcsTag = VERSION_NAME
-        }
+    signing {
+        sign publishing.publications.release
     }
 }
 
 // Open lint's HTML report in your default browser or viewer.
 task openLintReport(type: Exec) {
-    def lint_report = "build/reports/lint-results.html"
+    def lint_report = "build/reports/lint-results-debug.html"
     def cmd = "cat"
     def platform = System.getProperty('os.name').toLowerCase(Locale.ROOT)
     if (platform.contains("linux")) {
