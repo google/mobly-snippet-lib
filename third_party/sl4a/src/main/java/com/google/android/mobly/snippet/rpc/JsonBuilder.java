@@ -146,6 +146,7 @@ public class JsonBuilder {
 
     private static JSONObject buildJsonBundle(Bundle bundle) throws JSONException {
         JSONObject result = new JSONObject();
+        bundle.setClassLoader(JsonBuilder.class.getClassLoader());
         for (String key : bundle.keySet()) {
             result.put(key, build(bundle.get(key)));
         }
