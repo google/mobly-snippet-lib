@@ -104,15 +104,8 @@ public class JsonBuilder {
         if (data instanceof URL) {
             return buildURL((URL) data);
         }
-        if (data instanceof byte[]) {
-            JSONArray result = new JSONArray();
-            for (byte b : (byte[]) data) {
-                result.put(b & 0xFF);
-            }
-            return result;
-        }
-        if (data instanceof Object[]) {
-            return buildJSONArray((Object[]) data);
+        if (data.getClass().isArray()) {
+            return buildJSONArray(data);
         }
         // Try with custom converter provided by user.
         Object result = SnippetObjectConverterManager.getInstance().objectToJson(data);
@@ -136,10 +129,44 @@ public class JsonBuilder {
         return address;
     }
 
-    private static JSONArray buildJSONArray(Object[] data) throws JSONException {
+    private static JSONArray buildJSONArray(Object data) throws JSONException {
         JSONArray result = new JSONArray();
-        for (Object o : data) {
-            result.put(build(o));
+        if (data instanceof int[]) {
+            for (int i : (int []) data) {
+                result.put(i);
+            }
+        } else if (data instanceof short[]) {
+            for (short s : (short[]) data) {
+                result.put(s);
+            }
+        } else if (data instanceof long[]) {
+            for (long l : (long[]) data) {
+                result.put(l);
+            }
+        } else if (data instanceof float[]) {
+            for (float f : (float[]) data) {
+                result.put(f);
+            }
+        } else if (data instanceof double[]) {
+            for (double d : (double[]) data) {
+                result.put(d);
+            }
+        } else if (data instanceof boolean[]) {
+            for (boolean b : (boolean[]) data) {
+                result.put(b);
+            }
+        } else if (data instanceof char[]) {
+            for (char c : (char[]) data) {
+                result.put(c);
+            }
+        } else if (data instanceof byte[]) {
+            for (byte b : (byte[]) data) {
+                result.put(b & 0xFF);
+            }
+        } else {
+            for (Object o : (Object[]) data) {
+                result.put(build(o));
+            }
         }
         return result;
     }
