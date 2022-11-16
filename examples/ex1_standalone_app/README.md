@@ -58,7 +58,7 @@ a snippet app that controls (instruments) another app under test, please see
         package="com.my.app">
       <application>...</application>
       <instrumentation
-          android:name="com.google.android.mobly.snippet.ServerRunner"
+          android:name="com.google.android.mobly.snippet.SnippetRunner"
           android:targetPackage="com.my.app" />
     </manifest>
     ```
