@@ -23,7 +23,7 @@ a snippet app that controls (instruments) another app under test, please see
     package com.my.app;
     ...
     public class ExampleSnippet implements Snippet {
-      @Rpc(description='Returns a string containing the given number.')
+      @Rpc(description="Returns a string containing the given number.")
       public String getFoo(Integer input) {
         return "foo " + input;
       }
