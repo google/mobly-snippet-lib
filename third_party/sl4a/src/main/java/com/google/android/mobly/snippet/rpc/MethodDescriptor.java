@@ -22,6 +22,7 @@ import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.manager.SnippetObjectConverterManager;
 import com.google.android.mobly.snippet.util.AndroidUtil;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -68,6 +69,7 @@ public final class MethodDescriptor {
      * @throws Throwable the exception raised from executing the RPC method.
      */
     public Object invoke(SnippetManager manager, final JSONArray parameters) throws Throwable {
+        final Annotation annotations[][] = getParameterAnnotations();
         final Type[] parameterTypes = getGenericParameterTypes();
         final Object[] args = new Object[parameterTypes.length];
 
@@ -79,6 +81,8 @@ public final class MethodDescriptor {
             final Type parameterType = parameterTypes[i];
             if (i < parameters.length()) {
                 args[i] = convertParameter(parameters, i, parameterType);
+            } else if (MethodDescriptor.hasDefaultValue(annotations[i])) {
+                args[i] = MethodDescriptor.getDefaultValue(parameterType, annotations[i]);
             } else {
                 throw new RpcError("Argument " + (i + 1) + " is not present");
             }
@@ -218,6 +222,10 @@ public final class MethodDescriptor {
         return mClass;
     }
 
+    public Annotation[][] getParameterAnnotations() {
+        return mMethod.getParameterAnnotations();
+    }
+
     private String getAnnotationDescription() {
         if (isAsync()) {
             AsyncRpc annotation = mMethod.getAnnotation(AsyncRpc.class);
@@ -226,6 +234,7 @@ public final class MethodDescriptor {
         Rpc annotation = mMethod.getAnnotation(Rpc.class);
         return annotation.description();
     }
+
     /**
      * Returns a human-readable help text for this RPC, based on annotations in the source code.
      *
@@ -249,4 +258,34 @@ public final class MethodDescriptor {
                 mMethod.getReturnType().getSimpleName(),
                 getAnnotationDescription());
     }
+
+    /**
+     * Returns the default value for a specific parameter.
+     *
+     * @param parameterType parameterType
+     * @param annotations   annotations of the parameter
+     */
+    public static Object getDefaultValue(Type parameterType, Annotation[] annotations) {
+        for (Annotation a : annotations) {
+            if (a instanceof RpcOptional) {
+                return null;
+            }
+        }
+        throw new IllegalStateException("No default value for " + parameterType);
+    }
+
+    /**
+     * Determines whether or not this parameter has default value.
+     *
+     * @param annotations annotations of the parameter
+     */
+    public static boolean hasDefaultValue(Annotation[] annotations) {
+        for (Annotation a : annotations) {
+            if (a instanceof RpcOptional) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
