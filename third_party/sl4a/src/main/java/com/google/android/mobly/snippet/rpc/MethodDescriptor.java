@@ -22,19 +22,25 @@ import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.manager.SnippetObjectConverterManager;
 import com.google.android.mobly.snippet.util.AndroidUtil;
+import com.google.android.mobly.snippet.util.Log;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /** An adapter that wraps {@code Method}. */
 public final class MethodDescriptor {
+    private static final Map<Class<?>, Converter<?>> sConverters = populateConverters();
+
     private final Method mMethod;
     private final Class<? extends Snippet> mClass;
 
@@ -222,10 +228,6 @@ public final class MethodDescriptor {
         return mClass;
     }
 
-    public Annotation[][] getParameterAnnotations() {
-        return mMethod.getParameterAnnotations();
-    }
-
     private String getAnnotationDescription() {
         if (isAsync()) {
             AsyncRpc annotation = mMethod.getAnnotation(AsyncRpc.class);
@@ -233,6 +235,10 @@ public final class MethodDescriptor {
         }
         Rpc annotation = mMethod.getAnnotation(Rpc.class);
         return annotation.description();
+    }
+
+    public Annotation[][] getParameterAnnotations() {
+        return mMethod.getParameterAnnotations();
     }
 
     /**
@@ -267,11 +273,35 @@ public final class MethodDescriptor {
      */
     public static Object getDefaultValue(Type parameterType, Annotation[] annotations) {
         for (Annotation a : annotations) {
-            if (a instanceof RpcOptional) {
+            if (a instanceof RpcDefault) {
+                RpcDefault defaultAnnotation = (RpcDefault) a;
+                Converter<?> converter = converterFor(parameterType, defaultAnnotation.converter());
+                return converter.convert(defaultAnnotation.value());
+            } else if (a instanceof RpcOptional) {
                 return null;
             }
         }
         throw new IllegalStateException("No default value for " + parameterType);
+    }
+
+    @SuppressWarnings("rawtypes")
+    private static Converter<?> converterFor(Type parameterType,
+                                             Class<? extends Converter> converterClass) {
+        if (converterClass == Converter.class) {
+            Converter<?> converter = sConverters.get(parameterType);
+            if (converter == null) {
+                throw new IllegalArgumentException(
+                        "No predefined converter found for " + parameterType);
+            }
+            return converter;
+        }
+        try {
+            Constructor<?> constructor = converterClass.getConstructor(new Class<?>[0]);
+            return (Converter<?>) constructor.newInstance(new Object[0]);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Cannot create converter from "
+                    + converterClass.getCanonicalName());
+        }
     }
 
     /**
@@ -281,11 +311,61 @@ public final class MethodDescriptor {
      */
     public static boolean hasDefaultValue(Annotation[] annotations) {
         for (Annotation a : annotations) {
-            if (a instanceof RpcOptional) {
+            if (a instanceof RpcDefault || a instanceof RpcOptional) {
                 return true;
             }
         }
         return false;
     }
 
+    /**
+     * Returns the converters for {@code String}, {@code Integer}, {@code Long},
+     * and {@code Boolean}.
+     */
+    private static Map<Class<?>, Converter<?>> populateConverters() {
+        Map<Class<?>, Converter<?>> converters = new HashMap<Class<?>, Converter<?>>();
+        converters.put(String.class, new Converter<String>() {
+            @Override
+            public String convert(String value) {
+                return value;
+            }
+        });
+        converters.put(Integer.class, new Converter<Integer>() {
+            @Override
+            public Integer convert(String input) {
+                try {
+                    return Integer.decode(input);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("'" + input + "' is not an integer");
+                }
+            }
+        });
+        converters.put(Long.class, new Converter<Long>() {
+            @Override
+            public Long convert(String input) {
+                try {
+                    return Long.decode(input);
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("'" + input + "' is not a long");
+                }
+            }
+        });
+        converters.put(Boolean.class, new Converter<Boolean>() {
+            @Override
+            public Boolean convert(String input) {
+                if (input == null) {
+                    return null;
+                }
+                input = input.toLowerCase();
+                if (input.equals("true")) {
+                    return Boolean.TRUE;
+                }
+                if (input.equals("false")) {
+                    return Boolean.FALSE;
+                }
+                throw new IllegalArgumentException("'" + input + "' is not a boolean");
+            }
+        });
+        return converters;
+    }
 }
