@@ -88,6 +88,8 @@ public final class MethodDescriptor {
                 args[i] = convertParameter(parameters, i, parameterType);
             } else if (MethodDescriptor.hasDefaultValue(annotations[i])) {
                 args[i] = MethodDescriptor.getDefaultValue(parameterType, annotations[i]);
+            } else if (MethodDescriptor.isOptional(annotations[i])) {
+                args[i] = MethodDescriptor.getOptionalValue(parameterType, annotations[i]);
             } else {
                 throw new RpcError("Argument " + (i + 1) + " is not present");
             }
@@ -265,7 +267,7 @@ public final class MethodDescriptor {
     }
 
     /**
-     * Returns the default value for a specific parameter.
+     * Returns the default value for a parameter which has a default value.
      *
      * @param parameterType parameterType
      * @param annotations   annotations of the parameter
@@ -277,7 +279,20 @@ public final class MethodDescriptor {
                 TypeConverter<?> converter =
                         converterFor(parameterType, defaultAnnotation.converter());
                 return converter.convert(defaultAnnotation.value());
-            } else if (a instanceof RpcOptional) {
+            }
+        }
+        throw new IllegalStateException("No default value for " + parameterType);
+    }
+
+    /**
+     * Returns null for an optional parameter.
+     *
+     * @param parameterType parameterType
+     * @param annotations   annotations of the parameter
+     */
+    public static Object getOptionalValue(Type parameterType, Annotation[] annotations) {
+        for (Annotation a : annotations) {
+            if (a instanceof RpcOptional) {
                 return null;
             }
         }
@@ -313,7 +328,21 @@ public final class MethodDescriptor {
      */
     public static boolean hasDefaultValue(Annotation[] annotations) {
         for (Annotation a : annotations) {
-            if (a instanceof RpcDefault || a instanceof RpcOptional) {
+            if (a instanceof RpcDefault) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines whether or not this parameter is optional.
+     *
+     * @param annotations annotations of the parameter
+     */
+    public static boolean isOptional(Annotation[] annotations) {
+        for (Annotation a : annotations) {
+            if (a instanceof RpcOptional) {
                 return true;
             }
         }
