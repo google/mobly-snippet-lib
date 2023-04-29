@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.google.android.mobly.snippet.example7">
+
+    <application android:allowBackup="false">
+        <meta-data
+            android:name="mobly-snippets"
+            android:value="com.google.android.mobly.snippet.example7.ExampleDefaultAndOptionalRpcSnippet" />
+    </application>
+
+    <instrumentation
+        android:name="com.google.android.mobly.snippet.SnippetRunner"
+        android:targetPackage="com.google.android.mobly.snippet.example7" />
+
+</manifest>
