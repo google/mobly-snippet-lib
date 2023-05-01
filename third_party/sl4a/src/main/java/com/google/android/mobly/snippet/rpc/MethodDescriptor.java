@@ -27,6 +27,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +75,7 @@ public final class MethodDescriptor {
      * @throws Throwable the exception raised from executing the RPC method.
      */
     public Object invoke(SnippetManager manager, final JSONArray parameters) throws Throwable {
-        final Annotation annotations[][] = getParameterAnnotations();
+        final Annotation[][] annotations = getParameterAnnotations();
         final Type[] parameterTypes = getGenericParameterTypes();
         final Object[] args = new Object[parameterTypes.length];
 
@@ -86,10 +87,12 @@ public final class MethodDescriptor {
             final Type parameterType = parameterTypes[i];
             if (i < parameters.length()) {
                 args[i] = convertParameter(parameters, i, parameterType);
-            } else if (MethodDescriptor.hasDefaultValue(annotations[i])) {
-                args[i] = MethodDescriptor.getDefaultValue(parameterType, annotations[i]);
-            } else if (MethodDescriptor.isOptional(annotations[i])) {
-                args[i] = MethodDescriptor.getOptionalValue(parameterType, annotations[i]);
+            } else if (MethodDescriptor.hasDefaultValue(Arrays.asList(annotations[i]))) {
+                args[i] = MethodDescriptor.getDefaultValue(
+                        parameterType, Arrays.asList(annotations[i]));
+            } else if (MethodDescriptor.isOptional(Arrays.asList(annotations[i]))) {
+                args[i] = MethodDescriptor.getOptionalValue(
+                        parameterType, Arrays.asList(annotations[i]));
             } else {
                 throw new RpcError("Argument " + (i + 1) + " is not present");
             }
@@ -176,7 +179,8 @@ public final class MethodDescriptor {
                             + " should be of type "
                             + ((Class<?>) type).getSimpleName()
                             + ", but is of type "
-                            + parameters.get(index).getClass().getSimpleName());
+                            + parameters.get(index).getClass().getSimpleName(),
+                    e);
         }
     }
 
@@ -272,7 +276,7 @@ public final class MethodDescriptor {
      * @param parameterType parameterType
      * @param annotations   annotations of the parameter
      */
-    public static Object getDefaultValue(Type parameterType, Annotation[] annotations) {
+    public static Object getDefaultValue(Type parameterType, Iterable<Annotation> annotations) {
         for (Annotation a : annotations) {
             if (a instanceof RpcDefault) {
                 RpcDefault defaultAnnotation = (RpcDefault) a;
@@ -290,7 +294,7 @@ public final class MethodDescriptor {
      * @param parameterType parameterType
      * @param annotations   annotations of the parameter
      */
-    public static Object getOptionalValue(Type parameterType, Annotation[] annotations) {
+    public static Object getOptionalValue(Type parameterType, Iterable<Annotation> annotations) {
         for (Annotation a : annotations) {
             if (a instanceof RpcOptional) {
                 return null;
@@ -326,7 +330,7 @@ public final class MethodDescriptor {
      *
      * @param annotations annotations of the parameter
      */
-    public static boolean hasDefaultValue(Annotation[] annotations) {
+    public static boolean hasDefaultValue(Iterable<Annotation> annotations) {
         for (Annotation a : annotations) {
             if (a instanceof RpcDefault) {
                 return true;
@@ -340,7 +344,7 @@ public final class MethodDescriptor {
      *
      * @param annotations annotations of the parameter
      */
-    public static boolean isOptional(Annotation[] annotations) {
+    public static boolean isOptional(Iterable<Annotation> annotations) {
         for (Annotation a : annotations) {
             if (a instanceof RpcOptional) {
                 return true;
