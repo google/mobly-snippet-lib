@@ -22,4 +22,8 @@ public class RpcError extends Exception {
     public RpcError(String message) {
         super(message);
     }
+
+    public RpcError(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
