@@ -25,8 +25,6 @@ import org.json.JSONObject;
 public final class AndroidUtil {
     private AndroidUtil() {}
 
-    // TODO(damonkohler): Pull this out into proper argument deserialization and support
-    // complex/nested types being passed in.
     public static void putExtrasFromJsonObject(JSONObject extras, Intent intent)
             throws JSONException {
         JSONArray names = extras.names();
