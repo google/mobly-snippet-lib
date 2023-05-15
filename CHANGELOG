@@ -1,4 +1,4 @@
-1.3.2:
+1.4.0:
   - Support RpcDefault and RpcOptional
   - Support primitive array types in JsonBuilder 
   - Setting class loader before unmarshalling bundle to prevent java.lang.ClassNotFoundException.
