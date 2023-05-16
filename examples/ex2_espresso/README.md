@@ -33,7 +33,7 @@ The snippet code cannot run from a regular test apk because it requires a custom
 
     ```
     dependencies {
-      snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.3.1'
+      snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.4.0'
     }
     ```
 

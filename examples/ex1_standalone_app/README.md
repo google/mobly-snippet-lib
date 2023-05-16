@@ -12,7 +12,7 @@ a snippet app that controls (instruments) another app under test, please see
 
     ```
     dependencies {
-      implementation 'com.google.android.mobly:mobly-snippet-lib:1.3.1'
+      implementation 'com.google.android.mobly:mobly-snippet-lib:1.4.0'
     }
     ```
 
