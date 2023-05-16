@@ -47,7 +47,7 @@ dependencies {
     // The 'snippetCompile project' dep is to compile against the snippet lib
     // source in this repo. For your own snippets, you'll want to use the
     // regular 'snippetCompile' dep instead:
-    //snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.3.1'
+    //snippetCompile 'com.google.android.mobly:mobly-snippet-lib:1.4.0'
     snippetImplementation project(':mobly-snippet-lib')
 
     snippetImplementation 'androidx.annotation:annotation:1.2.0'
