@@ -21,9 +21,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.ParcelUuid;
 import com.google.android.mobly.snippet.manager.SnippetObjectConverterManager;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,11 +31,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/** Builds the result for JSON RPC. */
 public class JsonBuilder {
 
     private JsonBuilder() {}
 
-    @SuppressWarnings("unchecked")
     public static Object build(Object data) throws JSONException {
         if (data == null) {
             return JSONObject.NULL;
@@ -89,20 +86,10 @@ public class JsonBuilder {
         }
         if (data instanceof Map<?, ?>) {
             // TODO(damonkohler): I would like to make this a checked cast if possible.
-            return buildJsonMap((Map<String, ?>) data);
+            return buildJsonMap((Map<?, ?>) data);
         }
         if (data instanceof ParcelUuid) {
             return data.toString();
-        }
-        // TODO(xpconanfan): Deprecate the following default non-primitive type builders.
-        if (data instanceof InetSocketAddress) {
-            return buildInetSocketAddress((InetSocketAddress) data);
-        }
-        if (data instanceof InetAddress) {
-            return buildInetAddress((InetAddress) data);
-        }
-        if (data instanceof URL) {
-            return buildURL((URL) data);
         }
         if (data.getClass().isArray()) {
             return buildJSONArray(data);
@@ -113,20 +100,6 @@ public class JsonBuilder {
             return result;
         }
         return data.toString();
-    }
-
-    private static Object buildInetAddress(InetAddress data) {
-        JSONArray address = new JSONArray();
-        address.put(data.getHostName());
-        address.put(data.getHostAddress());
-        return address;
-    }
-
-    private static Object buildInetSocketAddress(InetSocketAddress data) {
-        JSONArray address = new JSONArray();
-        address.put(data.getHostName());
-        address.put(data.getPort());
-        return address;
     }
 
     private static JSONArray buildJSONArray(Object data) throws JSONException {
@@ -204,25 +177,13 @@ public class JsonBuilder {
         return result;
     }
 
-    private static JSONObject buildJsonMap(Map<String, ?> map) throws JSONException {
+    private static JSONObject buildJsonMap(Map<?, ?> map) throws JSONException {
         JSONObject result = new JSONObject();
-        for (Entry<String, ?> entry : map.entrySet()) {
-            String key = entry.getKey();
-            if (key == null) {
-                key = "";
-            }
-            result.put(key, build(entry.getValue()));
+        for (Entry<?, ?> entry : map.entrySet()) {
+            Object key = entry.getKey();
+            String keyStr = key == null ? "" : key.toString();
+            result.put(keyStr, build(entry.getValue()));
         }
         return result;
-    }
-
-    private static Object buildURL(URL data) throws JSONException {
-        JSONObject url = new JSONObject();
-        url.put("Authority", data.getAuthority());
-        url.put("Host", data.getHost());
-        url.put("Path", data.getPath());
-        url.put("Port", data.getPort());
-        url.put("Protocol", data.getProtocol());
-        return url;
     }
 }
