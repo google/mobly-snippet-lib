@@ -2,7 +2,7 @@
 
 ## 1.4.0: Support RpcDefault and RpcOptional
 
-With new annotations, the arguments in RPC can have default value or optional.
+With new annotations, the arguments in RPC can have a default or optional value.
 
 ### New
   - Support RpcDefault for RPC arguments
