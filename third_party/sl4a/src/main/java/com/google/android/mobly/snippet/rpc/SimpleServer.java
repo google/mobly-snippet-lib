@@ -138,17 +138,19 @@ public abstract class SimpleServer {
 
         InetAddress candidate = null;
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-        for (NetworkInterface netint : Collections.list(nets)) {
-            if (!netint.isLoopback() || !netint.isUp()) { // Ignore if localhost or not active
-                continue;
-            }
-            Enumeration<InetAddress> addresses = netint.getInetAddresses();
-            for (InetAddress address : Collections.list(addresses)) {
-                if (address instanceof Inet4Address) {
-                    Log.d("local address " + address);
-                    return address; // Prefer ipv4
+        if (nets != null) {
+            for (NetworkInterface netint : Collections.list(nets)) {
+                if (!netint.isLoopback() || !netint.isUp()) { // Ignore if localhost or not active
+                    continue;
                 }
-                candidate = address; // Probably an ipv6
+                Enumeration<InetAddress> addresses = netint.getInetAddresses();
+                for (InetAddress address : Collections.list(addresses)) {
+                    if (address instanceof Inet4Address) {
+                        Log.d("local address " + address);
+                        return address; // Prefer ipv4
+                    }
+                    candidate = address; // Probably an ipv6
+                }
             }
         }
         if (candidate != null) {
