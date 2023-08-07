@@ -1,22 +1,33 @@
-1.4.0:
-  - Support RpcDefault and RpcOptional
-  - Deprecate non-primitive array types and enable checked warnings in JsonBuilder 
+# Mobly Snippet Lib Release History
+
+## 1.4.0: Support RpcDefault and RpcOptional
+
+With new annotations, the arguments in RPC can have a default or optional value.
+
+### New
+  - Support RpcDefault for RPC arguments
+  - Support RpcOptional for RPC arguments
+
+### Breaking Changes
+  - Deprecate non-primitive array types and enable checked warnings in JsonBuilder
+
+### Fixes
   - Setting class loader before unmarshalling bundle to prevent java.lang.ClassNotFoundException
 
-1.3.1:
+## 1.3.1:
   - Migrate from android.support to androidx library
   - Add a default close() method
   - Support for long arrays as parameters
   - Use newer Notification methods for Android O and above
   - Various minor fixes
 
-1.3.0:
+## 1.3.0:
   - Support for RPC scheduling
   - Support for custom converters of non-primitive types
   - Support for JSONArray parsing of parameters
   - Various minor fixes and cleanups
 
-1.2.0:
+## 1.2.0:
   - New startup protocol:
     - Snippet protocol is now versionated and reported to instrumentation output
     - Snippet startup progress can now be monitored via output
@@ -24,13 +35,13 @@
   - Improvements to help() output
   - Allow close() methods to throw exceptions
 
-1.1.0:
+## 1.1.0:
   - Support for asynchronous RPCs
   - Add an optional annotation to cause RPCs to be invoked on the main thread
   - Log tags are now configurable in the manifest
 
-1.0.1:
+## 1.0.1:
   - Ignore regular JUnit tests linked into the snippet lib
   - Improved exception handling and reporting
 
-1.0.0: Initial release of Mobly Snippet Lib with some examples
+## 1.0.0: Initial release of Mobly Snippet Lib with some examples
