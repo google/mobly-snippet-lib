@@ -138,6 +138,9 @@ public abstract class SimpleServer {
 
         InetAddress candidate = null;
         Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
+        if (nets == null) {
+            return InetAddress.getLocalHost(); // Return local host if no interfaces found.
+        }
         for (NetworkInterface netint : Collections.list(nets)) {
             if (!netint.isLoopback() || !netint.isUp()) { // Ignore if localhost or not active
                 continue;
