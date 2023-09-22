@@ -1,45 +1,36 @@
 # UIAutomator Snippet Example
 
-This example shows you how to create snippets that control the UI of a device
-across system and multiple app views using UIAutomator. Unlike Espresso-based
-UI automation, it does not require access to app source code.
+The UiAutomator API, which allows developers to automate UI interactions on an
+Android device, is now available in Python on
+[google/snippet-uiautomator](https://github.com/google/snippet-uiautomator).
+This makes it possible for developers to use UiAutomator in Mobly tests without
+having to write Java.
 
-This snippet is written as a [standalone snippet](../ex1_standalone_app/README.md)
-and does not target another app. In particular, it doesn't need to target the
-app under test, so it doesn't need its classpath or to be signed with the same
-key.
+The `snippet-uiautomator` package is a wrapper around the AndroidX UiAutomator
+APIs. It provides a Pythonic interface for interacting with Android UI elements,
+such as finding and clicking on buttons, entering text into fields, and
+scrolling through lists.
 
-See the [Espresso snippet tutorial](../ex2_espresso/README.md) for more
-information about the app this example automates.
+To use the `snippet-uiautomator` package, developers simply need to install it
+from PyPI and import it into their Python code. Once imported, they can use the
+package's API to automate any UI interaction.
 
-## Running the example code
+Here is an example of how to use the `snippet-uiautomator` package to automate a
+simple UI interaction:
 
-This folder contains a fully working example of a snippet apk that uses
-UIAutomator to automate a simple app.
+```Python
+from mobly.controllers import android_device
+from snippet_uiautomator import uiautomator
 
-1.  Compile the main app and automation. The main app of ex2 (espresso) is used
-    as the app to automate. Unlike espresso, the uiautomator test does not
-    depend on this apk and does not use its source or classpath, so you must
-    compile and install the app separately.
+# Connect to an Android device.
+ad = android_device.AndroidDevice(serial)
 
-        ./gradlew examples:ex2_espresso:assembleDebug examples:ex4_uiautomator:assembleDebug
+# Load UiAutomator service.
+uiautomator.load_uiautomator_service(ad)
 
-1.  Install the apks on your phone
+# Find the "Login" button.
+button = ad.ui(res='com.example.app:id/login_button')
 
-        adb install -r ./examples/ex2_espresso/build/outputs/apk/debug/ex2_espresso-main-debug.apk
-        adb install -r ./examples/ex4_uiautomator/build/outputs/apk/debug/ex4_uiautomator-debug.apk
-
-1.  Use `snippet_shell` from mobly to trigger `pushMainButton()`:
-
-        snippet_shell.py com.google.android.mobly.snippet.example4
-
-        >>> print(s.help())
-        Known methods:
-          pushMainButton(boolean) returns void  // Pushes the main app button, and checks the label if this is the first time.
-          startMainActivity() returns void  // Opens the main activity of the app
-          uiautomatorDump() returns String  // Perform a UIAutomator dump
-
-        >>> s.startMainActivity()
-        >>> s.pushMainButton(True)
-
-1. Press ctrl+d to exit the shell and terminate the app.
+# Click on the button.
+button.click()
+```
