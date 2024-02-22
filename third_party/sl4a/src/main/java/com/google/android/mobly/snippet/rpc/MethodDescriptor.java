@@ -22,9 +22,13 @@ import com.google.android.mobly.snippet.Snippet;
 import com.google.android.mobly.snippet.manager.SnippetManager;
 import com.google.android.mobly.snippet.manager.SnippetObjectConverterManager;
 import com.google.android.mobly.snippet.util.AndroidUtil;
+import com.google.android.mobly.snippet.util.Log;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,6 +109,14 @@ public final class MethodDescriptor {
     private static Object convertParameter(final JSONArray parameters, int index, Type type)
             throws JSONException, RpcError {
         try {
+            // The refelection system sometimes returns a GenericArrayType type
+            // instead of a raw type, causing issues with later type
+            // comparisons.
+            if (type instanceof GenericArrayType) {
+                Type componentType = ((GenericArrayType) type).getGenericComponentType();
+                type = Array.newInstance((Class<?>) componentType, 0).getClass();
+            }
+
             // We must handle null and numbers explicitly because we cannot magically cast them. We
             // also need to convert implicitly from numbers to bools.
             if (parameters.isNull(index)) {
