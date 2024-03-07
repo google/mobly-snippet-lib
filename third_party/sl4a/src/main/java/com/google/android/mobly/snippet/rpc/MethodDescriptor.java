@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.IntStream;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -141,6 +142,9 @@ public final class MethodDescriptor {
                 for (int i = 0; i < list.length(); i++) {
                     result[i] = list.getInt(i);
                 }
+                if (type == int[].class) {
+                    return Arrays.stream(result).mapToInt(Integer::intValue).toArray();
+                }
                 return result;
             } else if (type == Long[].class || type == long[].class) {
                 JSONArray list = parameters.getJSONArray(index);
@@ -148,12 +152,20 @@ public final class MethodDescriptor {
                 for (int i = 0; i < list.length(); i++) {
                     result[i] = list.getLong(i);
                 }
+                if (type == long[].class) {
+                    return Arrays.stream(result).mapToLong(Long::longValue).toArray();
+                }
                 return result;
-            } else if (type == Byte.class || type == byte[].class) {
+            } else if (type == Byte[].class || type == byte[].class) {
                 JSONArray list = parameters.getJSONArray(index);
                 byte[] result = new byte[list.length()];
                 for (int i = 0; i < list.length(); i++) {
                     result[i] = (byte) list.getInt(i);
+                }
+                if (type == Byte[].class) {
+                    return IntStream.range(0, result.length)
+                        .mapToObj(i -> result[i])
+                        .toArray(Byte[]::new);
                 }
                 return result;
             } else if (type == String[].class) {
