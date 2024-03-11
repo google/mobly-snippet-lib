@@ -40,6 +40,9 @@ public class JsonBuilder {
         if (data == null) {
             return JSONObject.NULL;
         }
+        if (data instanceof Byte) {
+            return (Byte) data & 0xFF;
+        }
         if (data instanceof Integer) {
             return data;
         }
